@@ -33,11 +33,11 @@ export const TRACKS: Record<
   TrackId,
   { label: string; boardSize: 5 | 7 | 9 | 13 | 19; blurb: string }
 > = {
-  seed: { label: "씨앗", boardSize: 5, blurb: "돌 놓기와 따내기의 감각을 익혀요" },
-  sprout: { label: "새싹", boardSize: 7, blurb: "활로와 두 눈을 배워요" },
-  leaf: { label: "잎새", boardSize: 9, blurb: "집을 만들고 작은 대국을 끝낼 수 있어요" },
-  tree: { label: "나무", boardSize: 13, blurb: "포석·사활의 기본을 쌓아요" },
-  forest: { label: "숲", boardSize: 19, blurb: "19줄 판에서 한 판을 끝까지 두어요" },
+  seed: { label: "씨앗", boardSize: 5, blurb: "규칙의 뼈대만, 부담 없이" },
+  sprout: { label: "새싹", boardSize: 7, blurb: "활로·두 눈도 생각보다 단순해요" },
+  leaf: { label: "잎새", boardSize: 9, blurb: "집 짓기까지, 한 판을 끝낼 수 있어요" },
+  tree: { label: "나무", boardSize: 13, blurb: "포석·사활도 기본만 익히면 돼요" },
+  forest: { label: "숲", boardSize: 19, blurb: "큰 판도 같은 규칙으로 두어요" },
 };
 
 export const RANKS: Rank[] = [
@@ -45,7 +45,7 @@ export const RANKS: Rank[] = [
     id: "beginner",
     label: "처음이에요",
     short: "입문",
-    meaning: "바둑판을 처음 보거나, 돌만 놓아본 정도예요",
+    meaning: "몰라도 괜찮아요. 바둑은 처음부터 어렵지 않게 익힐 수 있어요",
     boardSize: 5,
     track: "seed",
     level: 0,
@@ -54,7 +54,7 @@ export const RANKS: Rank[] = [
     id: "g30",
     label: "30급",
     short: "30급",
-    meaning: "바둑 규칙을 막 알기 시작했어요. 5줄 판에서 연습하기 좋아요",
+    meaning: "규칙을 막 알기 시작했어요. 지금은 감각만 잡아도 충분해요",
     boardSize: 5,
     track: "seed",
     level: 1,
@@ -63,7 +63,7 @@ export const RANKS: Rank[] = [
     id: "g25",
     label: "25급",
     short: "25급",
-    meaning: "따내기와 숨구멍을 조금씩 알아요. 7줄 판이 딱 맞아요",
+    meaning: "따내기와 숨구멍을 알아가기 시작했어요. 아직 어렵지 않은 구간이에요",
     boardSize: 7,
     track: "sprout",
     level: 2,
@@ -72,7 +72,7 @@ export const RANKS: Rank[] = [
     id: "g20",
     label: "20급",
     short: "20급",
-    meaning: "작은 판에서 한 판을 끝까지 둘 수 있어요",
+    meaning: "한 판을 끝까지 둘 수 있어요. 기본만으로도 충분합니다",
     boardSize: 7,
     track: "sprout",
     level: 3,

@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { addDays, dayKey, startOfToday } from "./date";
 import type { RankId } from "./ranks";
 
 export interface Goal {
@@ -16,6 +17,12 @@ export interface AppState {
   completed: Record<string, number>;
   /** 마지막으로 본 레슨 */
   lastLessonId: string | null;
+  /** 연속 학습 일수 */
+  streakDays: number;
+  /** 마지막으로 레슨을 완료한 날 YYYY-MM-DD */
+  lastActiveDay: string | null;
+  /** 오늘 미션(한 수)을 완료한 날 YYYY-MM-DD */
+  missionCompletedDay: string | null;
 }
 
 const KEY = "hansu/state";
@@ -26,6 +33,9 @@ const EMPTY: AppState = {
   goal: null,
   completed: {},
   lastLessonId: null,
+  streakDays: 0,
+  lastActiveDay: null,
+  missionCompletedDay: null,
 };
 
 function load(): AppState {
@@ -65,6 +75,20 @@ export function getState(): AppState {
   return state;
 }
 
+function bumpActivity(from: AppState): Pick<AppState, "streakDays" | "lastActiveDay" | "missionCompletedDay"> {
+  const today = dayKey(startOfToday());
+  const yesterday = dayKey(addDays(startOfToday(), -1));
+  let streakDays = from.streakDays;
+  if (from.lastActiveDay !== today) {
+    streakDays = from.lastActiveDay === yesterday ? from.streakDays + 1 : 1;
+  }
+  return {
+    streakDays,
+    lastActiveDay: today,
+    missionCompletedDay: today,
+  };
+}
+
 export const actions = {
   completeOnboarding(currentRank: RankId, goal: Goal | null = null) {
     set({ ...state, currentRank, goal });
@@ -83,6 +107,7 @@ export const actions = {
       ...state,
       completed: { ...state.completed, [lessonId]: Date.now() },
       lastLessonId: lessonId,
+      ...bumpActivity(state),
     });
   },
 

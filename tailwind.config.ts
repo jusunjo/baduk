@@ -83,6 +83,15 @@ export default {
           "0%, 100%": { opacity: "0.95", transform: "scale(1)" },
           "50%": { opacity: "0.45", transform: "scale(1.12)" },
         },
+        "stone-drop": {
+          "0%": { opacity: "0", transform: "translateY(-28px) scale(0.7)" },
+          "70%": { opacity: "1", transform: "translateY(3px) scale(1.05)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
+        "companion-bob": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-3px)" },
+        },
       },
       animation: {
         "step-in": "step-in 480ms cubic-bezier(0.22, 1, 0.36, 1) both",
@@ -98,6 +107,8 @@ export default {
         shake: "shake 360ms ease-in-out",
         pop: "pop 420ms cubic-bezier(0.22, 1, 0.36, 1) both",
         gasp: "gasp 900ms ease-in-out infinite",
+        "stone-drop": "stone-drop 520ms cubic-bezier(0.22, 1, 0.36, 1) both",
+        "companion-bob": "companion-bob 2.4s ease-in-out infinite",
       },
     },
   },

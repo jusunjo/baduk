@@ -1,79 +1,190 @@
-import { useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import { Board } from "@/components/Board";
+import { CompanionArt } from "@/components/Companion";
+import { GameStart } from "@/components/GameStart";
 import { Logo } from "@/components/Logo";
 import { RankOptions } from "@/components/RankPicker";
 import { Headline, PrimaryButton, Reveal, SecondaryButton } from "@/components/Screen";
 import { allLessons } from "@/data/curriculum";
+import { emptyBoard, playMove, type Grid } from "@/lib/board";
+import { haptic } from "@/lib/native";
 import { getRank, RANKS, type RankId } from "@/lib/ranks";
 import { actions } from "@/lib/store";
 
 export function WelcomePage() {
   const navigate = useNavigate();
-  const [step, setStep] = useState<"intro" | "rank">("intro");
+  const [step, setStep] = useState<"intro" | "rank" | "boot">("intro");
   const [current, setCurrent] = useState<RankId>("beginner");
   const rank = getRank(current);
 
-  const start = () => {
+  const finishBoot = useCallback(() => {
     actions.completeOnboarding(current, null);
     const first = allLessons(rank.track)[0];
     navigate(first ? `/learn/${first.id}` : "/", { replace: true });
-  };
+  }, [current, navigate, rank.track]);
+
+  if (step === "boot") {
+    return <GameStart boardSize={rank.boardSize} track={rank.track} onDone={finishBoot} />;
+  }
 
   if (step === "intro") {
-    return (
-      <Shell>
-        <Reveal>
-          <Logo size={48} />
-        </Reveal>
-        <Reveal order={1} className="mt-6">
-          <Headline>{"바둑,\n한 수부터 쉽게"}</Headline>
-        </Reveal>
-        <Reveal order={2}>
-          <p className="mt-3 break-keep text-[15px] leading-relaxed text-toss-body">
-            바둑을 하나도 몰라도 괜찮아요. 판 위에 직접 돌을 놓으면서 규칙을 하나씩 알아가요.
-          </p>
-        </Reveal>
-        <Footer>
-          <PrimaryButton onClick={() => setStep("rank")}>시작하기</PrimaryButton>
-        </Footer>
-      </Shell>
-    );
+    return <TitleScreen onStart={() => setStep("rank")} />;
   }
 
   return (
-    <Shell>
+    <Shell warm>
       <Reveal>
         <Headline>{"바둑을 얼마나\n알고 있나요?"}</Headline>
       </Reveal>
       <Reveal order={1}>
-        <p className="mt-3 break-keep text-[15px] text-toss-mute">잘 모르겠으면 ‘처음이에요’를 고르세요. 나중에 바꿀 수 있어요.</p>
+        <p className="mt-3 break-keep text-[15px] leading-relaxed text-toss-body">
+          잘 모르겠으면 ‘처음이에요’를 고르세요. 나중에 바꿀 수 있어요.
+        </p>
       </Reveal>
       <Reveal order={2} className="mt-6">
         <RankOptions ranks={RANKS} value={current} onChange={setCurrent} />
       </Reveal>
-      <Footer>
+      <Footer warm>
         <div className="flex gap-2">
           <div className="w-[38%]">
             <SecondaryButton onClick={() => setStep("intro")}>이전</SecondaryButton>
           </div>
-          <PrimaryButton onClick={start}>{current === "beginner" ? "첫 판 둬 보기" : `${rank.boardSize}줄에서 시작하기`}</PrimaryButton>
+          <PrimaryButton
+            onClick={() => {
+              haptic.tap();
+              setStep("boot");
+            }}
+          >
+            {current === "beginner" ? "시작하기" : `${rank.boardSize}줄에서 시작하기`}
+          </PrimaryButton>
         </div>
       </Footer>
     </Shell>
   );
 }
 
-function Shell({ children }: { children: ReactNode }) {
+function TitleScreen({ onStart }: { onStart: () => void }) {
+  const [board, setBoard] = useState<Grid>(() => emptyBoard(5));
+  const [lastMove, setLastMove] = useState<{ x: number; y: number } | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const show = window.setTimeout(() => setReady(true), 40);
+    const black = window.setTimeout(() => {
+      const next = playMove(emptyBoard(5), { x: 2, y: 2 }, "B");
+      if (next) {
+        setBoard(next);
+        setLastMove({ x: 2, y: 2 });
+        haptic.tap();
+      }
+    }, 520);
+    const white = window.setTimeout(() => {
+      setBoard((prev) => {
+        const next = playMove(prev, { x: 3, y: 2 }, "W");
+        if (next) {
+          setLastMove({ x: 3, y: 2 });
+          haptic.tap();
+          return next;
+        }
+        return prev;
+      });
+    }, 1100);
+    return () => {
+      window.clearTimeout(show);
+      window.clearTimeout(black);
+      window.clearTimeout(white);
+    };
+  }, []);
+
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[520px] flex-col px-5 pt-[env(safe-area-inset-top)]">
-      <main className="flex flex-1 flex-col pb-36 pt-10">{children}</main>
+    <Shell warm>
+      <div
+        className={`flex min-h-0 flex-1 flex-col transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`}
+      >
+        <div className="flex items-center gap-2 pt-2">
+          <Logo size={26} />
+          <span className="text-[13px] font-semibold text-toss-mute">쉬운 바둑</span>
+        </div>
+
+        <div className="mt-7">
+          <h1 className="font-display text-[44px] font-bold leading-none tracking-tight text-toss-ink">한수</h1>
+          <p className="mt-3 break-keep text-[18px] font-semibold leading-snug tracking-tight text-toss-ink">
+            바둑, 생각보다 어렵지 않아요
+          </p>
+          <p className="mt-2 max-w-[20em] break-keep text-[15px] leading-relaxed text-toss-body">
+            판 위에 돌을 놓아 보며 규칙을 익혀요. 몰라도 바로 시작할 수 있어요.
+          </p>
+        </div>
+
+        <div className="relative mt-8 flex flex-1 items-center justify-center">
+          <div className="absolute -right-1 -top-3 z-10 sm:right-2">
+            <CompanionArt track="seed" stage={0} mood="intro" size={64} />
+          </div>
+          <div className="w-full max-w-[340px] rounded-[32px] bg-gradient-to-b from-[#f7efe2] to-white p-3.5 shadow-[0_16px_40px_rgba(92,61,30,0.12)] ring-1 ring-black/[0.04]">
+            <Board size={5} board={board} lastMove={lastMove} interactive={false} showSize={false} className="max-w-none" />
+            <p className="mt-2.5 text-center text-[12px] font-semibold text-[#8a6a3d]">5줄 판 · 첫 돌부터</p>
+          </div>
+        </div>
+      </div>
+
+      <Footer warm>
+        <PrimaryButton
+          onClick={() => {
+            haptic.tap();
+            onStart();
+          }}
+        >
+          한 판 시작하기
+        </PrimaryButton>
+      </Footer>
+    </Shell>
+  );
+}
+
+function Shell({ children, warm }: { children: ReactNode; warm?: boolean }) {
+  return (
+    <div
+      className={`relative mx-auto flex min-h-[100dvh] w-full max-w-[520px] flex-col overflow-hidden px-5 pt-[env(safe-area-inset-top)] ${
+        warm ? "bg-[#faf7f2]" : "bg-white"
+      }`}
+    >
+      {warm && (
+        <>
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(90% 55% at 50% -8%, #fffdf8 0%, transparent 58%), radial-gradient(70% 40% at 100% 100%, rgba(215, 232, 200, 0.35) 0%, transparent 55%)",
+            }}
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 h-40 opacity-[0.04]"
+            style={{
+              backgroundImage:
+                "linear-gradient(#5c3d1e 1px, transparent 1px), linear-gradient(90deg, #5c3d1e 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+              maskImage: "linear-gradient(to bottom, black, transparent)",
+            }}
+            aria-hidden
+          />
+        </>
+      )}
+      <main className="relative z-10 flex flex-1 flex-col pb-36 pt-6">{children}</main>
     </div>
   );
 }
 
-function Footer({ children }: { children: ReactNode }) {
+function Footer({ children, warm }: { children: ReactNode; warm?: boolean }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 bg-gradient-to-t from-white via-white to-white/0 pt-6">
+    <div
+      className={`fixed inset-x-0 bottom-0 z-30 pt-6 ${
+        warm
+          ? "bg-gradient-to-t from-[#faf7f2] via-[#faf7f2]/95 to-transparent"
+          : "bg-gradient-to-t from-white via-white to-white/0"
+      }`}
+    >
       <div className="mx-auto w-full max-w-[520px] px-5 pb-[max(20px,env(safe-area-inset-bottom))]">{children}</div>
     </div>
   );

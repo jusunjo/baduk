@@ -28,10 +28,11 @@ export function LearnPage() {
   return (
     <Screen nav gray>
       <div className="px-1 pt-1">
-        <p className="text-[13px] font-semibold text-toss-mute">{track.label} · {p.rank.boardSize}줄 판</p>
+        <p className="text-[13px] font-semibold text-toss-mute">{track.label} · {p.rank.boardSize}줄 · 부담 없이</p>
         <p className="mt-1 text-[22px] font-bold tracking-tight text-toss-ink">
           {p.done}/{p.total} 레슨 완료
         </p>
+        <p className="mt-1 break-keep text-[14px] text-toss-mute">어려운 이론보다, 두면서 익히는 길이에요.</p>
       </div>
 
       <div className="mt-5 space-y-6 pb-10">

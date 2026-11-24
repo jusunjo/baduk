@@ -37,7 +37,7 @@ export function BoardGrowth({ active = 5 }: { active?: 5 | 7 | 9 | 13 | 19 }) {
   );
 }
 
-/** 작은 판이 궁금한 사람만 열어 보는 설명 */
+/** 왜 이 판으로 배우는지 — ‘어렵지 않다’를 먼저 */
 export function WhySmallBoard({ size }: { size: 5 | 7 | 9 | 13 | 19 }) {
   const [open, setOpen] = useState(false);
   if (size === 19) return null;
@@ -48,20 +48,20 @@ export function WhySmallBoard({ size }: { size: 5 | 7 | 9 | 13 | 19 }) {
         onClick={() => setOpen(true)}
         className="mx-auto flex items-center gap-1 rounded-pill px-3 py-1.5 text-[13px] font-medium text-toss-mute transition hover:bg-toss-soft active:scale-95"
       >
-        왜 {size}줄 판이에요?
+        바둑, 왜 어렵지 않은가요?
       </button>
       {open && (
         <Sheet
-          title={`왜 ${size}줄 판으로 배우나요?`}
+          title="바둑은 생각보다 단순해요"
           onClose={() => setOpen(false)}
           footer={<PrimaryButton onClick={() => setOpen(false)}>알겠어요</PrimaryButton>}
         >
           <BoardGrowth active={size} />
           <ul className="mt-5 space-y-3">
             {[
-              "실제 대국은 19줄 판에서 둬요. 돌을 놓을 자리가 361개라 처음엔 막막해요.",
-              "작은 판은 한 판이 몇 분 만에 끝나서, 규칙과 감각을 빨리 익힐 수 있어요.",
-              "실력이 늘면 7 → 9 → 13 → 19줄로 판이 함께 넓어져요. 작은 판에서 배운 원칙은 그대로 쓰여요.",
+              "규칙은 몇 가지뿐이에요. 돌을 놓고, 숨을 막고, 집을 더 많이 지키면 이겨요.",
+              "처음부터 19줄 전체를 외울 필요 없어요. 지금 배우는 감각이면 충분합니다.",
+              "익숙해질수록 판만 넓어질 뿐, 기본은 그대로예요. 어려운 게 쌓이는 구조가 아니에요.",
             ].map((t) => (
               <li key={t} className="flex gap-2.5 break-keep text-[14px] leading-relaxed text-toss-body">
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-toss-blue" />

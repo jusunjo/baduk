@@ -1,5 +1,5 @@
 import { allLessons, curriculumForRank } from "@/data/curriculum";
-import { daysUntil } from "./date";
+import { addDays, dayKey, daysUntil, startOfToday } from "./date";
 import { getRank, type Rank } from "./ranks";
 import { useStore } from "./store";
 
@@ -13,6 +13,12 @@ export function useProgress() {
   const target: Rank | null = state.goal ? getRank(state.goal.targetRank) : null;
   const daysLeft = state.goal ? daysUntil(state.goal.date) : null;
 
+  const today = dayKey(startOfToday());
+  const yesterday = dayKey(addDays(startOfToday(), -1));
+  const streakAlive = state.lastActiveDay === today || state.lastActiveDay === yesterday;
+  const streakDays = streakAlive ? state.streakDays : 0;
+  const missionDoneToday = state.missionCompletedDay === today;
+
   return {
     ...state,
     rank,
@@ -24,5 +30,7 @@ export function useProgress() {
     target,
     daysLeft,
     pct: lessons.length ? done / lessons.length : 0,
+    streakDays,
+    missionDoneToday,
   };
 }

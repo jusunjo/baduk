@@ -43,6 +43,31 @@ export interface LessonStep {
   autoplay?: { color: StoneColor; at: Point }[];
 }
 
+/** 개념 세션의 문제. 맞출 때까지 진행하고, 한 번이라도 틀리면 오답 복습 큐에 들어간다. */
+export interface Problem {
+  id: string;
+  prompt: string;
+  tip?: string;
+  /** 오답 복습 때 짧게 보여 줄 해설 */
+  explanation?: string;
+  setup?: { color: StoneColor; at: Point }[];
+  size?: 5 | 7 | 9 | 13 | 19;
+  answer: Answer;
+  playAs?: StoneColor;
+  highlight?: Point[];
+  feedback?: string;
+  wrongHint?: string;
+  reply?: (played: Point) => Point;
+  autoNext?: boolean;
+  libertiesFor?: StoneColor | "both";
+}
+
+export interface LessonSession {
+  concept: LessonStep[];
+  example: LessonStep[];
+  problems: Problem[];
+}
+
 export interface Lesson {
   id: string;
   title: string;
@@ -56,7 +81,10 @@ export interface Lesson {
   libertiesFor?: StoneColor | "both";
   /** 끝나면 정리 화면 없이 다음 레슨으로 바로 이어진다 */
   flowNext?: boolean;
+  /** 레거시 선형 스텝. session이 있으면 플레이어는 session을 우선한다. */
   steps: LessonStep[];
+  /** 개념 → 예시 → 문제 → 오답 복습 */
+  session?: LessonSession;
 }
 
 export interface Chapter {
@@ -106,24 +134,24 @@ const seed: TrackCurriculum = {
     {
       id: "seed-big-picture",
       title: "바둑이 뭐예요?",
-      blurb: "판과 돌, 그리고 이기는 법",
+      blurb: "생각보다 단순한 규칙부터",
       lessons: [
         {
           id: "seed-first-game",
           title: "첫 판",
-          subtitle: "규칙 몰라도 일단 한 판",
+          subtitle: "몰라도 괜찮아요, 일단 두어 보기",
           boardSize: 5,
           minutes: 2,
-          vibe: "첫 판 두기",
+          vibe: "어렵지 않은 시작",
           steps: [
             {
               text: "흑부터 둬요. 빛나는 점 중 아무 데나 눌러 보세요.",
-              tip: "규칙은 몰라도 괜찮아요. 일단 한 판 둬 봐요.",
+              tip: "바둑은 어렵지 않아요. 규칙은 두면서 자연스럽게 익혀요.",
               ...GAME_MOVE,
             },
             {
               text: "백도 한 수 뒀어요. 다시 흑 차례예요.",
-              tip: "이렇게 흑과 백이 한 수씩 번갈아 둬요.",
+              tip: "흑과 백이 번갈아 두는 게 전부예요. 간단하죠?",
               ...GAME_MOVE,
             },
             {
@@ -232,14 +260,14 @@ const seed: TrackCurriculum = {
               goto: 4,
             },
             {
-              text: "좋아요! 그런데 처음부터 집 짓기를 배우기엔 조금 어려워요.",
-              tip: "집을 지키려면, 먼저 돌이 언제 잡히는지 알아야 하거든요. 그래서 이 순서로 배워요.",
+              text: "좋아요! 집 짓기 전에, 더 쉬운 규칙부터 짚고 갈게요.",
+              tip: "집을 지키려면 돌이 언제 잡히는지만 알면 돼요. 그래서 이 순서로 배워요.",
               visual: "roadmap",
               cta: "배울 순서 보기",
             },
             {
-              text: "돌 따먹기부터 해요. 이해하기 쉽고, 바둑에서 그다음으로 중요한 규칙이에요.",
-              tip: "돌이 숨 쉬는 자리, ‘활로’를 알면 따먹기는 금방이에요.",
+              text: "돌 따먹기부터 해요. 이해하기 쉽고, 바둑의 핵심 규칙이에요.",
+              tip: "돌이 숨 쉬는 자리, ‘활로’만 알면 따먹기는 금방이에요.",
               setup: [{ color: "W", at: C }],
               cta: "따먹기 시작하기",
             },
@@ -257,235 +285,389 @@ const seed: TrackCurriculum = {
           title: "돌도 숨을 쉬어요",
           subtitle: "숨구멍을 막으면 따낼 수 있어요",
           boardSize: 5,
-          minutes: 3,
+          minutes: 4,
           vibe: "숨구멍과 따내기",
           libertiesFor: "W",
           bridge: "돌 하나로 천천히 볼게요.",
-          steps: [
-            {
-              text: "바둑에서 ‘옆’은 선으로 바로 이어진 위·아래·왼쪽·오른쪽, 네 곳이에요.",
-              tip: "대각선은 선으로 이어져 있지 않아서 옆이 아니에요.",
-              setup: [{ color: "W", at: C }],
-              highlight: AROUND_C,
-              cta: "숨구멍 알아보기",
-            },
-            {
-              text: "이 네 곳이 비어 있으면 돌이 숨을 쉬어요. 돌 위의 숫자 4가 숨구멍 수예요.",
-              tip: "숨구멍은 바둑 용어로 ‘활로’라고 해요.",
-              highlight: AROUND_C,
-              cta: "숨구멍 막아 보기",
-            },
-            {
-              text: "흑 돌로 흰 돌의 숨구멍을 하나 막아 보세요.",
-              answer: { libertiesOf: C },
-              autoNext: true,
-              wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
-            },
-            {
-              text: "숫자가 3이 됐어요. 계속 막아 볼까요?",
-              answer: { libertiesOf: C },
-              autoNext: true,
-              wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
-            },
-            {
-              text: "2개 남았어요. 하나 더!",
-              answer: { libertiesOf: C },
-              autoNext: true,
-              wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
-            },
-            {
-              text: "숨구멍이 하나뿐이라 돌이 숨차 보이죠? 이걸 ‘단수’라고 해요. 마지막 숨구멍을 막아 보세요.",
-              answer: { libertiesOf: C },
-              feedback: "따냈어요! 숨을 못 쉬게 된 돌은 판에서 들어내요. 이게 ‘따내기’예요.",
-              wrongHint: "남은 숨구멍은 하나뿐이에요.",
-            },
-            {
-              text: "따낸 자리는 다시 빈자리가 돼요. 따낸 돌은 나중에 점수에도 보태져요.",
-              tip: "목표는 여전히 집이에요. 따내기는 집을 지키고 넓히는 수단이에요.",
-              cta: "다음으로",
-            },
-          ],
+          steps: [],
+          session: {
+            concept: [
+              {
+                text: "바둑에서 ‘옆’은 선으로 바로 이어진 위·아래·왼쪽·오른쪽, 네 곳이에요.",
+                tip: "대각선은 선으로 이어져 있지 않아서 옆이 아니에요.",
+                setup: [{ color: "W", at: C }],
+                highlight: AROUND_C,
+                cta: "숨구멍 알아보기",
+              },
+              {
+                text: "이 네 곳이 비어 있으면 돌이 숨을 쉬어요. 돌 위의 숫자 4가 숨구멍 수예요.",
+                tip: "숨구멍은 바둑 용어로 ‘활로’라고 해요. 다 막히면 돌은 잡혀요.",
+                highlight: AROUND_C,
+                cta: "예시 보기",
+              },
+            ],
+            example: [
+              {
+                text: "흑으로 흰 돌 숨구멍을 하나씩 막아 볼게요. 먼저 하나!",
+                setup: [{ color: "W", at: C }],
+                answer: { libertiesOf: C },
+                autoNext: true,
+                wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
+              },
+              {
+                text: "3개 남았어요. 하나 더 막아 보세요.",
+                answer: { libertiesOf: C },
+                autoNext: true,
+                wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
+              },
+              {
+                text: "2개 남았어요. 하나 더!",
+                answer: { libertiesOf: C },
+                autoNext: true,
+                wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
+              },
+              {
+                text: "이제 단수예요. 마지막 숨구멍을 막아 따내 보세요.",
+                answer: { libertiesOf: C },
+                feedback: "따냈어요! 숨을 못 쉬게 된 돌은 판에서 들어내요.",
+                wrongHint: "남은 숨구멍은 하나뿐이에요.",
+              },
+            ],
+            problems: [
+              {
+                id: "breath-p1",
+                prompt: "흰 돌이 단수예요. 따내 보세요.",
+                explanation: "숨구멍이 하나 남았을 때 그 자리를 막으면 따내요.",
+                setup: [
+                  { color: "W", at: C },
+                  { color: "B", at: { x: 1, y: 2 } },
+                  { color: "B", at: { x: 3, y: 2 } },
+                  { color: "B", at: { x: 2, y: 3 } },
+                ],
+                answer: { libertiesOf: C },
+                highlight: [],
+                autoNext: true,
+                wrongHint: "숫자가 1인 돌의 남은 빈자리를 찾아요.",
+              },
+              {
+                id: "breath-p2",
+                prompt: "숨구멍이 두 개예요. 하나를 막아 보세요.",
+                explanation: "옆(상하좌우) 빈자리가 숨구멍이에요.",
+                setup: [
+                  { color: "W", at: C },
+                  { color: "B", at: { x: 1, y: 2 } },
+                  { color: "B", at: { x: 3, y: 2 } },
+                ],
+                answer: { libertiesOf: C },
+                highlight: [],
+                autoNext: true,
+                wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
+              },
+              {
+                id: "breath-p3",
+                prompt: "가운데 흰 돌의 숨구멍을 하나 막아 보세요.",
+                explanation: "가운데 돌은 숨구멍이 최대 4개예요.",
+                setup: [{ color: "W", at: C }],
+                answer: { libertiesOf: C },
+                highlight: [],
+                wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
+              },
+            ],
+          },
         },
         {
           id: "seed-edge-breath",
           title: "가장자리는 숨이 적어요",
           subtitle: "가운데 4 · 변 3 · 귀 2",
           boardSize: 5,
-          minutes: 3,
+          minutes: 4,
           vibe: "자리마다 다른 숨구멍",
           libertiesFor: "W",
           bridge: "같은 돌이라도 어디에 있느냐에 따라 숨구멍 수가 달라요.",
-          steps: [
-            {
-              text: "판 가장자리(변)에 있는 돌은 바깥쪽이 판 끝이라 숨구멍이 3개예요.",
-              setup: [{ color: "W", at: { x: 2, y: 0 } }],
-              highlight: [
-                { x: 1, y: 0 },
-                { x: 3, y: 0 },
-                { x: 2, y: 1 },
-              ],
-              cta: "변의 돌 잡아 보기",
-            },
-            {
-              text: "숨구멍을 하나씩 막아 보세요.",
-              answer: { libertiesOf: { x: 2, y: 0 } },
-              autoNext: true,
-              wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
-            },
-            {
-              text: "2개 남았어요.",
-              answer: { libertiesOf: { x: 2, y: 0 } },
-              autoNext: true,
-              wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
-            },
-            {
-              text: "단수예요. 마지막 하나!",
-              answer: { libertiesOf: { x: 2, y: 0 } },
-              feedback: "세 수 만에 잡았어요!",
-              wrongHint: "남은 숨구멍은 하나뿐이에요.",
-            },
-            {
-              text: "모서리(귀)는 숨구멍이 2개뿐이에요.",
-              setup: [{ color: "W", at: { x: 0, y: 0 } }],
-              highlight: [
-                { x: 1, y: 0 },
-                { x: 0, y: 1 },
-              ],
-              cta: "귀의 돌 잡아 보기",
-            },
-            {
-              text: "숨구멍 하나를 막아 보세요.",
-              answer: { libertiesOf: { x: 0, y: 0 } },
-              autoNext: true,
-              wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
-            },
-            {
-              text: "벌써 단수예요. 따내 보세요!",
-              answer: { libertiesOf: { x: 0, y: 0 } },
-              feedback: "두 수면 끝! 귀의 돌은 정말 잡히기 쉬워요.",
-              wrongHint: "남은 숨구멍은 하나뿐이에요.",
-            },
-            {
-              text: "가운데 4개, 변 3개, 귀 2개. 위치에 따라 숨구멍이 달라요.",
-              tip: "귀는 잡히기 쉽지만, 집 짓기엔 제일 좋은 곳이기도 해요.",
-              cta: "다음으로",
-            },
-          ],
+          steps: [],
+          session: {
+            concept: [
+              {
+                text: "가운데는 숨구멍 4개, 변은 3개, 귀는 2개예요.",
+                tip: "판 끝이 벽을 대신해서, 자리마다 숨구멍 수가 달라요.",
+                setup: [{ color: "W", at: { x: 2, y: 0 } }],
+                highlight: [
+                  { x: 1, y: 0 },
+                  { x: 3, y: 0 },
+                  { x: 2, y: 1 },
+                ],
+                cta: "예시 보기",
+              },
+            ],
+            example: [
+              {
+                text: "변의 돌이에요. 숨구멍을 하나씩 막아 보세요.",
+                setup: [{ color: "W", at: { x: 2, y: 0 } }],
+                answer: { libertiesOf: { x: 2, y: 0 } },
+                autoNext: true,
+                wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
+              },
+              {
+                text: "2개 남았어요. 하나 더!",
+                answer: { libertiesOf: { x: 2, y: 0 } },
+                autoNext: true,
+                wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
+              },
+              {
+                text: "단수예요. 따내 보세요!",
+                answer: { libertiesOf: { x: 2, y: 0 } },
+                feedback: "변의 돌은 세 수면 잡혀요.",
+                wrongHint: "남은 숨구멍은 하나뿐이에요.",
+              },
+            ],
+            problems: [
+              {
+                id: "edge-p1",
+                prompt: "변에 있는 흰 돌이 단수예요. 따내 보세요.",
+                explanation: "변의 돌은 숨구멍이 최대 3개라 가운데보다 빨리 잡혀요.",
+                setup: [
+                  { color: "W", at: { x: 4, y: 2 } },
+                  { color: "B", at: { x: 4, y: 1 } },
+                  { color: "B", at: { x: 3, y: 2 } },
+                ],
+                answer: { libertiesOf: { x: 4, y: 2 } },
+                highlight: [],
+                autoNext: true,
+                wrongHint: "흰 돌 아래쪽을 보세요.",
+              },
+              {
+                id: "edge-p2",
+                prompt: "귀의 흰 돌이 단수예요. 따내 보세요.",
+                explanation: "귀는 숨구멍이 2개뿐이라 두 수면 끝나요.",
+                setup: [
+                  { color: "W", at: { x: 0, y: 0 } },
+                  { color: "B", at: { x: 1, y: 0 } },
+                ],
+                answer: { libertiesOf: { x: 0, y: 0 } },
+                highlight: [],
+                autoNext: true,
+                wrongHint: "남은 숨구멍은 하나뿐이에요.",
+              },
+              {
+                id: "edge-p3",
+                prompt: "귀의 돌 숨구멍을 하나 막아 보세요.",
+                explanation: "귀를 막으면 바로 단수가 돼요.",
+                setup: [{ color: "W", at: { x: 0, y: 0 } }],
+                answer: { libertiesOf: { x: 0, y: 0 } },
+                highlight: [],
+                wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
+              },
+            ],
+          },
         },
         {
           id: "seed-group-capture",
           title: "붙은 돌은 한 덩어리",
           subtitle: "덩어리째 따내기",
           boardSize: 5,
-          minutes: 2,
+          minutes: 3,
           vibe: "덩어리 따내기",
           libertiesFor: "W",
           bridge: "돌이 여러 개 붙어 있으면 어떻게 될까요?",
-          steps: [
-            {
-              text: "흰 돌 두 개가 붙어 있어요. 붙은 돌은 한 덩어리라서 숨구멍을 같이 써요.",
-              tip: "숫자는 덩어리 전체의 숨구멍 수예요.",
-              setup: [
-                { color: "W", at: { x: 1, y: 2 } },
-                { color: "W", at: { x: 2, y: 2 } },
-                { color: "B", at: { x: 0, y: 2 } },
-                { color: "B", at: { x: 1, y: 1 } },
-                { color: "B", at: { x: 2, y: 1 } },
-              ],
-              cta: "덩어리 잡아 보기",
-            },
-            {
-              text: "덩어리의 숨구멍을 막아 보세요.",
-              answer: { libertiesOf: { x: 1, y: 2 } },
-              autoNext: true,
-              wrongHint: "흰 돌 두 개 둘레의 빈자리를 찾아요.",
-            },
-            {
-              text: "좋아요, 하나 더!",
-              answer: { libertiesOf: { x: 1, y: 2 } },
-              autoNext: true,
-              wrongHint: "흰 돌 두 개 둘레의 빈자리를 찾아요.",
-            },
-            {
-              text: "덩어리가 단수예요. 통째로 따내 보세요!",
-              answer: { libertiesOf: { x: 1, y: 2 } },
-              feedback: "두 점을 한 번에 따냈어요!",
-              wrongHint: "남은 숨구멍은 하나뿐이에요.",
-            },
-            {
-              text: "돌이 많이 붙을수록 숨구멍도 많아져요. 그래서 이어진 돌은 잡기 어려워요.",
-              cta: "다음으로",
-            },
-          ],
+          steps: [],
+          session: {
+            concept: [
+              {
+                text: "붙은 돌은 한 덩어리라서 숨구멍을 같이 써요.",
+                tip: "숫자는 돌 하나가 아니라 덩어리 전체의 숨구멍 수예요.",
+                setup: [
+                  { color: "W", at: { x: 1, y: 2 } },
+                  { color: "W", at: { x: 2, y: 2 } },
+                  { color: "B", at: { x: 0, y: 2 } },
+                  { color: "B", at: { x: 1, y: 1 } },
+                  { color: "B", at: { x: 2, y: 1 } },
+                ],
+                cta: "예시 보기",
+              },
+            ],
+            example: [
+              {
+                text: "덩어리의 숨구멍을 막아 보세요.",
+                setup: [
+                  { color: "W", at: { x: 1, y: 2 } },
+                  { color: "W", at: { x: 2, y: 2 } },
+                  { color: "B", at: { x: 0, y: 2 } },
+                  { color: "B", at: { x: 1, y: 1 } },
+                  { color: "B", at: { x: 2, y: 1 } },
+                ],
+                answer: { libertiesOf: { x: 1, y: 2 } },
+                autoNext: true,
+                wrongHint: "흰 돌 두 개 둘레의 빈자리를 찾아요.",
+              },
+              {
+                text: "좋아요, 하나 더!",
+                answer: { libertiesOf: { x: 1, y: 2 } },
+                autoNext: true,
+                wrongHint: "흰 돌 두 개 둘레의 빈자리를 찾아요.",
+              },
+              {
+                text: "덩어리가 단수예요. 통째로 따내 보세요!",
+                answer: { libertiesOf: { x: 1, y: 2 } },
+                feedback: "두 점을 한 번에 따냈어요!",
+                wrongHint: "남은 숨구멍은 하나뿐이에요.",
+              },
+            ],
+            problems: [
+              {
+                id: "group-p1",
+                prompt: "흰 돌 두 개 덩어리가 단수예요. 따내 보세요.",
+                explanation: "이어진 돌은 숨구멍을 공유해요. 마지막 하나만 막으면 통째로 잡혀요.",
+                setup: [
+                  { color: "W", at: { x: 1, y: 1 } },
+                  { color: "W", at: { x: 2, y: 1 } },
+                  { color: "B", at: { x: 0, y: 1 } },
+                  { color: "B", at: { x: 3, y: 1 } },
+                  { color: "B", at: { x: 1, y: 0 } },
+                  { color: "B", at: { x: 2, y: 0 } },
+                  { color: "B", at: { x: 1, y: 2 } },
+                ],
+                answer: { libertiesOf: { x: 1, y: 1 } },
+                highlight: [],
+                autoNext: true,
+                wrongHint: "두 돌 둘레에 아직 비어 있는 곳은 한 군데예요.",
+              },
+              {
+                id: "group-p2",
+                prompt: "귀의 흰 돌 두 개를 한 번에 잡아 보세요.",
+                explanation: "귀에서도 붙은 돌은 한 덩어리예요.",
+                setup: [
+                  { color: "W", at: { x: 0, y: 0 } },
+                  { color: "W", at: { x: 1, y: 0 } },
+                  { color: "B", at: { x: 2, y: 0 } },
+                  { color: "B", at: { x: 0, y: 1 } },
+                ],
+                answer: { libertiesOf: { x: 0, y: 0 } },
+                highlight: [],
+                autoNext: true,
+                wrongHint: "두 돌을 한 덩어리로 보고, 남은 빈자리를 찾아요.",
+              },
+              {
+                id: "group-p3",
+                prompt: "덩어리 숨구멍을 하나 막아 보세요.",
+                explanation: "돌이 붙을수록 숨구멍도 늘어나서 잡기 어려워져요.",
+                setup: [
+                  { color: "W", at: { x: 1, y: 2 } },
+                  { color: "W", at: { x: 2, y: 2 } },
+                  { color: "B", at: { x: 0, y: 2 } },
+                  { color: "B", at: { x: 1, y: 1 } },
+                  { color: "B", at: { x: 2, y: 1 } },
+                ],
+                answer: { libertiesOf: { x: 1, y: 2 } },
+                highlight: [],
+                wrongHint: "흰 돌 두 개 둘레의 빈자리를 찾아요.",
+              },
+            ],
+          },
         },
         {
           id: "seed-capture",
           title: "따내기 퀴즈",
           subtitle: "어디를 막으면 잡힐까요?",
           boardSize: 5,
-          minutes: 2,
+          minutes: 3,
           vibe: "따내기 실력 확인",
           libertiesFor: "W",
-          bridge: "배운 걸로 문제를 풀어 볼게요. 네 문제예요.",
-          steps: [
-            {
-              text: "흰 돌을 따내 보세요.",
-              setup: [
-                { color: "W", at: C },
-                { color: "B", at: { x: 1, y: 2 } },
-                { color: "B", at: { x: 3, y: 2 } },
-                { color: "B", at: { x: 2, y: 3 } },
-              ],
-              answer: { libertiesOf: C },
-              highlight: [],
-              feedback: "정답! 다음 문제예요.",
-              autoNext: true,
-              wrongHint: "숫자가 1인 돌의 남은 빈자리를 찾아요.",
-            },
-            {
-              text: "변에 있는 흰 돌이에요.",
-              setup: [
-                { color: "W", at: { x: 4, y: 2 } },
-                { color: "B", at: { x: 4, y: 1 } },
-                { color: "B", at: { x: 3, y: 2 } },
-              ],
-              answer: { libertiesOf: { x: 4, y: 2 } },
-              highlight: [],
-              feedback: "정답! 변의 돌은 숨구멍이 3개뿐이었죠.",
-              autoNext: true,
-              wrongHint: "흰 돌 아래쪽을 보세요.",
-            },
-            {
-              text: "귀에 있는 흰 돌 두 개를 한 번에 잡아 보세요.",
-              setup: [
-                { color: "W", at: { x: 0, y: 0 } },
-                { color: "W", at: { x: 1, y: 0 } },
-                { color: "B", at: { x: 2, y: 0 } },
-                { color: "B", at: { x: 0, y: 1 } },
-              ],
-              answer: { libertiesOf: { x: 0, y: 0 } },
-              highlight: [],
-              feedback: "정답! 마지막 문제예요.",
-              autoNext: true,
-              wrongHint: "두 돌을 한 덩어리로 보고, 남은 빈자리를 찾아요.",
-            },
-            {
-              text: "흰 돌 두 개 덩어리예요. 따내 보세요.",
-              setup: [
-                { color: "W", at: { x: 1, y: 1 } },
-                { color: "W", at: { x: 2, y: 1 } },
-                { color: "B", at: { x: 0, y: 1 } },
-                { color: "B", at: { x: 3, y: 1 } },
-                { color: "B", at: { x: 1, y: 0 } },
-                { color: "B", at: { x: 2, y: 0 } },
-                { color: "B", at: { x: 1, y: 2 } },
-              ],
-              answer: { libertiesOf: { x: 1, y: 1 } },
-              highlight: [],
-              feedback: "네 문제 모두 맞혔어요!",
-              wrongHint: "두 돌 둘레에 아직 비어 있는 곳은 한 군데예요.",
-            },
-          ],
+          bridge: "배운 걸로 문제를 풀어 볼게요.",
+          steps: [],
+          session: {
+            concept: [
+              {
+                text: "숨구멍을 모두 막으면 돌을 따내요. 단수(숨구멍 1개)를 찾으면 쉬워요.",
+                tip: "가운데·변·귀, 한 점·덩어리 모두 같은 규칙이에요.",
+                setup: [
+                  { color: "W", at: C },
+                  { color: "B", at: { x: 1, y: 2 } },
+                  { color: "B", at: { x: 3, y: 2 } },
+                  { color: "B", at: { x: 2, y: 3 } },
+                ],
+                highlight: [{ x: 2, y: 1 }],
+                cta: "예시 보기",
+              },
+            ],
+            example: [
+              {
+                text: "이 흰 돌은 단수예요. 남은 숨구멍을 막아 따내 보세요.",
+                setup: [
+                  { color: "W", at: C },
+                  { color: "B", at: { x: 1, y: 2 } },
+                  { color: "B", at: { x: 3, y: 2 } },
+                  { color: "B", at: { x: 2, y: 3 } },
+                ],
+                answer: { libertiesOf: C },
+                highlight: [],
+                feedback: "이 감각으로 문제를 풀어 볼게요.",
+                wrongHint: "숫자가 1인 돌의 남은 빈자리를 찾아요.",
+              },
+            ],
+            problems: [
+              {
+                id: "quiz-p1",
+                prompt: "흰 돌을 따내 보세요.",
+                explanation: "숨구멍 하나만 남은 자리를 막으면 됩니다.",
+                setup: [
+                  { color: "W", at: C },
+                  { color: "B", at: { x: 1, y: 2 } },
+                  { color: "B", at: { x: 3, y: 2 } },
+                  { color: "B", at: { x: 2, y: 3 } },
+                ],
+                answer: { libertiesOf: C },
+                highlight: [],
+                autoNext: true,
+                wrongHint: "숫자가 1인 돌의 남은 빈자리를 찾아요.",
+              },
+              {
+                id: "quiz-p2",
+                prompt: "변에 있는 흰 돌이에요.",
+                explanation: "변의 돌은 숨구멍이 최대 3개예요.",
+                setup: [
+                  { color: "W", at: { x: 4, y: 2 } },
+                  { color: "B", at: { x: 4, y: 1 } },
+                  { color: "B", at: { x: 3, y: 2 } },
+                ],
+                answer: { libertiesOf: { x: 4, y: 2 } },
+                highlight: [],
+                autoNext: true,
+                wrongHint: "흰 돌 아래쪽을 보세요.",
+              },
+              {
+                id: "quiz-p3",
+                prompt: "귀에 있는 흰 돌 두 개를 한 번에 잡아 보세요.",
+                explanation: "붙은 돌은 한 덩어리로 숨구멍을 공유해요.",
+                setup: [
+                  { color: "W", at: { x: 0, y: 0 } },
+                  { color: "W", at: { x: 1, y: 0 } },
+                  { color: "B", at: { x: 2, y: 0 } },
+                  { color: "B", at: { x: 0, y: 1 } },
+                ],
+                answer: { libertiesOf: { x: 0, y: 0 } },
+                highlight: [],
+                autoNext: true,
+                wrongHint: "두 돌을 한 덩어리로 보고, 남은 빈자리를 찾아요.",
+              },
+              {
+                id: "quiz-p4",
+                prompt: "흰 돌 두 개 덩어리예요. 따내 보세요.",
+                explanation: "덩어리 둘레의 마지막 빈자리를 막으면 통째로 잡혀요.",
+                setup: [
+                  { color: "W", at: { x: 1, y: 1 } },
+                  { color: "W", at: { x: 2, y: 1 } },
+                  { color: "B", at: { x: 0, y: 1 } },
+                  { color: "B", at: { x: 3, y: 1 } },
+                  { color: "B", at: { x: 1, y: 0 } },
+                  { color: "B", at: { x: 2, y: 0 } },
+                  { color: "B", at: { x: 1, y: 2 } },
+                ],
+                answer: { libertiesOf: { x: 1, y: 1 } },
+                highlight: [],
+                wrongHint: "두 돌 둘레에 아직 비어 있는 곳은 한 군데예요.",
+              },
+            ],
+          },
         },
       ],
     },
@@ -1236,6 +1418,45 @@ export function curriculumForRank(rankId: RankId): TrackCurriculum {
 
 export function allLessons(track: TrackId): Lesson[] {
   return CURRICULUM[track].chapters.flatMap((c) => c.lessons);
+}
+
+/** 홈 미리보기·검사에 쓸 첫 보드 스텝 */
+export function previewStep(lesson: Lesson): LessonStep | null {
+  if (lesson.session) {
+    const s = lesson.session;
+    const first = s.concept[0] ?? s.example[0];
+    if (first) return first;
+    const p = s.problems[0];
+    if (p) {
+      return {
+        text: p.prompt,
+        tip: p.tip,
+        setup: p.setup,
+        size: p.size,
+        answer: p.answer,
+        playAs: p.playAs,
+        highlight: p.highlight,
+      };
+    }
+    return null;
+  }
+  return lesson.steps[0] ?? null;
+}
+
+/** 세션/레거시 answer 스텝을 평탄화 (검증용) */
+export function playableSteps(lesson: Lesson): { text: string; step: LessonStep | Problem; boardSize: number }[] {
+  if (lesson.session) {
+    const { concept, example, problems } = lesson.session;
+    const out: { text: string; step: LessonStep | Problem; boardSize: number }[] = [];
+    for (const step of [...concept, ...example]) {
+      out.push({ text: step.text, step, boardSize: step.size ?? lesson.boardSize });
+    }
+    for (const p of problems) {
+      out.push({ text: p.prompt, step: p, boardSize: p.size ?? lesson.boardSize });
+    }
+    return out;
+  }
+  return lesson.steps.map((step) => ({ text: step.text, step, boardSize: step.size ?? lesson.boardSize }));
 }
 
 export function findLesson(track: TrackId, lessonId: string): { chapter: Chapter; lesson: Lesson } | null {

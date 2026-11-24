@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { PageAsk } from "./components/PageAsk";
 import { setupNative } from "./lib/native";
 import { useStore } from "./lib/store";
 import { HomePage } from "./pages/HomePage";
@@ -37,13 +38,16 @@ export function App() {
   if (!currentRank && pathname !== "/welcome") return <Navigate to="/welcome" replace />;
 
   return (
-    <Routes>
-      <Route path="/welcome" element={<WelcomePage />} />
-      <Route path="/" element={<HomePage />} />
-      <Route path="/learn" element={<LearnPage />} />
-      <Route path="/learn/:lessonId" element={<LessonPlayPage />} />
-      <Route path="/path" element={<PathPage />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/welcome" element={<WelcomePage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/learn" element={<LearnPage />} />
+        <Route path="/learn/:lessonId" element={<LessonPlayPage />} />
+        <Route path="/path" element={<PathPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <PageAsk />
+    </>
   );
 }
