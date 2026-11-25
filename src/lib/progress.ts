@@ -9,6 +9,7 @@ import {
 } from "@/data/path";
 import { addDays, dayKey, daysUntil, startOfToday } from "./date";
 import { getRank, type Rank } from "./ranks";
+import { XP_DAILY_GOAL } from "./sfx";
 import { useStore } from "./store";
 
 export function useProgress() {
@@ -47,6 +48,7 @@ export function useProgress() {
   const streakAlive = state.lastActiveDay === today || state.lastActiveDay === yesterday;
   const streakDays = streakAlive ? state.streakDays : 0;
   const missionDoneToday = state.missionCompletedDay === today;
+  const xpToday = state.xpDay === today ? state.xpToday : 0;
 
   return {
     ...state,
@@ -72,6 +74,9 @@ export function useProgress() {
     pct: queue.length ? doneKeys / queue.length : 0,
     streakDays,
     missionDoneToday,
+    xpToday,
+    xpGoal: XP_DAILY_GOAL,
+    xpGoalPct: Math.min(1, xpToday / XP_DAILY_GOAL),
   };
 }
 

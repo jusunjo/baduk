@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { isUnlocked, useProgress } from "@/lib/progress";
-import { actions } from "@/lib/store";
 import type { PathItem } from "@/data/path/types";
+import { isUnlocked, useProgress } from "@/lib/progress";
+import { sfx } from "@/lib/sfx";
+import { actions } from "@/lib/store";
 
 /** Duolingo-style horizontal snake offsets (px) */
 const ZIGZAG = [0, 52, 78, 52, 0, -52, -78, -52];
@@ -51,15 +52,17 @@ export function LearnPath() {
   let zig = 0;
 
   return (
-    <div className="pb-8">
-      {sections.map((sec) => {
+    <div className="relative pb-10">
+      {sections.map((sec, si) => {
         const playable = sec.nodes.filter((n) => n.kind === "mission" || n.kind === "exam");
         const anyCurrent = playable.some((n) => stateOf(n.key) === "current");
         const allDone = playable.every((n) => stateOf(n.key) === "done");
         return (
-          <section key={sec.id} className="mb-2">
+          <section key={sec.id} className="mb-1">
             <UnitBanner title={sec.title} tone={sec.tone} active={anyCurrent} done={allDone} />
-            <div className="relative flex flex-col items-center gap-7 py-6">
+            <div className="relative flex flex-col items-center gap-8 py-7">
+              <PathTrail />
+              {si % 2 === 1 ? <SideDecor side="left" /> : <SideDecor side="right" />}
               {sec.nodes.map((node) => {
                 const x = ZIGZAG[zig++ % ZIGZAG.length]!;
                 if (node.kind === "chest") {
@@ -71,7 +74,10 @@ export function LearnPath() {
                       key={node.key}
                       x={x}
                       active={!!node.unitDone}
-                      onStart={() => actions.setCurrentRank("g30")}
+                      onStart={() => {
+                        sfx.play("start");
+                        actions.setCurrentRank("g30");
+                      }}
                     />
                   );
                 }
@@ -89,7 +95,11 @@ export function LearnPath() {
                       state={st}
                       kind={node.kind}
                       onClick={() => {
-                        if (st === "locked") return;
+                        if (st === "locked") {
+                          sfx.play("wrong");
+                          return;
+                        }
+                        sfx.play("tap");
                         setOpen(isOpen ? null : node.key);
                       }}
                     />
@@ -99,6 +109,7 @@ export function LearnPath() {
                         state={st}
                         offset={-x * 0.65}
                         onStart={() => {
+                          sfx.play("start");
                           if (node.kind === "exam" && node.item?.kind === "rank-exam") {
                             navigate(`/exam/${node.item.module.rankId}`);
                           } else {
@@ -114,6 +125,34 @@ export function LearnPath() {
           </section>
         );
       })}
+    </div>
+  );
+}
+
+function PathTrail() {
+  return (
+    <div
+      className="pointer-events-none absolute inset-y-8 left-1/2 w-3 -translate-x-1/2 rounded-full opacity-40"
+      style={{
+        backgroundImage: "repeating-linear-gradient(to bottom, #CECECE 0 10px, transparent 10px 18px)",
+      }}
+      aria-hidden
+    />
+  );
+}
+
+function SideDecor({ side }: { side: "left" | "right" }) {
+  return (
+    <div
+      className={`pointer-events-none absolute top-16 ${side === "left" ? "left-2" : "right-2"} opacity-90`}
+      aria-hidden
+    >
+      <svg width="56" height="64" viewBox="0 0 56 64" fill="none">
+        <ellipse cx="28" cy="48" rx="18" ry="8" fill="#89E219" opacity="0.55" />
+        <circle cx="20" cy="34" r="12" fill="#58CC02" />
+        <circle cx="34" cy="30" r="14" fill="#7AC70C" />
+        <circle cx="28" cy="22" r="10" fill="#58CC02" />
+      </svg>
     </div>
   );
 }
@@ -201,15 +240,26 @@ function UnitBanner({
         ? "bg-[#FF9600]"
         : tone === "purple"
           ? "bg-[#CE82FF]"
-          : "bg-toss-blue";
+          : "bg-duo-blue";
+  const deep =
+    tone === "green"
+      ? "#46A302"
+      : tone === "orange"
+        ? "#E07E00"
+        : tone === "purple"
+          ? "#A568D0"
+          : "#1899D6";
   return (
     <div
-      className={`mx-1 flex items-center justify-between rounded-2xl px-4 py-3.5 text-white shadow-[0_4px_0_rgba(0,0,0,0.12)] ${bg} ${
-        !active && !done ? "opacity-70" : ""
+      className={`relative mx-1 overflow-hidden rounded-2xl px-4 py-3.5 text-white ${bg} ${
+        !active && !done ? "opacity-75" : ""
       }`}
+      style={{ boxShadow: `0 4px 0 ${deep}` }}
     >
-      <p className="text-[17px] font-extrabold tracking-tight">{title}</p>
-      {done ? <span className="text-[12px] font-bold text-white/90">완료</span> : null}
+      <p className="relative z-10 text-[17px] font-extrabold tracking-tight">{title}</p>
+      {done ? <span className="relative z-10 text-[12px] font-bold text-white/90">완료</span> : null}
+      <span className="pointer-events-none absolute -right-2 -top-4 h-20 w-20 rounded-full bg-white/15" aria-hidden />
+      <span className="pointer-events-none absolute -bottom-6 right-10 h-16 w-16 rounded-full bg-white/10" aria-hidden />
     </div>
   );
 }

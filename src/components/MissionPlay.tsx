@@ -6,6 +6,9 @@ import type { Point } from "@/data/curriculum";
 import type { Exercise } from "@/data/path/types";
 import { aiBoard, gridToStones } from "@/lib/aiBoard";
 import { applySetup, keyOf, playMove, pointsMatch, type Grid } from "@/lib/board";
+import { haptic } from "@/lib/native";
+import { sfx, XP_PER_CORRECT } from "@/lib/sfx";
+import { actions } from "@/lib/store";
 
 export function MissionPlay({
   title,
@@ -54,7 +57,9 @@ export function MissionPlay({
   };
 
   const advance = () => {
+    sfx.play("tap");
     if (idx + 1 >= exercises.length) {
+      sfx.play("complete");
       onComplete();
       return;
     }
@@ -62,11 +67,17 @@ export function MissionPlay({
   };
 
   const succeed = (msg?: string) => {
+    sfx.play("correct");
+    sfx.play("xp");
+    haptic.correct();
+    actions.addXp(XP_PER_CORRECT);
     setOk(true);
-    setFeedback(msg ?? ex.correctText ?? "좋아요!");
+    setFeedback(msg ?? ex.correctText ?? `좋아요! +${XP_PER_CORRECT} XP`);
   };
 
   const fail = (at?: Point) => {
+    sfx.play("wrong");
+    haptic.wrong();
     setOk(false);
     setWrong(at ?? null);
     setFeedback(ex.wrongText ?? ex.hint ?? "다시 생각해 보세요.");
@@ -170,19 +181,26 @@ export function MissionPlay({
 
       <div className="shrink-0 pt-3 pb-[max(12px,env(safe-area-inset-bottom))]">
         {ex.type === "read" && !ok ? (
-          <PrimaryButton onClick={() => succeed(ex.correctText ?? "다음으로")}>알겠어요</PrimaryButton>
+          <PrimaryButton onClick={() => succeed(ex.correctText ?? `알겠어요 · +${XP_PER_CORRECT} XP`)}>
+            알겠어요 · +{XP_PER_CORRECT} XP
+          </PrimaryButton>
         ) : ok ? (
-          <PrimaryButton onClick={advance}>{idx + 1 >= exercises.length ? "완료" : "다음"}</PrimaryButton>
+          <PrimaryButton onClick={advance}>
+            {idx + 1 >= exercises.length ? "미션 완료" : "다음"}
+          </PrimaryButton>
         ) : wrong ? (
           <button
             type="button"
-            className="flex h-14 w-full items-center justify-center rounded-2xl bg-toss-soft2 text-[15px] font-semibold text-toss-mute active:scale-[0.98]"
-            onClick={() => load(idx)}
+            className="flex h-14 w-full items-center justify-center rounded-2xl bg-white text-[15px] font-extrabold text-duo-wolf ring-2 ring-duo-swan active:scale-[0.98]"
+            onClick={() => {
+              sfx.play("tap");
+              load(idx);
+            }}
           >
             다시 두기
           </button>
         ) : (
-          <div className="flex h-14 items-center justify-center rounded-2xl bg-toss-soft2 text-[14px] font-semibold text-toss-mute">
+          <div className="flex h-14 items-center justify-center rounded-2xl bg-white text-[14px] font-bold text-duo-hare ring-2 ring-duo-swan">
             {ex.type === "choice" ? "아래에서 골라 보세요" : "판을 눌러 두어 보세요"}
           </div>
         )}

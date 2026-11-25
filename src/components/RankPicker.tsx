@@ -61,7 +61,7 @@ export function RankOptions({
 /** 표시만 — 현재 급수는 온보딩·승급 시험 외에는 바꾸지 않음 */
 export function RankBadge({ label, onClick }: { label: string; onClick?: () => void }) {
   const className =
-    "flex h-9 items-center rounded-pill bg-white px-3.5 text-[14px] font-semibold text-toss-ink shadow-[0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-toss-line";
+    "flex h-9 items-center rounded-pill bg-white px-3.5 text-[14px] font-extrabold text-duo-eel shadow-[0_2px_0_#E5E5E5] ring-2 ring-duo-swan";
   if (onClick) {
     return (
       <button type="button" onClick={onClick} className={`${className} transition active:scale-95`}>

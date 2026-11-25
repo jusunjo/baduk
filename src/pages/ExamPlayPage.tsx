@@ -15,8 +15,9 @@ import type { ExamProblem } from "@/data/exams/types";
 import { aiBoard, gridToStones } from "@/lib/aiBoard";
 import { applySetup, isAnswer, playMove, resolveAnswer, type Grid } from "@/lib/board";
 import { haptic } from "@/lib/native";
-import { nextRank, type RankId } from "@/lib/ranks";
 import { useProgress } from "@/lib/progress";
+import { nextRank, type RankId } from "@/lib/ranks";
+import { sfx } from "@/lib/sfx";
 import { actions } from "@/lib/store";
 
 function isExamRank(id: string): id is ExamRankId {
@@ -189,6 +190,8 @@ function ExamProblemView({
       const after = isAnswer(point, resolved, board) ? playMove(board, point, playAs) : null;
       if (after) {
         haptic.correct();
+        sfx.play("correct");
+        sfx.play("xp");
         setBoard(after);
         setLastMove(point);
         setSolved("ok");
@@ -197,6 +200,7 @@ function ExamProblemView({
         return;
       }
       haptic.wrong();
+      sfx.play("wrong");
       setWrong(point);
       setSolved("ng");
       window.clearTimeout(hintTimer.current);

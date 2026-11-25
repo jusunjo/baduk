@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { addDays, dayKey, startOfToday } from "./date";
 import type { RankId } from "./ranks";
+import { XP_MISSION_BONUS } from "./sfx";
 
 export interface Goal {
   /** YYYY-MM-DD */
@@ -9,7 +10,7 @@ export interface Goal {
 }
 
 export interface AppState {
-  version: 1;
+  version: 2;
   /** null이면 온보딩 */
   currentRank: RankId | null;
   goal: Goal | null;
@@ -23,12 +24,18 @@ export interface AppState {
   lastActiveDay: string | null;
   /** 오늘 미션(한 수)을 완료한 날 YYYY-MM-DD */
   missionCompletedDay: string | null;
+  /** 누적 포인트 */
+  xp: number;
+  /** 오늘 번 XP */
+  xpToday: number;
+  /** xpToday가 속한 날 */
+  xpDay: string | null;
 }
 
 const KEY = "hansu/state";
 
 const EMPTY: AppState = {
-  version: 1,
+  version: 2,
   currentRank: null,
   goal: null,
   completed: {},
@@ -36,7 +43,21 @@ const EMPTY: AppState = {
   streakDays: 0,
   lastActiveDay: null,
   missionCompletedDay: null,
+  xp: 0,
+  xpToday: 0,
+  xpDay: null,
 };
+
+function migrate(raw: Record<string, unknown>): AppState {
+  return {
+    ...EMPTY,
+    ...raw,
+    version: 2,
+    xp: typeof raw.xp === "number" ? raw.xp : 0,
+    xpToday: typeof raw.xpToday === "number" ? raw.xpToday : 0,
+    xpDay: typeof raw.xpDay === "string" ? raw.xpDay : null,
+  };
+}
 
 function load(): AppState {
   if (import.meta.env.DEV) {
@@ -46,8 +67,8 @@ function load(): AppState {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return EMPTY;
-    const parsed = JSON.parse(raw) as AppState;
-    return parsed.version === EMPTY.version ? { ...EMPTY, ...parsed } : EMPTY;
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    return migrate(parsed);
   } catch {
     return EMPTY;
   }
@@ -89,6 +110,13 @@ function bumpActivity(from: AppState): Pick<AppState, "streakDays" | "lastActive
   };
 }
 
+function withXp(from: AppState, amount: number): Pick<AppState, "xp" | "xpToday" | "xpDay"> {
+  if (amount <= 0) return { xp: from.xp, xpToday: from.xpToday, xpDay: from.xpDay };
+  const today = dayKey(startOfToday());
+  const xpToday = from.xpDay === today ? from.xpToday + amount : amount;
+  return { xp: from.xp + amount, xpToday, xpDay: today };
+}
+
 export const actions = {
   completeOnboarding(currentRank: RankId, goal: Goal | null = null) {
     set({ ...state, currentRank, goal });
@@ -100,19 +128,27 @@ export const actions = {
 
   /** 승급 시험 통과 시 */
   promoteRank(next: RankId) {
-    set({ ...state, currentRank: next, ...bumpActivity(state) });
+    set({ ...state, currentRank: next, ...bumpActivity(state), ...withXp(state, 50) });
   },
 
   setGoal(goal: Goal | null) {
     set({ ...state, goal });
   },
 
+  addXp(amount: number) {
+    if (amount <= 0) return;
+    set({ ...state, ...withXp(state, amount) });
+  },
+
   completeLesson(lessonId: string) {
+    const first = !state.completed[lessonId];
+    const bonus = first ? XP_MISSION_BONUS : 0;
     set({
       ...state,
       completed: { ...state.completed, [lessonId]: Date.now() },
       lastLessonId: lessonId,
       ...bumpActivity(state),
+      ...withXp(state, bonus),
     });
   },
 

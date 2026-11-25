@@ -41,14 +41,16 @@ export function Screen({
 
   return (
     <div className={`mx-auto flex w-full max-w-[520px] flex-col px-5 ${fit ? "h-[100dvh] overflow-hidden" : "min-h-[100dvh]"}`}>
-      {gray && <div className="fixed inset-0 -z-10 bg-toss-soft" aria-hidden />}
+      <div className={`fixed inset-0 -z-10 ${gray ? "duo-bg" : "bg-white"}`} aria-hidden />
       <header
-        className={`sticky top-0 z-20 -mx-5 px-5 pt-[env(safe-area-inset-top)] ${gray ? "bg-toss-soft/90" : "bg-white/90"} backdrop-blur`}
+        className={`sticky top-0 z-20 -mx-5 px-5 pt-[env(safe-area-inset-top)] ${
+          gray ? "bg-[#F7F7F7]/92" : "bg-white/92"
+        } backdrop-blur`}
       >
         <div className="relative flex h-14 items-center justify-between">
           {leading}
           {title && (
-            <span className="pointer-events-none absolute inset-x-16 truncate text-center text-[17px] font-semibold tracking-tight text-toss-ink">
+            <span className="pointer-events-none absolute inset-x-16 truncate text-center text-[17px] font-extrabold tracking-tight text-toss-ink">
               {title}
             </span>
           )}
@@ -108,7 +110,7 @@ export function PrimaryButton({
       type="button"
       onClick={onClick}
       disabled={disabled || loading}
-      className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-toss-blue text-[17px] font-semibold text-white transition hover:bg-toss-blue-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-toss-blue/40 disabled:active:scale-100"
+      className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-duo-green text-[17px] font-extrabold text-white shadow-[0_4px_0_#46A302] transition active:translate-y-[3px] active:shadow-[0_1px_0_#46A302] disabled:cursor-not-allowed disabled:bg-[#AFE581] disabled:shadow-none disabled:active:translate-y-0"
     >
       {loading && <Spinner className="h-5 w-5 text-white" />}
       {children}

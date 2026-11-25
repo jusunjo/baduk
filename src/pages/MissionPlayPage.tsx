@@ -4,6 +4,7 @@ import { Screen } from "@/components/Screen";
 import { findCourseLesson, findRankPart, getRankModule } from "@/data/path";
 import type { Exercise } from "@/data/path/types";
 import { useProgress } from "@/lib/progress";
+import { sfx } from "@/lib/sfx";
 import { actions } from "@/lib/store";
 
 export function MissionPlayPage() {
@@ -56,7 +57,8 @@ function Mission({ missionId }: { missionId: string }) {
         exercises={exercises}
         onComplete={() => {
           actions.completeLesson(missionId);
-          navigate("/learn", { replace: true });
+          sfx.play("xp");
+          navigate("/", { replace: true });
         }}
       />
     </Screen>
