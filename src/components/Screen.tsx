@@ -103,24 +103,24 @@ export function Screen({
       <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </IconButton>
   ) : (
-    <span className="flex items-center gap-2 font-display text-[17px] font-extrabold tracking-tight text-duo-eel">
-      <Logo size={22} />
+    <span className="flex items-center gap-2 font-display text-[18px] font-extrabold tracking-tight text-[#3C3C3C]">
+      <Logo size={24} />
       한수
     </span>
   );
 
+  const home = !!nav || !!gray;
+
   return (
     <div className={`mx-auto flex w-full max-w-[520px] flex-col px-5 ${fit ? "h-[100dvh] overflow-hidden" : "min-h-[100dvh]"}`}>
-      <div className={`fixed inset-0 -z-10 ${gray ? "duo-bg" : "bg-white"}`} aria-hidden />
+      <div className={`fixed inset-0 -z-10 ${home ? "duo-bg" : "bg-white"}`} aria-hidden />
       <header
-        className={`sticky top-0 z-50 -mx-5 px-5 pt-[env(safe-area-inset-top)] ${
-          gray ? "bg-[#F7F7F7]/95" : "bg-white/95"
-        } border-b-2 border-duo-swan backdrop-blur-sm`}
+        className="sticky top-0 z-50 -mx-5 border-b-2 border-[#E5E5E5] bg-white px-5 pt-[max(8px,env(safe-area-inset-top))]"
       >
         <div className="relative flex h-14 items-center justify-between">
           {leading}
           {title && (
-            <span className="pointer-events-none absolute inset-x-16 truncate text-center text-[17px] font-extrabold tracking-tight text-duo-eel">
+            <span className="pointer-events-none absolute inset-x-16 truncate text-center text-[17px] font-extrabold tracking-tight text-[#3C3C3C]">
               {title}
             </span>
           )}

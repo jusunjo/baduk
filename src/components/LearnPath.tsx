@@ -267,7 +267,9 @@ function UnitBanner({
         <p className="text-[16px] font-extrabold tracking-tight">{title}</p>
         {done ? <span className="shrink-0 text-[12px] font-bold text-white/95">완료</span> : null}
         {active && !done ? (
-          <span className="shrink-0 rounded-pill bg-white/25 px-2 py-0.5 text-[11px] font-extrabold">지금</span>
+          <span className="shrink-0 rounded-xl bg-white px-2.5 py-1 text-[11px] font-extrabold text-[#3C3C3C]">
+            지금
+          </span>
         ) : null}
       </div>
       <span className="pointer-events-none absolute -right-3 -top-5 h-24 w-24 rounded-full bg-white/20" aria-hidden />
@@ -362,20 +364,24 @@ function NodePopover({
   onClose: () => void;
 }) {
   return (
-    <div className="relative mt-3 w-[min(100%,260px)] rounded-[20px] bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,0.12)] ring-2 ring-black/[0.04]">
+    <div
+      className="relative mt-3 w-[min(100%,280px)] rounded-[20px] bg-white p-4"
+      style={{ border: "2px solid #E5E5E5", boxShadow: "0 6px 0 #E5E5E5" }}
+    >
       <button
         type="button"
         onClick={onClose}
-        className="absolute right-3 top-3 text-[18px] leading-none text-[#777777]"
+        className="absolute right-3 top-3 text-[20px] leading-none font-bold text-[#AFAFAF]"
         aria-label="닫기"
       >
         ×
       </button>
-      <p className="pr-6 text-[16px] font-extrabold text-duo-eel">{title}</p>
+      <p className="pr-6 text-[17px] font-extrabold text-[#3C3C3C]">{title}</p>
       <button
         type="button"
         onClick={onStart}
-        className="mt-3 flex h-12 w-full items-center justify-center rounded-2xl bg-[#58CC02] text-[16px] font-extrabold text-white shadow-[0_4px_0_#46A302] transition active:translate-y-[3px] active:shadow-[0_1px_0_#46A302]"
+        className="mt-3 flex h-12 w-full items-center justify-center rounded-2xl text-[16px] font-extrabold text-white transition active:translate-y-[3px]"
+        style={{ backgroundColor: "#58CC02", boxShadow: "0 4px 0 #46A302" }}
       >
         {state === "done" ? "다시" : "시작"}
       </button>

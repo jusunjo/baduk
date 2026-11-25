@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoalSheet } from "@/components/GoalSheet";
-import { Screen, SecondaryButton } from "@/components/Screen";
+import { PrimaryButton, Screen } from "@/components/Screen";
 import { RANKS } from "@/lib/ranks";
 import { useProgress } from "@/lib/progress";
 import { actions } from "@/lib/store";
@@ -16,11 +16,14 @@ export function PathPage() {
   const myLevel = p.rank.level;
 
   return (
-    <Screen nav gray>
-      <div className="px-1 pt-1">
-        <p className="text-[13px] font-extrabold text-[#5C656B]">나의 급수</p>
-        <p className="mt-1 text-[24px] font-extrabold tracking-tight text-[#3C3C3C]">{p.rank.label}</p>
-        <p className="mt-1 break-keep text-[14px] font-medium text-[#5C656B]">
+    <Screen nav gray title="급수">
+      <div
+        className="mt-2 rounded-2xl px-4 py-5 text-white"
+        style={{ backgroundColor: "#58CC02", boxShadow: "0 4px 0 #46A302" }}
+      >
+        <p className="text-[13px] font-extrabold text-white/90">나의 급수</p>
+        <p className="mt-1 text-[28px] font-extrabold tracking-tight">{p.rank.label}</p>
+        <p className="mt-1 text-[14px] font-bold text-white/95">
           {p.rank.boardSize}줄 · 연속 {p.streakDays}일
         </p>
       </div>
@@ -32,48 +35,59 @@ export function PathPage() {
             sfx.play("start");
             navigate(`/exam/${p.module!.rankId}`);
           }}
-          className="mt-5 w-full rounded-2xl bg-[#58CC02] px-4 py-4 text-left text-white shadow-[0_4px_0_#46A302] active:translate-y-[3px] active:shadow-[0_1px_0_#46A302]"
+          className="mt-4 w-full rounded-2xl px-4 py-4 text-left text-white transition active:translate-y-[3px]"
+          style={{ backgroundColor: "#FF9600", boxShadow: "0 4px 0 #E07E00" }}
         >
-          <p className="text-[12px] font-bold text-white">승급 시험</p>
+          <p className="text-[12px] font-extrabold text-white/90">승급 시험 가능</p>
           <p className="mt-0.5 text-[17px] font-extrabold">{p.module.title} · 10문제 중 8개</p>
         </button>
       )}
 
       <div className="mt-6">
-        <p className="mb-3 px-1 text-[13px] font-extrabold text-[#5C656B]">급수 목록</p>
-        <ul className="space-y-2">
+        <p className="mb-3 px-1 text-[13px] font-extrabold uppercase tracking-wide text-[#AFAFAF]">급수 사다리</p>
+        <ul className="space-y-2.5">
           {RANKS.map((r) => {
             const state = r.level < myLevel ? "done" : r.level === myLevel ? "now" : "soon";
             return (
               <li
                 key={r.id}
-                className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 ring-2 ${
-                  state === "now"
-                    ? "bg-[#E7F9D3] ring-[#58CC02]"
-                    : state === "done"
-                      ? "bg-white ring-duo-swan"
-                      : "bg-[#F0F0F0] ring-transparent"
-                }`}
+                className="flex items-center gap-3 rounded-2xl bg-white px-3.5 py-3.5"
+                style={{
+                  border: state === "now" ? "2px solid #58CC02" : "2px solid #E5E5E5",
+                  boxShadow: state === "now" ? "0 4px 0 #46A302" : "0 3px 0 #E5E5E5",
+                  backgroundColor: state === "now" ? "#E7F9D3" : state === "soon" ? "#F7F7F7" : "#FFFFFF",
+                  opacity: state === "soon" ? 0.72 : 1,
+                }}
               >
                 <span
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold ${
-                    state === "now"
-                      ? "bg-[#58CC02] text-white"
-                      : state === "done"
-                        ? "bg-[#1CB0F6] text-white"
-                        : "bg-[#E5E5E5] text-[#777777]"
-                  }`}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[14px] font-extrabold text-white"
+                  style={{
+                    backgroundColor: state === "now" ? "#58CC02" : state === "done" ? "#1CB0F6" : "#E5E5E5",
+                    color: state === "soon" ? "#AFAFAF" : "#FFFFFF",
+                    boxShadow: state === "soon" ? "none" : `0 3px 0 ${state === "now" ? "#46A302" : "#1899D6"}`,
+                  }}
                 >
-                  {state === "done" ? "✓" : r.short.replace("급", "")}
+                  {state === "done" ? "✓" : state === "soon" ? (
+                    <LockIcon />
+                  ) : (
+                    r.short.replace("급", "")
+                  )}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[15px] font-extrabold text-[#3C3C3C]">
+                  <span className="block text-[16px] font-extrabold text-[#3C3C3C]">
                     {r.label}
                     <span className="ml-1.5 text-[12px] font-bold text-[#777777]">{r.boardSize}줄</span>
                   </span>
+                  <span className="mt-0.5 block break-keep text-[12px] font-semibold text-[#777777]">{r.meaning}</span>
                 </span>
-                <span className="shrink-0 text-[12px] font-extrabold text-[#5C656B]">
-                  {state === "done" ? "지남" : state === "now" ? "지금" : "잠김"}
+                <span
+                  className="shrink-0 rounded-lg px-2 py-1 text-[11px] font-extrabold"
+                  style={{
+                    backgroundColor: state === "now" ? "#58CC02" : state === "done" ? "#DDF4FF" : "#E5E5E5",
+                    color: state === "now" ? "#FFFFFF" : state === "done" ? "#1CB0F6" : "#AFAFAF",
+                  }}
+                >
+                  {state === "done" ? "완료" : state === "now" ? "지금" : "잠김"}
                 </span>
               </li>
             );
@@ -81,21 +95,32 @@ export function PathPage() {
         </ul>
       </div>
 
-      <div className="mt-8 space-y-2 px-1 pb-[max(2rem,calc(var(--nav-h,72px)+1rem))]">
-        <button
-          type="button"
-          onClick={() => setGoalOpen(true)}
-          className="w-full rounded-2xl bg-white py-3.5 text-[15px] font-extrabold text-duo-eel ring-2 ring-duo-swan"
+      <div className="mt-8 space-y-3 px-0.5 pb-[max(2rem,calc(var(--nav-h,72px)+1rem))]">
+        <PrimaryButton
+          onClick={() => {
+            sfx.play("tap");
+            setGoalOpen(true);
+          }}
         >
           {p.goal ? "목표 바꾸기" : "목표 급수 정하기"}
+        </PrimaryButton>
+        <button
+          type="button"
+          onClick={() => {
+            sfx.play("tap");
+            navigate("/");
+          }}
+          className="flex h-14 w-full items-center justify-center rounded-2xl text-[16px] font-extrabold text-[#3C3C3C] transition active:translate-y-[2px]"
+          style={{ backgroundColor: "#FFFFFF", border: "2px solid #E5E5E5", boxShadow: "0 4px 0 #E5E5E5" }}
+        >
+          학습 패스 보기
         </button>
-        <SecondaryButton onClick={() => navigate("/")}>학습 패스 보기</SecondaryButton>
         <button
           type="button"
           onClick={() => {
             if (confirm("학습 기록을 모두 지우고 처음부터 할까요?")) actions.reset();
           }}
-          className="w-full py-3 text-center text-[13px] font-medium text-[#777777]"
+          className="w-full py-3 text-center text-[13px] font-bold text-[#AFAFAF]"
         >
           처음부터 다시 설정
         </button>
@@ -103,5 +128,14 @@ export function PathPage() {
 
       {goalOpen && <GoalSheet currentRank={p.rank.id} current={p.goal} onClose={() => setGoalOpen(false)} />}
     </Screen>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
+      <rect x="6" y="10" width="12" height="9" rx="2" fill="#AFAFAF" />
+      <path d="M8.5 10V8a3.5 3.5 0 0 1 7 0v2" stroke="#AFAFAF" strokeWidth="2" fill="none" strokeLinecap="round" />
+    </svg>
   );
 }

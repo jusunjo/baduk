@@ -94,14 +94,23 @@ export function RankOptions({
 
 /** 표시만 — 현재 급수는 온보딩·승급 시험 외에는 바꾸지 않음 */
 export function RankBadge({ label, onClick }: { label: string; onClick?: () => void }) {
+  const style = {
+    backgroundColor: "#DDF4FF",
+    color: "#1CB0F6",
+    boxShadow: "0 2px 0 #1899D6",
+  } as const;
   const className =
-    "flex h-9 items-center rounded-pill bg-white px-3.5 text-[14px] font-extrabold text-duo-eel shadow-[0_2px_0_#E5E5E5] ring-2 ring-duo-swan";
+    "flex h-9 items-center rounded-2xl px-3.5 text-[14px] font-extrabold transition active:translate-y-[2px] active:[box-shadow:0_0_0_#1899D6]";
   if (onClick) {
     return (
-      <button type="button" onClick={onClick} className={`${className} transition active:scale-95`}>
+      <button type="button" onClick={onClick} className={className} style={style}>
         {label}
       </button>
     );
   }
-  return <span className={className}>{label}</span>;
+  return (
+    <span className={className} style={style}>
+      {label}
+    </span>
+  );
 }

@@ -46,7 +46,7 @@ export function App() {
       pathname.startsWith("/mission") ||
       pathname.startsWith("/exam") ||
       pathname.startsWith("/board3d");
-    const color = night ? "#131F24" : "#F7F7F7";
+    const color = night ? "#131F24" : "#FFFFFF";
     const meta = document.querySelector('meta[name="theme-color"]');
     meta?.setAttribute("content", color);
     if (!night) {
