@@ -1,16 +1,64 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HansuMascot } from "@/components/HansuMascot";
 import { useHansuAsk } from "@/hooks/useHansuAsk";
 import { Spinner } from "./Screen";
 
 const IDLE_NUDGE_MS = 5000;
 const NUDGE = "궁금한 거 물어봐요!";
+const POS_KEY = "hansu/buddy-pos";
+const SIZE = 56;
+const DRAG_THRESHOLD = 8;
 
-/** 우하단 플로팅 한수 — 5초 무터치면 넛지 말풍선, AI 답은 전부 표시 */
+type Pos = { x: number; y: number };
+
+function defaultPos(): Pos {
+  if (typeof window === "undefined") return { x: 0, y: 0 };
+  return {
+    x: Math.max(8, window.innerWidth - SIZE - 16),
+    y: Math.max(8, window.innerHeight - SIZE - 100),
+  };
+}
+
+function loadPos(): Pos {
+  try {
+    const raw = localStorage.getItem(POS_KEY);
+    if (!raw) return defaultPos();
+    const parsed = JSON.parse(raw) as Pos;
+    if (typeof parsed.x === "number" && typeof parsed.y === "number") return clamp(parsed);
+  } catch {
+    /* ignore */
+  }
+  return defaultPos();
+}
+
+function clamp(p: Pos): Pos {
+  const maxX = Math.max(8, window.innerWidth - SIZE - 8);
+  const maxY = Math.max(8, window.innerHeight - SIZE - 8);
+  return {
+    x: Math.min(maxX, Math.max(8, p.x)),
+    y: Math.min(maxY, Math.max(8, p.y)),
+  };
+}
+
+/** 우하단 플로팅 한수 — 드래그로 위치 이동, 5초 무터치면 넛지 */
 export function BoardBuddy() {
   const h = useHansuAsk();
   const [draft, setDraft] = useState("");
   const [nudge, setNudge] = useState(false);
+  const [pos, setPos] = useState<Pos>(() => defaultPos());
+  const dragging = useRef(false);
+  const moved = useRef(false);
+  const origin = useRef({ x: 0, y: 0, px: 0, py: 0 });
+
+  useEffect(() => {
+    setPos(loadPos());
+  }, []);
+
+  useEffect(() => {
+    const onResize = () => setPos((p) => clamp(p));
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
     if (!h.expanded) setDraft("");
@@ -48,47 +96,82 @@ export function BoardBuddy() {
   const bubbleLabel = content ?? NUDGE;
   const idle = !h.loading && !h.error && !h.answer && !h.expanded;
   const isAnswer = !!h.answer && !h.loading;
+  const bubbleLeft = pos.x < window.innerWidth / 2;
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    dragging.current = true;
+    moved.current = false;
+    origin.current = { x: e.clientX, y: e.clientY, px: pos.x, py: pos.y };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging.current) return;
+    const dx = e.clientX - origin.current.x;
+    const dy = e.clientY - origin.current.y;
+    if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) moved.current = true;
+    if (!moved.current) return;
+    setPos(clamp({ x: origin.current.px + dx, y: origin.current.py + dy }));
+  };
+
+  const onPointerUp = () => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    if (moved.current) {
+      setPos((p) => {
+        const next = clamp(p);
+        localStorage.setItem(POS_KEY, JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
+    h.toggle();
+  };
 
   return (
-    <div className="pointer-events-none fixed right-4 z-40 bottom-[calc(88px+env(safe-area-inset-bottom))] flex flex-col items-end gap-2">
-      {h.expanded && !h.loading && (
-        <form
-          className="pointer-events-auto flex w-[min(calc(100vw-2rem),300px)] gap-2 animate-rise-in"
-          onSubmit={(e) => {
-            e.preventDefault();
-            void h.ask(draft);
-          }}
-        >
-          <input
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="한수에게 묻기"
-            className="h-11 min-w-0 flex-1 rounded-full bg-white px-4 text-[14px] text-toss-ink outline-none ring-1 ring-[#eadcc8] placeholder:text-toss-mute focus:ring-toss-blue"
-            disabled={h.loading}
-            autoFocus
-          />
-          <button
-            type="submit"
-            disabled={h.loading || !draft.trim()}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#1a1f27] text-white transition active:scale-95 disabled:opacity-40"
-            aria-label="보내기"
+    <div className="pointer-events-none fixed z-40" style={{ left: pos.x, top: pos.y, width: SIZE }}>
+      <div className="relative flex flex-col items-center">
+        {h.expanded && !h.loading && (
+          <form
+            className={`pointer-events-auto absolute bottom-[calc(100%+10px)] flex w-[min(calc(100vw-2rem),280px)] gap-2 animate-rise-in ${
+              bubbleLeft ? "left-0" : "right-0"
+            }`}
+            onSubmit={(e) => {
+              e.preventDefault();
+              void h.ask(draft);
+            }}
           >
-            {h.loading ? <Spinner className="h-4 w-4" /> : <SendIcon />}
-          </button>
-        </form>
-      )}
+            <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder="한수에게 묻기"
+              className="h-11 min-w-0 flex-1 rounded-full bg-white px-4 text-[14px] text-toss-ink outline-none ring-1 ring-[#eadcc8] placeholder:text-toss-mute focus:ring-toss-blue"
+              disabled={h.loading}
+              autoFocus
+            />
+            <button
+              type="submit"
+              disabled={h.loading || !draft.trim()}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#1a1f27] text-white transition active:scale-95 disabled:opacity-40"
+              aria-label="보내기"
+            >
+              {h.loading ? <Spinner className="h-4 w-4" /> : <SendIcon />}
+            </button>
+          </form>
+        )}
 
-      <div className="pointer-events-auto flex items-end gap-2">
         {showBubble && (
           <button
             type="button"
             onClick={() => {
               if (!h.loading) h.expand();
             }}
-            className={`relative mb-3 animate-pop rounded-2xl bg-white px-3.5 py-2.5 text-left shadow-[0_6px_20px_rgba(92,61,30,0.12)] ring-1 ring-[#eadcc8] ${
+            className={`pointer-events-auto absolute bottom-[calc(100%+8px)] animate-pop rounded-2xl bg-white px-3.5 py-2.5 text-left shadow-[0_6px_20px_rgba(92,61,30,0.12)] ring-1 ring-[#eadcc8] ${
+              bubbleLeft ? "left-0" : "right-0"
+            } ${
               isAnswer || h.error
-                ? "buddy-scroll max-h-[min(40dvh,280px)] w-[min(calc(100vw-5.5rem),280px)] overflow-y-auto overflow-x-hidden"
-                : "max-w-[220px]"
+                ? "buddy-scroll max-h-[min(40dvh,280px)] w-[min(calc(100vw-5.5rem),260px)] overflow-y-auto overflow-x-hidden"
+                : "max-w-[200px]"
             }`}
             aria-label="한수에게 묻기"
           >
@@ -110,21 +193,19 @@ export function BoardBuddy() {
             {h.showedBoard && !h.expanded && h.answer && (
               <p className="mt-1.5 text-[11px] font-semibold text-toss-blue">판에도 표시</p>
             )}
-            <span
-              className="absolute -right-1 bottom-3 h-2.5 w-2.5 rotate-45 bg-white ring-1 ring-[#eadcc8]"
-              aria-hidden
-            />
-            <span className="absolute -right-0.5 bottom-3 h-2.5 w-2.5 rotate-45 bg-white" aria-hidden />
           </button>
         )}
 
         <button
           type="button"
-          onClick={() => h.toggle()}
-          className="shrink-0 drop-shadow-[0_8px_18px_rgba(92,61,30,0.18)] transition active:scale-95"
-          aria-label="한수에게 묻기"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          className="pointer-events-auto touch-none shrink-0 drop-shadow-[0_8px_18px_rgba(92,61,30,0.18)] transition active:scale-95"
+          aria-label="한수에게 묻기 · 길게 끌어 이동"
         >
-          <HansuMascot size={56} bounce={idle || nudge} />
+          <HansuMascot size={SIZE} bounce={idle || nudge} />
         </button>
       </div>
     </div>

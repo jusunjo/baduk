@@ -49,7 +49,7 @@ function Mission({ missionId }: { missionId: string }) {
   }
 
   return (
-    <Screen onBack={() => navigate("/learn")} title={title}>
+    <Screen fit onBack={() => navigate("/learn")} title={title}>
       <MissionPlay
         title={title}
         subtitle={subtitle}

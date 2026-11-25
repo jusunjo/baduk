@@ -1,11 +1,13 @@
 import { useMemo } from "react";
 import type { Point, StoneColor } from "@/data/curriculum";
+import type { BoardMark } from "@/data/path/types";
 import { groups, keyOf, type Grid } from "@/lib/board";
 
 export function Board({
   size,
   board,
   highlights = [],
+  marks = [],
   ghosts = [],
   territory = [],
   onPlay,
@@ -13,12 +15,14 @@ export function Board({
   lastMove,
   wrongFlash,
   libertiesFor,
-  showSize = true,
+  showSize = false,
   className = "",
 }: {
   size: number;
   board: Grid;
   highlights?: Point[];
+  /** 세모·X·숨구멍 등 미션 안내 마크 */
+  marks?: BoardMark[];
   /** AI·힌트용 반투명 제안 돌 */
   ghosts?: { color: StoneColor; at: Point }[];
   territory?: { color: StoneColor; points: Point[] }[];
@@ -32,10 +36,32 @@ export function Board({
   className?: string;
 }) {
   const n = board.length || size;
-  const hi = useMemo(() => new Set(highlights.map(keyOf)), [highlights]);
+  const markDots = useMemo(
+    () =>
+      marks
+        .filter((m) => m.type === "target" || m.type === "glow" || m.type === "liberty")
+        .map((m) => m.at),
+    [marks],
+  );
+  const allHighlights = useMemo(() => {
+    const seen = new Set<string>();
+    const out: Point[] = [];
+    for (const p of [...highlights, ...markDots]) {
+      const k = keyOf(p);
+      if (seen.has(k)) continue;
+      seen.add(k);
+      out.push(p);
+    }
+    return out;
+  }, [highlights, markDots]);
+  const hi = useMemo(() => new Set(allHighlights.map(keyOf)), [allHighlights]);
   const labelled = useMemo(
     () => (libertiesFor ? groups(board).filter((g) => libertiesFor === "both" || g.color === libertiesFor) : []),
     [board, libertiesFor],
+  );
+  const glyphMarks = useMemo(
+    () => marks.filter((m) => m.type === "triangle" || m.type === "x" || m.type === "label" || m.type === "not"),
+    [marks],
   );
 
   /**
@@ -109,7 +135,7 @@ export function Board({
           )}
 
           {/* highlights — 초록 점/링 (미션 안내와 맞춤) */}
-          {highlights.map((p) => {
+          {allHighlights.map((p) => {
             const { cx, cy } = xy(p);
             const r = stoneR * 0.92;
             return (
@@ -129,6 +155,51 @@ export function Board({
                   <animate attributeName="opacity" values="0.95;0.55;0.95" dur="1.6s" repeatCount="indefinite" />
                 </circle>
               </g>
+            );
+          })}
+
+          {/* 세모·X·라벨 */}
+          {glyphMarks.map((m) => {
+            const { cx, cy } = xy(m.at);
+            if (m.type === "triangle") {
+              const s = stoneR * 0.95;
+              return (
+                <g key={`mk-${keyOf(m.at)}`} transform={`translate(${cx} ${cy})`} pointerEvents="none">
+                  <path
+                    d={`M 0 ${-s * 0.85} L ${s * 0.82} ${s * 0.55} L ${-s * 0.82} ${s * 0.55} Z`}
+                    fill="rgba(34,197,94,0.2)"
+                    stroke="#16A34A"
+                    strokeWidth="0.9"
+                    strokeLinejoin="round"
+                  />
+                </g>
+              );
+            }
+            if (m.type === "x") {
+              const s = stoneR * 0.55;
+              return (
+                <g key={`mk-${keyOf(m.at)}`} transform={`translate(${cx} ${cy})`} pointerEvents="none">
+                  <line x1={-s} y1={-s} x2={s} y2={s} stroke="#F04452" strokeWidth="1.2" strokeLinecap="round" />
+                  <line x1={s} y1={-s} x2={-s} y2={s} stroke="#F04452" strokeWidth="1.2" strokeLinecap="round" />
+                </g>
+              );
+            }
+            const label = "label" in m ? m.label : "";
+            if (!label) return null;
+            return (
+              <text
+                key={`mk-${keyOf(m.at)}`}
+                x={cx}
+                y={cy}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize={stoneR * 0.9}
+                fontWeight={700}
+                fill="#16A34A"
+                pointerEvents="none"
+              >
+                {label}
+              </text>
             );
           })}
 

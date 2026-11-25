@@ -1,14 +1,11 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CompanionCard, companionMood } from "@/components/Companion";
-import { DailyPulse } from "@/components/DailyPulse";
+import { companionMood } from "@/components/Companion";
 import { GoalSheet } from "@/components/GoalSheet";
+import { Logo } from "@/components/Logo";
 import { RankBadge } from "@/components/RankPicker";
-import { Headline, PrimaryButton, Reveal, Screen } from "@/components/Screen";
-import { Pill } from "@/components/ui";
+import { Reveal, Screen } from "@/components/Screen";
 import { itemKey, itemTitle } from "@/data/path";
-import { dDayLabel, formatDay } from "@/lib/date";
-import { listConcepts } from "@/lib/practice";
 import { useProgress } from "@/lib/progress";
 
 export function HomePage() {
@@ -22,16 +19,10 @@ export function HomePage() {
     return p.queue.slice(Math.max(0, i), Math.max(0, i) + 3);
   }, [p.queue, p.next, p.nextId]);
 
-  const firstConcept = useMemo(() => {
-    if (!p.rank) return null;
-    return listConcepts(p.rank.track)[0] ?? null;
-  }, [p.rank]);
-
   if (!p.rank) return null;
 
   const introPhase = p.done === 0;
   const trackClear = !p.next && p.done > 0;
-  const remaining = Math.max(0, p.total - p.done);
   const mood = companionMood({
     intro: introPhase,
     missionDone: p.missionDoneToday,
@@ -39,13 +30,16 @@ export function HomePage() {
     trackClear,
   });
 
-  const headline = introPhase
-    ? "바둑,\n생각보다 어렵지 않아요"
-    : p.canTakeExam
-      ? "승급 시험\n준비됐어요"
-      : p.next
-        ? `${itemTitle(p.next)}\n이어서 둘까요?`
-        : "이 구간은\n다 익혔어요";
+  const bubble =
+    mood === "intro"
+      ? "어렵지 않아요. 같이 한 판 두어 볼까요?"
+      : mood === "clear"
+        ? "이 구간은 다 익혔어요. 복습해도 좋아요!"
+        : p.canTakeExam
+          ? "승급 시험 열렸어요. 도전해 볼까요?"
+          : p.missionDoneToday
+            ? "오늘도 해냈어요. 한 판 더?"
+            : "오늘도 가볍게, 한 수만요!";
 
   const goMission = () => {
     if (p.canTakeExam && p.module) navigate(`/exam/${p.module.rankId}`);
@@ -53,144 +47,164 @@ export function HomePage() {
     else navigate("/learn");
   };
 
+  const ctaLabel = introPhase
+    ? "시작하기"
+    : p.canTakeExam
+      ? "시험 보기"
+      : !p.missionDoneToday
+        ? "오늘 미션"
+        : p.next
+          ? "이어서"
+          : "복습하기";
+
+  const pct = Math.round(Math.min(1, Math.max(0, p.pct)) * 100);
+
   return (
-    <Screen nav right={<RankBadge label={p.rank.short} onClick={() => navigate("/path")} />}>
-      <Reveal className="px-1 pt-1">
-        <p className="text-[13px] font-semibold text-toss-mute">나의 급수 · {p.rank.label}</p>
-        <Headline>{headline}</Headline>
-        {introPhase && (
-          <p className="mt-2 break-keep text-[15px] leading-relaxed text-toss-body">
-            Course로 규칙을 익히고, 급수 파트로 감각을 쌓은 뒤 시험으로 올라가요.
-          </p>
-        )}
-      </Reveal>
-
-      <Reveal order={1} className="mt-4">
-        <DailyPulse streak={p.streakDays} missionDone={p.missionDoneToday} onMissionClick={goMission} />
-      </Reveal>
-
-      <Reveal order={2} className="mt-3">
-        <CompanionCard
-          track={p.rank.track}
-          rankLabel={p.rank.label}
-          boardSize={p.rank.boardSize}
-          progress={p.pct}
-          mood={mood}
-          streak={p.streakDays}
+    <Screen
+      nav
+      gray
+      right={<RankBadge label={p.rank.short} onClick={() => navigate("/path")} />}
+    >
+      <div className="relative flex flex-1 flex-col pb-2">
+        {/* soft playfield */}
+        <div
+          className="pointer-events-none absolute inset-x-[-20px] top-0 h-[42%] rounded-b-[40px] opacity-90"
+          style={{
+            background: "radial-gradient(120% 80% at 50% 0%, #dff3ff 0%, #eef8f1 45%, transparent 75%)",
+          }}
+          aria-hidden
         />
-      </Reveal>
 
-      <Reveal order={3} className="mt-3">
-        <div className="grid grid-cols-3 gap-2">
-          <Stat label="완료" value={`${p.done}`} unit={`/ ${p.total}`} />
-          <Stat label="남은 미션" value={`${remaining}`} unit="개" />
-          <Stat label="지금 판" value={`${p.rank.boardSize}`} unit="줄" />
-        </div>
-      </Reveal>
-
-      {p.goal && p.target && (
-        <Reveal order={4} className="mt-3 px-1">
-          <button
-            type="button"
-            onClick={() => setSheet("goal")}
-            className="flex w-full items-center gap-2 rounded-2xl bg-toss-soft2 px-3.5 py-2.5 text-left transition active:scale-[0.99]"
-          >
-            <Pill tone="bg-toss-blue text-white">{p.daysLeft == null ? "목표" : dDayLabel(p.daysLeft)}</Pill>
-            <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-toss-body">
-              {p.target.label} · {formatDay(p.goal.date)}
-            </span>
-            <span className="text-[12px] font-semibold text-toss-mute">변경</span>
-          </button>
+        <Reveal className="relative px-1 pt-1">
+          <div className="flex items-center gap-2">
+            <StreakChip days={p.streakDays} />
+            {p.missionDoneToday ? (
+              <span className="rounded-pill bg-toss-green/15 px-2.5 py-1 text-[12px] font-bold text-toss-green">
+                오늘 완료
+              </span>
+            ) : (
+              <span className="rounded-pill bg-toss-blue/12 px-2.5 py-1 text-[12px] font-bold text-toss-blue">
+                미션 대기
+              </span>
+            )}
+          </div>
         </Reveal>
-      )}
 
-      <Reveal order={5} className="mt-5 space-y-3">
-        {firstConcept && (
-          <button
-            type="button"
-            onClick={() => navigate("/practice")}
-            className="w-full rounded-[28px] bg-white p-4 text-left shadow-[0_1px_0_rgba(0,0,0,0.03)] ring-1 ring-toss-line transition active:scale-[0.99]"
-          >
-            <p className="text-[12px] font-semibold text-toss-blue">문제 풀이</p>
-            <p className="mt-1 text-[17px] font-bold tracking-tight text-toss-ink">개념 고르고 풀기</p>
-            <p className="mt-0.5 break-keep text-[13px] text-toss-mute">
-              개념 {listConcepts(p.rank.track).length}개 · 원하는 주제부터
-            </p>
-          </button>
-        )}
+        <Reveal order={1} className="relative mt-5 flex flex-col items-center text-center">
+          <div className="relative">
+            <div className="absolute -inset-3 rounded-full bg-white/50 blur-md" aria-hidden />
+            <Logo
+              size={108}
+              className={mood === "intro" || mood === "mission" ? "relative animate-companion-bob" : "relative animate-pop"}
+            />
+          </div>
+          <div className="relative mt-4 max-w-[300px] animate-pop rounded-[22px] bg-white px-4 py-3 shadow-[0_8px_24px_rgba(49,130,246,0.1)] ring-1 ring-toss-line">
+            <p className="break-keep text-[16px] font-bold leading-snug text-toss-ink">{bubble}</p>
+            <span className="absolute -top-2 left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 bg-white ring-1 ring-toss-line" aria-hidden />
+            <span className="absolute -top-1.5 left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 bg-white" aria-hidden />
+          </div>
+          <p className="mt-4 text-[13px] font-semibold text-toss-mute">
+            {p.rank.label} · {p.done}/{p.total} 미션
+          </p>
+          <div className="mt-2 h-3 w-[220px] overflow-hidden rounded-full bg-white ring-1 ring-black/[0.04]">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-toss-blue to-[#58CC02] transition-[width] duration-700 ease-out"
+              style={{ width: `${Math.max(8, pct)}%` }}
+            />
+          </div>
+        </Reveal>
 
-        {p.next && (
+        <Reveal order={2} className="relative mt-7 px-1">
           <button
             type="button"
             onClick={goMission}
-            className="w-full rounded-[24px] bg-toss-soft2 px-4 py-3.5 text-left transition active:scale-[0.99]"
+            className="flex h-[58px] w-full items-center justify-center rounded-[18px] bg-[#58CC02] text-[18px] font-extrabold tracking-tight text-white shadow-[0_6px_0_#46A302] transition active:translate-y-[4px] active:shadow-[0_2px_0_#46A302]"
           >
-            <p className="text-[12px] font-semibold text-toss-mute">
-              {introPhase ? "Course 시작" : p.canTakeExam ? "승급 시험" : "이어서 배우기"}
-            </p>
-            <p className="mt-0.5 text-[16px] font-bold tracking-tight text-toss-ink">{itemTitle(p.next)}</p>
-            <p className="mt-0.5 break-keep text-[13px] text-toss-mute">짧은 미션 · 판 위에서</p>
+            {ctaLabel}
           </button>
-        )}
+          <p className="mt-2 text-center text-[13px] font-medium text-toss-mute">
+            {p.next ? itemTitle(p.next) : "개념 맵에서 골라 복습해요"}
+          </p>
+        </Reveal>
 
         {upcoming.length > 0 && (
-          <div className="rounded-[24px] bg-toss-soft2 p-3.5">
-            <p className="px-1 text-[12px] font-semibold text-toss-mute">앞으로의 길</p>
-            <ul className="mt-2 space-y-1">
+          <Reveal order={3} className="relative mt-6 px-1">
+            <p className="mb-3 text-center text-[12px] font-bold uppercase tracking-wide text-toss-mute">다음 길</p>
+            <div className="flex items-center justify-center gap-2">
               {upcoming.map((item, i) => {
                 const key = itemKey(item);
+                const active = i === 0;
                 return (
-                  <li key={key}>
-                    <button
-                      type="button"
-                      onClick={() => i === 0 && (item.kind === "rank-exam" ? navigate(`/exam/${item.module.rankId}`) : navigate(`/mission/${key}`))}
-                      disabled={i > 0}
-                      className={`flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left transition ${
-                        i === 0 ? "bg-white ring-1 ring-toss-line active:scale-[0.99]" : "opacity-55"
-                      }`}
-                    >
-                      <span
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold ${
-                          i === 0 ? "bg-toss-blue text-white" : "bg-white text-toss-mute"
-                        }`}
-                      >
-                        {i + 1}
-                      </span>
-                      <span className="min-w-0 flex-1 truncate text-[14px] font-bold text-toss-ink">{itemTitle(item)}</span>
-                    </button>
-                  </li>
+                  <button
+                    key={key}
+                    type="button"
+                    disabled={!active}
+                    onClick={() =>
+                      active &&
+                      (item.kind === "rank-exam"
+                        ? navigate(`/exam/${item.module.rankId}`)
+                        : navigate(`/mission/${key}`))
+                    }
+                    className={`flex h-[72px] w-[72px] flex-col items-center justify-center rounded-[22px] transition ${
+                      active
+                        ? "bg-toss-blue text-white shadow-[0_5px_0_#1B64DA] active:translate-y-[3px] active:shadow-[0_2px_0_#1B64DA]"
+                        : "bg-white text-toss-mute ring-1 ring-toss-line opacity-70"
+                    }`}
+                  >
+                    <span className="text-[15px] font-extrabold">{i + 1}</span>
+                    <span className="mt-0.5 max-w-[58px] truncate text-[10px] font-semibold leading-tight">
+                      {itemTitle(item).replace(/^Part\s*\d+\s*·\s*/, "").slice(0, 6)}
+                    </span>
+                  </button>
                 );
               })}
-            </ul>
-          </div>
+            </div>
+          </Reveal>
         )}
 
-        <PrimaryButton onClick={goMission}>
-          {introPhase
-            ? "쉽게 시작해 보기"
-            : p.canTakeExam
-              ? "승급 시험 보기"
-              : !p.missionDoneToday
-                ? "오늘 한 판 두기"
-                : p.next
-                  ? "이어서 배우기"
-                  : "개념 목록 보기"}
-        </PrimaryButton>
-      </Reveal>
+        <Reveal order={4} className="relative mt-auto flex justify-center gap-5 pt-8 text-[13px] font-semibold">
+          <button type="button" onClick={() => navigate("/learn")} className="text-toss-blue">
+            개념 맵
+          </button>
+          <span className="text-toss-line">·</span>
+          <button type="button" onClick={() => navigate("/practice")} className="text-toss-blue">
+            문제 풀기
+          </button>
+          {p.goal ? (
+            <>
+              <span className="text-toss-line">·</span>
+              <button type="button" onClick={() => setSheet("goal")} className="text-toss-mute">
+                목표
+              </button>
+            </>
+          ) : (
+            <>
+              <span className="text-toss-line">·</span>
+              <button type="button" onClick={() => setSheet("goal")} className="text-toss-mute">
+                목표 정하기
+              </button>
+            </>
+          )}
+        </Reveal>
+      </div>
 
       {sheet === "goal" && <GoalSheet currentRank={p.rank.id} current={p.goal} onClose={() => setSheet(null)} />}
     </Screen>
   );
 }
 
-function Stat({ label, value, unit }: { label: string; value: string; unit: string }) {
+function StreakChip({ days }: { days: number }) {
+  const on = days > 0;
   return (
-    <div className="rounded-2xl bg-toss-soft2 px-3 py-2.5 text-center">
-      <p className="text-[11px] font-semibold text-toss-mute">{label}</p>
-      <p className="mt-0.5 text-[18px] font-bold tabular-nums tracking-tight text-toss-ink">
-        {value}
-        <span className="ml-0.5 text-[12px] font-semibold text-toss-mute">{unit}</span>
-      </p>
-    </div>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 text-[12px] font-bold ${
+        on ? "bg-[#FFEDD5] text-[#EA580C]" : "bg-white text-toss-mute ring-1 ring-toss-line"
+      }`}
+    >
+      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor" aria-hidden>
+        <path d="M12 3c1.2 2.4-.2 4.2-1.4 5.5C9.2 10 8 11.4 8 14a4 4 0 0 0 8 0c0-2.2-1-3.8-2-5.2-.8-1.2-1.4-2.2-1.2-3.8.6 1 .8 1.8 1.6 2.8C16.2 9.8 18 11.6 18 14.2A6 6 0 0 1 6 14c0-3.2 2.2-5.2 3.8-6.8C11 5.8 11.4 4.6 12 3Z" />
+      </svg>
+      {on ? `${days}일째` : "연속 시작"}
+    </span>
   );
 }
