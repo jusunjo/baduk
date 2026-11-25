@@ -195,21 +195,24 @@ export function MissionPlay({
         ) : null}
       </div>
 
-      {feedback ? (
-        <div
-          className="mt-3 shrink-0 rounded-2xl px-4 py-3"
-          style={
-            ok
-              ? { backgroundColor: "rgba(88,204,2,0.16)", color: "#89E219" }
-              : { backgroundColor: "rgba(255,75,75,0.14)", color: "#FF6B6B" }
-          }
-        >
-          <p className="text-[15px] font-extrabold">{ok ? "정답!" : "아쉬워요"}</p>
-          <p className="mt-0.5 break-keep text-[14px] font-semibold" style={{ color: ok ? "#D6F5A8" : "#FFC2C2" }}>
-            {feedback}
-          </p>
-        </div>
-      ) : null}
+      {/* 피드백 자리를 항상 확보해 정답 시 레이아웃 덜컹임 방지 */}
+      <div className="mt-3 shrink-0" style={{ minHeight: 76 }}>
+        {feedback ? (
+          <div
+            className="rounded-2xl px-4 py-3"
+            style={
+              ok
+                ? { backgroundColor: "rgba(88,204,2,0.16)", color: "#89E219" }
+                : { backgroundColor: "rgba(255,75,75,0.14)", color: "#FF6B6B" }
+            }
+          >
+            <p className="text-[15px] font-extrabold">{ok ? "정답!" : "아쉬워요"}</p>
+            <p className="mt-0.5 line-clamp-2 break-keep text-[14px] font-semibold" style={{ color: ok ? "#D6F5A8" : "#FFC2C2" }}>
+              {feedback}
+            </p>
+          </div>
+        ) : null}
+      </div>
 
       <div
         className="shrink-0 pt-3 pb-[max(16px,calc(env(safe-area-inset-bottom)+4px))]"
