@@ -48,7 +48,7 @@ export function BottomNav() {
   return (
     <>
       <div className="h-[calc(64px+env(safe-area-inset-bottom))]" aria-hidden />
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-duo-swan bg-white pb-[env(safe-area-inset-bottom)]">
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-duo-swan bg-white shadow-[0_-4px_0_rgba(229,229,229,0.6)] pb-[env(safe-area-inset-bottom)]">
         <ul className="mx-auto flex h-[64px] max-w-[520px]">
           {TABS.map((t) => {
             const active = t.match

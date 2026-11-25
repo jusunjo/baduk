@@ -34,6 +34,12 @@ export default {
           fox: "#FF9600",
           cardinal: "#FF4B4B",
           berry: "#CE82FF",
+          /** 듀오 레슨 다크 */
+          night: "#131F24",
+          "night-2": "#1A2C33",
+          "night-3": "#202F36",
+          "night-line": "#37464F",
+          "night-mute": "#52656D",
         },
       },
       fontFamily: {

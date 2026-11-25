@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MissionPlay } from "@/components/MissionPlay";
-import { Screen } from "@/components/Screen";
+import { PrimaryButton, Screen } from "@/components/Screen";
 import { findCourseLesson, findRankPart, getRankModule } from "@/data/path";
 import type { Exercise } from "@/data/path/types";
 import { useProgress } from "@/lib/progress";
@@ -15,6 +16,9 @@ export function MissionPlayPage() {
 function Mission({ missionId }: { missionId: string }) {
   const navigate = useNavigate();
   const p = useProgress();
+  const [hearts, setHearts] = useState(5);
+  const [step, setStep] = useState(0);
+  const [total, setTotal] = useState(1);
 
   let title = "";
   let subtitle: string | undefined;
@@ -49,12 +53,47 @@ function Mission({ missionId }: { missionId: string }) {
     );
   }
 
+  if (hearts <= 0) {
+    return (
+      <Screen lesson fit progress={1} hearts={0} onClose={() => navigate("/", { replace: true })}>
+        <div className="flex flex-1 flex-col items-center justify-center px-2 text-center">
+          <BrokenHeart />
+          <p className="mt-4 text-[22px] font-extrabold text-white">하트가 다 닳았어요</p>
+          <p className="mt-2 break-keep text-[15px] text-duo-hare">잠깐 쉬었다가 다시 도전해 봐요.</p>
+        </div>
+        <div className="pb-[max(12px,env(safe-area-inset-bottom))]">
+          <PrimaryButton
+            night
+            onClick={() => {
+              sfx.play("tap");
+              navigate("/", { replace: true });
+            }}
+          >
+            홈으로
+          </PrimaryButton>
+        </div>
+      </Screen>
+    );
+  }
+
   return (
-    <Screen fit onBack={() => navigate("/learn")} title={title}>
+    <Screen
+      lesson
+      fit
+      progress={(step + 1) / Math.max(1, total)}
+      hearts={hearts}
+      onClose={() => navigate("/", { replace: true })}
+    >
       <MissionPlay
         title={title}
         subtitle={subtitle}
         exercises={exercises}
+        hearts={hearts}
+        onHeartLost={() => setHearts((h) => Math.max(0, h - 1))}
+        onStep={(i, t) => {
+          setStep(i);
+          setTotal(t);
+        }}
         onComplete={() => {
           actions.completeLesson(missionId);
           sfx.play("xp");
@@ -62,5 +101,17 @@ function Mission({ missionId }: { missionId: string }) {
         }}
       />
     </Screen>
+  );
+}
+
+function BrokenHeart() {
+  return (
+    <svg viewBox="0 0 64 64" className="h-16 w-16 text-[#FF4B4B]" aria-hidden>
+      <path
+        fill="currentColor"
+        d="M32 54c-.8 0-1.5-.3-2.1-.9C22.4 46.5 16.8 41.6 14.4 37.2 12.4 33.5 12.6 28.8 15.2 25.6 17.8 22.3 22.2 21.3 25.6 23c1.3.7 2.4 1.7 3.2 3 .8-1.3 1.9-2.3 3.2-3 3.4-1.7 7.8-.7 10.4 2.6 2.6 3.2 2.8 7.9.8 11.6-2.4 4.4-8 9.3-15.5 15.9-.6.6-1.3.9-2.1.9Z"
+      />
+      <path d="M28 22 36 42" stroke="#131F24" strokeWidth="4" strokeLinecap="round" />
+    </svg>
   );
 }

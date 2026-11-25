@@ -12,13 +12,18 @@ import { actions } from "@/lib/store";
 
 export function MissionPlay({
   title,
-  subtitle,
   exercises,
+  hearts,
+  onHeartLost,
+  onStep,
   onComplete,
 }: {
   title: string;
   subtitle?: string;
   exercises: Exercise[];
+  hearts: number;
+  onHeartLost: () => void;
+  onStep?: (index: number, total: number) => void;
   onComplete: () => void;
 }) {
   const [idx, setIdx] = useState(0);
@@ -46,9 +51,16 @@ export function MissionPlay({
     return () => aiBoard.clearSession();
   }, [ex?.id]);
 
+  useEffect(() => {
+    onStep?.(0, exercises.length);
+    // 최초 진행만 알림 — onStep 참조 변경으로 루프 나지 않게
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exercises.length]);
+
   const load = (i: number) => {
     const next = exercises[i];
     setIdx(i);
+    onStep?.(i, exercises.length);
     setBoard(applySetup(next.size, next.setup));
     setFeedback(null);
     setOk(false);
@@ -78,6 +90,7 @@ export function MissionPlay({
   const fail = (at?: Point) => {
     sfx.play("wrong");
     haptic.wrong();
+    onHeartLost();
     setOk(false);
     setWrong(at ?? null);
     setFeedback(ex.wrongText ?? ex.hint ?? "다시 생각해 보세요.");
@@ -126,50 +139,50 @@ export function MissionPlay({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="shrink-0 px-1">
-        <p className="text-[13px] font-semibold text-toss-mute">
-          {title} · {idx + 1}/{exercises.length}
-        </p>
-        {subtitle ? <p className="mt-0.5 text-[13px] text-toss-mute">{subtitle}</p> : null}
-        <p className="mt-2 break-keep text-[18px] font-bold leading-snug text-toss-ink">{ex.prompt}</p>
-        {ex.hint && !feedback ? <p className="mt-1.5 text-[13px] text-toss-mute">힌트: {ex.hint}</p> : null}
-        {feedback ? (
-          <p className={`mt-1.5 break-keep text-[14px] font-semibold ${ok ? "text-toss-green" : "text-toss-orange"}`}>
-            {feedback}
-          </p>
-        ) : null}
+        <div className="mb-3 inline-flex items-center gap-1.5 rounded-lg bg-[#CE82FF]/15 px-2 py-1">
+          <span className="flex h-4 w-4 items-center justify-center rounded-md bg-duo-berry text-[10px] font-black text-white">
+            ◆
+          </span>
+          <span className="text-[12px] font-extrabold text-duo-berry">{title}</span>
+        </div>
+        <p className="break-keep text-[22px] font-extrabold leading-snug text-white">{ex.prompt}</p>
+        {ex.hint && !feedback ? <p className="mt-2 text-[13px] font-bold text-duo-night-mute">힌트: {ex.hint}</p> : null}
       </div>
 
-      <div className="relative mt-2 flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden">
-        <Board
-          size={ex.size}
-          board={board}
-          marks={ex.marks}
-          onPlay={ex.type === "read" ? undefined : onTap}
-          interactive={ex.type !== "read" && !ok}
-          wrongFlash={wrong}
-          libertiesFor={ex.showLibs ? "both" : undefined}
-          showSize={false}
-          className="max-h-full max-w-[min(100%,340px)]"
-        />
+      <div className="relative mt-3 flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden">
+        <div className="w-full max-w-[min(100%,340px)] rounded-[24px] bg-duo-night-2 p-2.5 ring-2 ring-duo-night-line">
+          <Board
+            size={ex.size}
+            board={board}
+            marks={ex.marks}
+            onPlay={ex.type === "read" ? undefined : onTap}
+            interactive={ex.type !== "read" && !ok}
+            wrongFlash={wrong}
+            libertiesFor={ex.showLibs ? "both" : undefined}
+            showSize={false}
+            className="max-h-full max-w-none"
+          />
+        </div>
+
         {ex.type === "choice" ? (
-          <div className="mt-3 flex w-full shrink-0 flex-wrap justify-center gap-2 px-1">
+          <div className="mt-4 flex w-full shrink-0 flex-col gap-2.5 px-1">
             {(ex.choices ?? []).map((c) => {
               const tone = choiceTone(c.at);
               const cls =
                 tone === "correct"
-                  ? "bg-toss-green text-white ring-toss-green"
+                  ? "bg-[#58CC02]/15 text-duo-green ring-duo-green"
                   : tone === "wrong"
-                    ? "bg-toss-orange text-white ring-toss-orange"
+                    ? "bg-[#FF4B4B]/15 text-duo-cardinal ring-duo-cardinal"
                     : tone === "dim"
-                      ? "bg-white/70 text-toss-mute ring-toss-line opacity-60"
-                      : "bg-white text-toss-ink ring-toss-line";
+                      ? "bg-duo-night-2 text-duo-night-mute ring-duo-night-line opacity-50"
+                      : "bg-duo-night-2 text-white ring-duo-night-line active:bg-duo-night-3";
               return (
                 <button
                   key={keyOf(c.at)}
                   type="button"
                   disabled={ok}
                   onClick={() => onTap(c.at)}
-                  className={`rounded-pill px-4 py-2.5 text-[15px] font-bold shadow-sm ring-1 transition active:scale-95 disabled:active:scale-100 ${cls}`}
+                  className={`flex min-h-[56px] w-full items-center justify-center rounded-2xl px-4 py-3 text-[17px] font-extrabold ring-2 transition active:translate-y-[2px] disabled:active:translate-y-0 ${cls}`}
                 >
                   {c.label}
                 </button>
@@ -179,33 +192,43 @@ export function MissionPlay({
         ) : null}
       </div>
 
+      {feedback ? (
+        <div
+          className={`mt-3 shrink-0 rounded-2xl px-4 py-3 ${
+            ok ? "bg-[#58CC02]/15 text-duo-green" : "bg-[#FF4B4B]/12 text-duo-cardinal"
+          }`}
+        >
+          <p className="text-[15px] font-extrabold">{ok ? "정답!" : "아쉬워요"}</p>
+          <p className="mt-0.5 break-keep text-[14px] font-semibold opacity-90">{feedback}</p>
+        </div>
+      ) : null}
+
       <div className="shrink-0 pt-3 pb-[max(12px,env(safe-area-inset-bottom))]">
         {ex.type === "read" && !ok ? (
-          <PrimaryButton onClick={() => succeed(ex.correctText ?? `알겠어요 · +${XP_PER_CORRECT} XP`)}>
-            알겠어요 · +{XP_PER_CORRECT} XP
+          <PrimaryButton night onClick={() => succeed(ex.correctText ?? `알겠어요 · +${XP_PER_CORRECT} XP`)}>
+            확인
           </PrimaryButton>
         ) : ok ? (
-          <PrimaryButton onClick={advance}>
-            {idx + 1 >= exercises.length ? "미션 완료" : "다음"}
+          <PrimaryButton night onClick={advance}>
+            {idx + 1 >= exercises.length ? "완료" : "계속하기"}
           </PrimaryButton>
         ) : wrong ? (
-          <button
-            type="button"
-            className="flex h-14 w-full items-center justify-center rounded-2xl bg-white text-[15px] font-extrabold text-duo-wolf ring-2 ring-duo-swan active:scale-[0.98]"
+          <PrimaryButton
+            night
             onClick={() => {
               sfx.play("tap");
               load(idx);
             }}
           >
             다시 두기
-          </button>
+          </PrimaryButton>
         ) : (
-          <div className="flex h-14 items-center justify-center rounded-2xl bg-white text-[14px] font-bold text-duo-hare ring-2 ring-duo-swan">
-            {ex.type === "choice" ? "아래에서 골라 보세요" : "판을 눌러 두어 보세요"}
-          </div>
+          <PrimaryButton night disabled>
+            {ex.type === "choice" ? "골라 보세요" : "판을 눌러 보세요"}
+          </PrimaryButton>
         )}
       </div>
-      <BoardBuddy />
+      {hearts <= 0 ? null : <BoardBuddy />}
     </div>
   );
 }

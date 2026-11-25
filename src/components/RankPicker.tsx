@@ -6,10 +6,12 @@ export function RankOptions({
   ranks = RANKS,
   value,
   onChange,
+  dark,
 }: {
   ranks?: Rank[];
   value: RankId | null;
   onChange: (id: RankId) => void;
+  dark?: boolean;
 }) {
   return (
     <ul className="space-y-2.5">
@@ -25,22 +27,40 @@ export function RankOptions({
               }}
               aria-pressed={on}
               className={`flex w-full items-start gap-3 rounded-2xl px-3.5 py-3.5 text-left transition active:scale-[0.985] ${
-                on ? "bg-toss-blue/10 ring-2 ring-toss-blue" : "bg-toss-soft2 hover:bg-toss-soft"
+                dark
+                  ? on
+                    ? "bg-duo-blue/15 ring-2 ring-duo-blue"
+                    : "bg-duo-night-2 ring-2 ring-duo-night-line"
+                  : on
+                    ? "bg-toss-blue/10 ring-2 ring-toss-blue"
+                    : "bg-toss-soft2 hover:bg-toss-soft"
               }`}
             >
               <MiniBoard size={r.boardSize} />
               <span className="min-w-0 flex-1 pt-0.5">
                 <span className="flex flex-wrap items-center gap-1.5">
-                  <span className={`text-[16px] font-bold ${on ? "text-toss-blue" : "text-toss-ink"}`}>{r.label}</span>
-                  <span className={`text-[12px] font-semibold ${on ? "text-toss-blue/70" : "text-toss-mute"}`}>
+                  <span
+                    className={`text-[16px] font-extrabold ${
+                      on ? "text-duo-blue" : dark ? "text-white" : "text-toss-ink"
+                    }`}
+                  >
+                    {r.label}
+                  </span>
+                  <span className={`text-[12px] font-bold ${on ? "text-duo-blue/80" : "text-duo-hare"}`}>
                     {r.boardSize}줄 판
                   </span>
                 </span>
-                <span className="mt-1 block break-keep text-[13px] leading-snug text-toss-mute">{r.meaning}</span>
+                <span className={`mt-1 block break-keep text-[13px] leading-snug ${dark ? "text-duo-hare" : "text-toss-mute"}`}>
+                  {r.meaning}
+                </span>
               </span>
               <span
                 className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition ${
-                  on ? "bg-toss-blue text-white" : "bg-white ring-1 ring-toss-line"
+                  on
+                    ? "bg-duo-blue text-white"
+                    : dark
+                      ? "bg-duo-night ring-2 ring-duo-night-line"
+                      : "bg-white ring-1 ring-toss-line"
                 }`}
                 aria-hidden
               >

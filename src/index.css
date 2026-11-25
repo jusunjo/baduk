@@ -12,6 +12,7 @@
   --board-line: #5c3d1e;
   --duo-green: #58cc02;
   --duo-green-deep: #46a302;
+  --duo-night: #131f24;
 }
 
 html {
@@ -33,13 +34,21 @@ body {
   background: rgba(88, 204, 2, 0.22);
 }
 
-/* 듀오식 점무늬 배경 */
+/* 듀오식 홈 — 연한 점무늬 + 그린 글로우 */
 .duo-bg {
   background-color: #f7f7f7;
-  background-image: radial-gradient(circle at 20% 10%, rgba(88, 204, 2, 0.08), transparent 42%),
-    radial-gradient(circle at 90% 30%, rgba(28, 176, 246, 0.08), transparent 40%),
-    radial-gradient(#e5e5e5 1.2px, transparent 1.2px);
-  background-size: auto, auto, 18px 18px;
+  background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(88, 204, 2, 0.18), transparent 55%),
+    radial-gradient(circle at 90% 20%, rgba(28, 176, 246, 0.12), transparent 42%),
+    radial-gradient(circle at 10% 80%, rgba(255, 200, 0, 0.1), transparent 40%),
+    radial-gradient(#e5e5e5 1.35px, transparent 1.35px);
+  background-size: auto, auto, auto, 18px 18px;
+}
+
+/* 듀오 레슨/온보딩 다크 */
+.duo-night {
+  background-color: #131f24;
+  background-image: radial-gradient(ellipse 90% 55% at 50% -15%, rgba(88, 204, 2, 0.14), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(28, 176, 246, 0.08), transparent 45%);
 }
 
 @media (prefers-reduced-motion: reduce) {

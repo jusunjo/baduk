@@ -15,7 +15,7 @@ export function HomePage() {
 
   return (
     <Screen nav gray right={<RankBadge label={p.rank.short} onClick={() => navigate("/path")} />}>
-      <div className="sticky top-14 z-40 -mx-5 mb-3 border-b border-duo-swan bg-[#F7F7F7] px-5 py-2.5">
+      <div className="sticky top-14 z-40 -mx-5 mb-3 border-b-2 border-duo-swan bg-[#F7F7F7]/95 px-5 py-2.5 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <HudChip icon={<FlameIcon />} value={p.streakDays} tone="text-[#FF9600]" bg="bg-[#FFF4E0]" />
           <HudChip icon={<XpIcon />} value={p.xp} tone="text-[#1CB0F6]" bg="bg-[#DDF4FF]" />
