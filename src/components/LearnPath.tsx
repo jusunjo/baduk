@@ -47,35 +47,47 @@ export function LearnPath() {
 
   const sections = buildSections(p);
 
+  /** 듀오식 S커브 — transform 없이 margin으로 이동 (sticky 스택 꼬임 방지) */
+  let zigIndex = 0;
+
   return (
     <div className="relative z-0 space-y-8 pb-[max(7rem,calc(var(--nav-h,72px)+3rem))] pt-1">
       {sections.map((sec) => {
         const playable = sec.nodes.filter((n) => n.kind === "mission" || n.kind === "exam");
         const anyCurrent = playable.some((n) => stateOf(n.key) === "current");
         const allDone = playable.every((n) => stateOf(n.key) === "done");
+        const sectionStart = zigIndex;
+        const xs = sec.nodes.map((_, i) => zigX(sectionStart + i));
+        zigIndex += sec.nodes.length;
+
         return (
           <section key={sec.id}>
             <UnitBanner title={sec.title} tone={sec.tone} active={anyCurrent} done={allDone} />
-            <ul className="relative mt-4 flex flex-col items-center gap-6">
-              <PathTrail />
-              {sec.nodes.map((node) => {
+            <ul className="relative mt-4 flex flex-col items-center gap-7">
+              <PathTrail xs={xs} />
+              {sec.nodes.map((node, ni) => {
+                const x = xs[ni]!;
                 if (node.kind === "chest") {
                   return (
-                    <li key={node.key} className="relative z-[1]">
-                      <ChestNode open={!!node.unitDone} />
+                    <li key={node.key} className="relative z-[1] flex w-full justify-center">
+                      <div style={{ marginLeft: x }}>
+                        <ChestNode open={!!node.unitDone} />
+                      </div>
                     </li>
                   );
                 }
                 if (node.kind === "promote") {
                   return (
-                    <li key={node.key} className="relative z-[1]">
-                      <PromoteNode
-                        active={!!node.unitDone}
-                        onStart={() => {
-                          sfx.play("start");
-                          actions.setCurrentRank("g30");
-                        }}
-                      />
+                    <li key={node.key} className="relative z-[1] flex w-full justify-center">
+                      <div style={{ marginLeft: x }}>
+                        <PromoteNode
+                          active={!!node.unitDone}
+                          onStart={() => {
+                            sfx.play("start");
+                            actions.setCurrentRank("g30");
+                          }}
+                        />
+                      </div>
                     </li>
                   );
                 }
@@ -85,37 +97,39 @@ export function LearnPath() {
                   <li
                     key={node.key}
                     ref={st === "current" ? currentRef : undefined}
-                    className="relative z-[1] flex w-full flex-col items-center"
+                    className="relative z-[1] flex w-full justify-center"
                     style={{ scrollMarginTop: "140px" }}
                   >
-                    {st === "current" && !isOpen && <StartTip />}
-                    <PathCircle
-                      state={st}
-                      kind={node.kind}
-                      onClick={() => {
-                        if (st === "locked") {
-                          sfx.play("wrong");
-                          return;
-                        }
-                        sfx.play("tap");
-                        setOpen(isOpen ? null : node.key);
-                      }}
-                    />
-                    {isOpen && st !== "locked" && (
-                      <NodePopover
-                        title={node.title}
+                    <div className="flex flex-col items-center" style={{ marginLeft: x }}>
+                      {st === "current" && !isOpen && <StartTip />}
+                      <PathCircle
                         state={st}
-                        onStart={() => {
-                          sfx.play("start");
-                          if (node.kind === "exam" && node.item?.kind === "rank-exam") {
-                            navigate(`/exam/${node.item.module.rankId}`);
-                          } else {
-                            navigate(`/mission/${node.key}`);
+                        kind={node.kind}
+                        onClick={() => {
+                          if (st === "locked") {
+                            sfx.play("wrong");
+                            return;
                           }
+                          sfx.play("tap");
+                          setOpen(isOpen ? null : node.key);
                         }}
-                        onClose={() => setOpen(null)}
                       />
-                    )}
+                      {isOpen && st !== "locked" && (
+                        <NodePopover
+                          title={node.title}
+                          state={st}
+                          onStart={() => {
+                            sfx.play("start");
+                            if (node.kind === "exam" && node.item?.kind === "rank-exam") {
+                              navigate(`/exam/${node.item.module.rankId}`);
+                            } else {
+                              navigate(`/mission/${node.key}`);
+                            }
+                          }}
+                          onClose={() => setOpen(null)}
+                        />
+                      )}
+                    </div>
                   </li>
                 );
               })}
@@ -127,15 +141,44 @@ export function LearnPath() {
   );
 }
 
-function PathTrail() {
+/** 듀오 패스: 가운데 → 왼쪽 → 가운데 → 오른쪽 … */
+const ZIG_STEPS = [0, -1, 0, 1, 0, -1, 0, 1] as const;
+const ZIG_AMP = 58;
+
+function zigX(i: number): number {
+  return ZIG_STEPS[i % ZIG_STEPS.length]! * ZIG_AMP;
+}
+
+function PathTrail({ xs }: { xs: number[] }) {
+  if (xs.length < 2) return null;
+  const h = Math.max(1, (xs.length - 1) * 100);
+  const mid = 50;
+  const pts = xs
+    .map((x, i) => {
+      const px = mid + (x / ZIG_AMP) * 18;
+      const py = xs.length === 1 ? 0 : (i / (xs.length - 1)) * h;
+      return `${px.toFixed(2)},${py.toFixed(2)}`;
+    })
+    .join(" ");
+
   return (
-    <div
-      className="pointer-events-none absolute inset-y-2 left-1/2 z-0 w-2.5 -translate-x-1/2 rounded-full opacity-50"
-      style={{
-        backgroundImage: "repeating-linear-gradient(to bottom, #37464F 0 8px, transparent 8px 16px)",
-      }}
+    <svg
+      className="pointer-events-none absolute inset-x-0 top-2 z-0 h-[calc(100%-16px)] w-full opacity-55"
+      viewBox={`0 0 100 ${h}`}
+      preserveAspectRatio="none"
       aria-hidden
-    />
+    >
+      <polyline
+        points={pts}
+        fill="none"
+        stroke="#37464F"
+        strokeWidth="2.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray="0 11"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
   );
 }
 
