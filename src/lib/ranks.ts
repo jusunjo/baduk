@@ -137,6 +137,13 @@ export function getRank(id: RankId): Rank {
   return RANKS.find((r) => r.id === id)!;
 }
 
+/** 다음 급수 (없으면 null) */
+export function nextRank(id: RankId): Rank | null {
+  const i = RANKS.findIndex((r) => r.id === id);
+  if (i < 0 || i + 1 >= RANKS.length) return null;
+  return RANKS[i + 1]!;
+}
+
 /** 목표 급수는 현재보다 높은 것만 */
 export function goalRanks(current: RankId): Rank[] {
   const cur = getRank(current).level;

@@ -5,7 +5,7 @@ import { GameStart } from "@/components/GameStart";
 import { Logo } from "@/components/Logo";
 import { RankOptions } from "@/components/RankPicker";
 import { Headline, PrimaryButton, Reveal, SecondaryButton } from "@/components/Screen";
-import { allLessons } from "@/data/curriculum";
+import { courseLessonsFlat } from "@/data/path";
 import { emptyBoard, playMove, type Grid } from "@/lib/board";
 import { haptic } from "@/lib/native";
 import { getRank, RANKS, type RankId } from "@/lib/ranks";
@@ -19,9 +19,9 @@ export function WelcomePage() {
 
   const finishBoot = useCallback(() => {
     actions.completeOnboarding(current, null);
-    const first = allLessons(rank.track)[0];
-    navigate(first ? `/learn/${first.id}` : "/", { replace: true });
-  }, [current, navigate, rank.track]);
+    const first = courseLessonsFlat()[0]?.lesson;
+    navigate(first ? `/mission/${first.id}` : "/learn", { replace: true });
+  }, [current, navigate]);
 
   if (step === "boot") {
     return (

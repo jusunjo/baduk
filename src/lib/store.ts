@@ -98,6 +98,11 @@ export const actions = {
     set({ ...state, currentRank });
   },
 
+  /** 승급 시험 통과 시 */
+  promoteRank(next: RankId) {
+    set({ ...state, currentRank: next, ...bumpActivity(state) });
+  },
+
   setGoal(goal: Goal | null) {
     set({ ...state, goal });
   },

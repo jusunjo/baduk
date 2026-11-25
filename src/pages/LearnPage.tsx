@@ -1,183 +1,236 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Screen } from "@/components/Screen";
-import type { Lesson } from "@/data/curriculum";
-import { useProgress } from "@/lib/progress";
-
-/** Horizontal offsets (px) that make the nodes snake down the screen. */
-const ZIGZAG = [0, 44, 70, 44, 0, -44, -70, -44];
+import { PrimaryButton, Screen } from "@/components/Screen";
+import { isUnlocked, useProgress } from "@/lib/progress";
+import { actions } from "@/lib/store";
 
 type NodeState = "done" | "current" | "locked";
 
 export function LearnPage() {
   const navigate = useNavigate();
   const p = useProgress();
-  const [open, setOpen] = useState<string | null>(p.next?.id ?? null);
-  if (!p.rank || !p.curriculum) return null;
+  const [open, setOpen] = useState<string | null>(p.nextId);
 
-  const nextIdx = p.next ? p.lessons.findIndex((l) => l.id === p.next!.id) : p.lessons.length;
-  const stateOf = (lesson: Lesson): NodeState => {
-    if (p.completed[lesson.id]) return "done";
-    if (lesson.id === p.next?.id) return "current";
-    return p.lessons.findIndex((l) => l.id === lesson.id) > nextIdx ? "locked" : "done";
+  if (!p.rank || !p.course) return null;
+
+  const stateOf = (key: string): NodeState => {
+    if (p.completed[key]) return "done";
+    if (key === p.nextId) return "current";
+    return isUnlocked(p.completed, p.queue, key) ? "done" : "locked";
   };
 
-  let n = 0;
   return (
     <Screen nav gray>
       <div className="px-1 pt-1">
         <p className="text-[13px] font-semibold text-toss-mute">
-          {p.rank.label} · {p.rank.boardSize}줄 판
+          {p.rank.label} · Course + 급수
         </p>
         <p className="mt-1 text-[22px] font-bold tracking-tight text-toss-ink">
-          {p.done}/{p.total} 레슨 완료
+          {p.done}/{p.total} 미션 완료
         </p>
-        <p className="mt-1 break-keep text-[14px] text-toss-mute">급수는 두면서 올라가요. 지금은 이 판의 개념만 익히면 돼요.</p>
+        <p className="mt-1 break-keep text-[14px] text-toss-mute">
+          규칙 Course를 먼저, 그다음 급수 파트를 따라가요.
+        </p>
       </div>
 
       <div className="mt-5 space-y-6 pb-10">
-        {p.curriculum.chapters.map((ch, ci) => {
-          const states = ch.lessons.map(stateOf);
-          const chapterDone = states.every((s) => s === "done");
-          const chapterNow = states.includes("current");
+        {p.course.units.map((unit, ui) => {
+          const keys = unit.lessons.map((l) => l.id);
+          const states = keys.map(stateOf);
+          const unitDone = states.every((s) => s === "done");
+          const unitNow = states.includes("current");
           return (
-            <section key={ch.id}>
-              <div
-                className={`rounded-[22px] px-5 py-4 ${
-                  chapterNow ? "bg-toss-blue text-white" : chapterDone ? "bg-white text-toss-ink" : "bg-white/60 text-toss-mute"
-                }`}
-              >
-                <p className={`text-[12px] font-semibold ${chapterNow ? "text-white/75" : "text-toss-mute"}`}>
-                  챕터 {ci + 1}
-                  {chapterDone && " · 완료"}
-                </p>
-                <p className="mt-0.5 text-[18px] font-bold tracking-tight">{ch.title}</p>
-                <p className={`mt-0.5 break-keep text-[13px] ${chapterNow ? "text-white/80" : "text-toss-mute"}`}>{ch.blurb}</p>
-              </div>
-
-              <div className="mt-6 flex flex-col items-center gap-5">
-                {ch.lessons.map((lesson, li) => {
-                  const state = states[li];
-                  const x = ZIGZAG[n++ % ZIGZAG.length];
-                  return (
-                    <PathNode
-                      key={lesson.id}
-                      lesson={lesson}
-                      state={state}
-                      x={x}
-                      open={open === lesson.id}
-                      onToggle={() => setOpen(open === lesson.id ? null : lesson.id)}
-                      onStart={() => navigate(`/learn/${lesson.id}`)}
-                    />
-                  );
-                })}
-                <Chest x={ZIGZAG[n++ % ZIGZAG.length]} done={chapterDone} />
+            <section key={unit.id}>
+              <SectionHead
+                eyebrow={`Course · 유닛 ${ui + 1}`}
+                title={unit.title}
+                blurb={unit.blurb}
+                active={unitNow}
+                done={unitDone}
+              />
+              <div className="mt-3 space-y-2">
+                {unit.lessons.map((lesson) => (
+                  <MissionRow
+                    key={lesson.id}
+                    title={lesson.title}
+                    subtitle={lesson.subtitle ?? (lesson.review ? "복습" : `${lesson.exercises.length}문제`)}
+                    state={stateOf(lesson.id)}
+                    open={open === lesson.id}
+                    onToggle={() => setOpen(open === lesson.id ? null : lesson.id)}
+                    onStart={() => navigate(`/mission/${lesson.id}`)}
+                  />
+                ))}
               </div>
             </section>
           );
         })}
+
+        {p.rank.id === "beginner" && p.courseComplete && (
+          <section className="rounded-[22px] bg-toss-blue p-5 text-white">
+            <p className="text-[12px] font-semibold text-white/75">다음 단계</p>
+            <p className="mt-1 text-[18px] font-bold">30급 사다리로</p>
+            <p className="mt-1 break-keep text-[13px] text-white/85">
+              규칙을 익혔어요. 30급 파트를 열고 승급 시험까지 가 볼까요?
+            </p>
+            <button
+              type="button"
+              onClick={() => actions.setCurrentRank("g30")}
+              className="mt-4 h-11 w-full rounded-xl bg-white text-[15px] font-semibold text-toss-blue active:scale-[0.98]"
+            >
+              30급 시작하기
+            </button>
+          </section>
+        )}
+
+        {(() => {
+          const mod = p.module;
+          if (!mod) return null;
+          return (
+            <section>
+              <SectionHead
+                eyebrow={`${mod.title} 사다리`}
+                title={mod.title}
+                blurb={mod.blurb}
+                active={!p.moduleComplete && p.courseComplete}
+                done={p.moduleComplete}
+              />
+              <div className="mt-3 space-y-2">
+                <MissionRow
+                  title={mod.intro.title}
+                  subtitle={mod.intro.subtitle ?? "소개"}
+                  state={stateOf(mod.intro.id)}
+                  open={open === mod.intro.id}
+                  onToggle={() => setOpen(open === mod.intro.id ? null : mod.intro.id)}
+                  onStart={() => navigate(`/mission/${mod.intro.id}`)}
+                />
+                {mod.parts.map((part) => (
+                  <MissionRow
+                    key={part.id}
+                    title={part.title}
+                    subtitle={`${part.tag} · ${part.exercises.length}문제`}
+                    state={stateOf(part.id)}
+                    open={open === part.id}
+                    onToggle={() => setOpen(open === part.id ? null : part.id)}
+                    onStart={() => navigate(`/mission/${part.id}`)}
+                  />
+                ))}
+              </div>
+
+              {mod.exam && (
+                <div className="mt-4 rounded-[22px] bg-white p-5 ring-1 ring-toss-line">
+                  <p className="text-[12px] font-semibold text-toss-mute">승급 시험</p>
+                  <p className="mt-1 text-[17px] font-bold text-toss-ink">10문제 · 8개 이상 통과</p>
+                  <p className="mt-1 break-keep text-[13px] text-toss-mute">
+                    {p.canTakeExam
+                      ? "파트를 모두 끝냈어요. 시험에 도전해 보세요."
+                      : p.examPassed
+                        ? "이 급수 시험은 통과했어요."
+                        : "파트를 모두 마치면 열려요."}
+                  </p>
+                  {p.canTakeExam && (
+                    <div className="mt-4">
+                      <PrimaryButton onClick={() => navigate(`/exam/${mod.rankId}`)}>시험 보기</PrimaryButton>
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+          );
+        })()}
+
+        {!p.module && p.rank.id !== "beginner" && (
+          <p className="px-1 text-[14px] text-toss-mute">이 급수 파트가 곧 추가돼요. Course를 복습해 보세요.</p>
+        )}
       </div>
     </Screen>
   );
 }
 
-function PathNode({
-  lesson,
+function SectionHead({
+  eyebrow,
+  title,
+  blurb,
+  active,
+  done,
+}: {
+  eyebrow: string;
+  title: string;
+  blurb: string;
+  active: boolean;
+  done: boolean;
+}) {
+  return (
+    <div
+      className={`rounded-[22px] px-5 py-4 ${
+        active ? "bg-toss-blue text-white" : done ? "bg-white text-toss-ink" : "bg-white/60 text-toss-mute"
+      }`}
+    >
+      <p className={`text-[12px] font-semibold ${active ? "text-white/75" : "text-toss-mute"}`}>
+        {eyebrow}
+        {done && " · 완료"}
+      </p>
+      <p className="mt-0.5 text-[18px] font-bold tracking-tight">{title}</p>
+      <p className={`mt-0.5 break-keep text-[13px] ${active ? "text-white/80" : "text-toss-mute"}`}>{blurb}</p>
+    </div>
+  );
+}
+
+function MissionRow({
+  title,
+  subtitle,
   state,
-  x,
   open,
   onToggle,
   onStart,
 }: {
-  lesson: Lesson;
+  title: string;
+  subtitle: string;
   state: NodeState;
-  x: number;
   open: boolean;
   onToggle: () => void;
   onStart: () => void;
 }) {
   const locked = state === "locked";
-  const face =
-    state === "locked"
-      ? "bg-[#E5E8EB] shadow-[0_6px_0_#C9CED4]"
-      : "bg-toss-blue shadow-[0_6px_0_#1B64DA] active:translate-y-[4px] active:shadow-[0_2px_0_#1B64DA]";
-
   return (
-    <div className={`relative flex flex-col items-center ${open ? "z-30" : ""}`} style={{ transform: `translateX(${x}px)` }}>
-      {state === "current" && !open && (
-        <span className="absolute -top-10 z-10 animate-pop whitespace-nowrap rounded-xl bg-white px-3 py-1.5 text-[13px] font-bold text-toss-blue shadow-[0_4px_12px_rgba(0,0,0,0.08)] ring-1 ring-toss-line">
-          시작
-          <span className="absolute -bottom-[5px] left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 border-b border-r border-toss-line bg-white" />
-        </span>
-      )}
-
-      <div className="relative">
-        {state === "current" && (
-          <span className="absolute -inset-[7px] rounded-full ring-[5px] ring-toss-blue/20 animate-breathe" aria-hidden />
-        )}
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-label={lesson.title}
-          className={`relative flex h-[68px] w-[68px] items-center justify-center rounded-full transition ${face}`}
+    <div className="overflow-hidden rounded-2xl bg-white ring-1 ring-toss-line">
+      <button type="button" onClick={onToggle} className="flex w-full items-center gap-3 px-4 py-3.5 text-left">
+        <span
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+            state === "done"
+              ? "bg-toss-blue text-white"
+              : state === "current"
+                ? "bg-toss-blue/15 text-toss-blue ring-2 ring-toss-blue/30"
+                : "bg-[#E5E8EB] text-toss-mute"
+          }`}
         >
-          <NodeGlyph state={state} />
-        </button>
-      </div>
-
+          {state === "done" ? "✓" : state === "locked" ? "·" : "▶"}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className={`block text-[15px] font-bold ${locked ? "text-toss-mute" : "text-toss-ink"}`}>{title}</span>
+          <span className="block text-[12px] text-toss-mute">{subtitle}</span>
+        </span>
+        {state === "current" && (
+          <span className="shrink-0 rounded-pill bg-toss-blue/10 px-2 py-0.5 text-[11px] font-semibold text-toss-blue">
+            지금
+          </span>
+        )}
+      </button>
       {open && (
-        <div
-          style={{ marginLeft: -x * 0.7 }}
-          className="absolute top-[84px] z-20 w-[248px] animate-pop rounded-[20px] bg-white p-4 shadow-[0_12px_32px_rgba(0,0,0,0.12)] ring-1 ring-black/5">
-          <p className="text-[16px] font-bold text-toss-ink">{lesson.title}</p>
-          <p className="mt-1 break-keep text-[13px] text-toss-mute">
-            {locked ? "앞 레슨을 마치면 열려요" : `${lesson.subtitle} · ${lesson.minutes}분`}
+        <div className="border-t border-toss-line px-4 py-3">
+          <p className="break-keep text-[13px] text-toss-mute">
+            {locked ? "앞 미션을 마치면 열려요" : "짧은 미션을 판 위에서 풀어요"}
           </p>
           {!locked && (
             <button
               type="button"
               onClick={onStart}
-              className="mt-3 h-11 w-full rounded-xl bg-toss-blue text-[15px] font-semibold text-white transition active:scale-[0.98]"
+              className="mt-3 h-11 w-full rounded-xl bg-toss-blue text-[15px] font-semibold text-white active:scale-[0.98]"
             >
               {state === "done" ? "다시 하기" : "시작하기"}
             </button>
           )}
         </div>
       )}
-    </div>
-  );
-}
-
-function NodeGlyph({ state }: { state: NodeState }) {
-  if (state === "done")
-    return (
-      <svg viewBox="0 0 24 24" className="h-8 w-8" aria-hidden>
-        <path d="m6 12.5 4 4L18 8" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  const locked = state === "locked";
-  return (
-    <svg viewBox="0 0 24 24" className="h-8 w-8" aria-hidden>
-      <circle cx="9.5" cy="10" r="5.5" fill={locked ? "#B0B8C1" : "#191F28"} />
-      <circle cx="15" cy="14.5" r="5.5" fill={locked ? "#D1D6DB" : "#fff"} />
-    </svg>
-  );
-}
-
-function Chest({ x, done }: { x: number; done: boolean }) {
-  return (
-    <div
-      className={`flex h-[56px] w-[56px] items-center justify-center rounded-[18px] ${
-        done ? "bg-toss-orange shadow-[0_5px_0_#d9771a]" : "bg-[#E5E8EB] shadow-[0_5px_0_#C9CED4]"
-      }`}
-      style={{ transform: `translateX(${x}px)` }}
-      aria-label={done ? "챕터 완료" : "챕터를 마치면 열려요"}
-    >
-      <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden>
-        <path d="M7 3.5h10v5.5a5 5 0 0 1-10 0V3.5Z" fill={done ? "#fff" : "#B0B8C1"} />
-        <rect x="10.5" y="13" width="3" height="4" fill={done ? "#fff" : "#B0B8C1"} />
-        <rect x="7" y="17" width="10" height="3.5" rx="1.5" fill={done ? "#fff" : "#B0B8C1"} />
-      </svg>
     </div>
   );
 }

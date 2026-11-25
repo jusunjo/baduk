@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * GoProblems.com → 연습 뱅크 (개념·문항 풍성하게)
+ * GoProblems.com → raw 레퍼런스 캐시 (앱 뱅크에 직접 넣지 않음)
+ *
+ * 연습 문항은 `npm run build:practice`(자작 모티프 변주)로 만듭니다.
+ * 이 스크립트는 급수·장르 레퍼런스 수집용입니다.
  *
  *   npm run fetch:goproblems
- *   npm run fetch:goproblems -- --limit 120   # 상세 fetch 상한
+ *   npm run fetch:goproblems -- --limit 120
  *   npm run fetch:goproblems -- --track sprout
- *
- * .env 의 GOPROBLEMS_API_KEY 사용 (없어도 공개 상세는 동작).
- * seed 자작 뱅크는 유지하고, GP 개념을 seed에 추가 병합합니다.
  */
 
 import { mkdir, readFile, writeFile, access } from "node:fs/promises";

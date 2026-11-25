@@ -59,22 +59,12 @@ npm run fetch:exams -- --limit 20   # 소량 테스트
 
 ## 연습 문제 (문제 풀이)
 
-개념·문항을 [GoProblems](https://goproblems.com) canon으로 채웁니다(약 65개념 / 860문항).
-
-| 트랙 | 개념 | 문항 | 소스 |
-|------|------|------|------|
-| **seed** | 17 | 190 | 자작 규칙 드릴 + GP 입문 |
-| **sprout** | 12 | 180 | GP (기초) |
-| **leaf** | 12 | 180 | GP (중급) |
-| **tree** | 12 | 180 | GP (상급) |
-| **forest** | 12 | 130 | GP (실전) |
+[GoProblems](https://goproblems.com) 급수 문항을 **레퍼런스**로만 보고, 같은 전술 모티프(단수·덩어리·눈·장문·축·이중단수 등)를 위치·회전·판 크기로 변주한 **자작** 뱅크입니다. GP SGF를 그대로 넣지 않습니다.
 
 ```bash
-npm run build:practice                 # seed 자작 부분
-npm run fetch:goproblems               # 전 트랙 시드
-npm run fetch:goproblems -- --track forest
+npm run build:practice     # 자작 뱅크 재생성 (개념당 약 20문항)
 npm run check:practice
+npm run fetch:goproblems   # (선택) 레퍼런스용 raw 캐시만 — 앱 뱅크에 직접 쓰지 않음
 ```
 
-`.env`에 `GOPROBLEMS_API_KEY`(설정→API 토큰)를 넣으세요. 클라이언트/깃에 올리지 마세요.  
-원본 응답은 `src/data/practice/raw-goproblems/`에 캐시되며 gitignore됩니다. 요청은 딜레이·429 재시도로 천천히 — [API 안내](https://goproblems.com/article/api).
+`.env`의 `GOPROBLEMS_API_KEY`는 레퍼런스 fetch 전용입니다. 클라이언트/깃에 올리지 마세요.

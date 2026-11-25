@@ -3,9 +3,11 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-
 import { PageAsk } from "./components/PageAsk";
 import { setupNative } from "./lib/native";
 import { useStore } from "./lib/store";
+import { ExamPlayPage } from "./pages/ExamPlayPage";
 import { HomePage } from "./pages/HomePage";
 import { LearnPage } from "./pages/LearnPage";
 import { LessonPlayPage } from "./pages/LessonPlayPage";
+import { MissionPlayPage } from "./pages/MissionPlayPage";
 import { PathPage } from "./pages/PathPage";
 import { PracticePage } from "./pages/PracticePage";
 import { PracticePlayPage } from "./pages/PracticePlayPage";
@@ -46,6 +48,8 @@ export function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/learn" element={<LearnPage />} />
         <Route path="/learn/:lessonId" element={<LessonPlayPage />} />
+        <Route path="/mission/:missionId" element={<MissionPlayPage />} />
+        <Route path="/exam/:rankId" element={<ExamPlayPage />} />
         <Route path="/practice" element={<PracticePage />} />
         <Route path="/practice/:lessonId/:problemId" element={<PracticePlayPage />} />
         <Route path="/path" element={<PathPage />} />

@@ -16,6 +16,8 @@ export function pageMeta(pathname: string): { id: string; title: string } {
   if (pathname === "/") return { id: "home", title: "오늘" };
   if (pathname === "/learn") return { id: "learn", title: "개념 목록" };
   if (pathname.startsWith("/learn/")) return { id: "lesson", title: "레슨" };
+  if (pathname.startsWith("/mission/")) return { id: "mission", title: "미션" };
+  if (pathname.startsWith("/exam/")) return { id: "exam", title: "승급 시험" };
   if (pathname === "/practice") return { id: "practice", title: "문제 풀이" };
   if (pathname.startsWith("/practice/")) return { id: "practice-play", title: "문제" };
   if (pathname === "/path") return { id: "path", title: "나의 급수" };
@@ -47,7 +49,11 @@ export function buildPageContext(pathname: string, progress: PageAskProgress): s
   } else if (pathname === "/") {
     lines.push("구성: 나의 급수, 연속 학습, 오늘 미션, 돌 동료, 다음 레슨 CTA. 미션은 레슨 1개 완료.");
   } else if (pathname === "/learn") {
-    lines.push("구성: 현재 급수·판 크기, 챕터·레슨 맵. 완료/현재/잠김. 앞 레슨 후 다음 개방.");
+    lines.push("구성: Course 유닛 + 급수 파트 사다리. 완료/현재/잠김. 앞 미션 후 다음 개방. 승급 시험 CTA.");
+  } else if (pathname.startsWith("/mission/")) {
+    lines.push("구성: PlayGo식 짧은 미션(read/choice/move). 판 위에서 규칙·감각 연습.");
+  } else if (pathname.startsWith("/exam/")) {
+    lines.push("구성: 승급 시험 10문제, 8개 이상 통과 시 다음 급수.");
   } else if (pathname.startsWith("/learn/")) {
     const lessonId = pathname.split("/")[2] ?? "";
     lines.push(`레슨 ID: ${lessonId}`);

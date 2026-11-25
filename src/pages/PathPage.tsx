@@ -108,7 +108,21 @@ export function PathPage() {
         </ul>
       </Reveal>
 
-      <Reveal order={4} className="mt-8 space-y-2 px-1">
+      {p.canTakeExam && p.module && (
+        <Reveal order={4} className="mt-6 rounded-[24px] bg-toss-blue p-5 text-white">
+          <p className="text-[12px] font-semibold text-white/75">승급 시험 열림</p>
+          <p className="mt-1 text-[18px] font-bold">{p.module.title} · 10문제 중 8개</p>
+          <button
+            type="button"
+            onClick={() => navigate(`/exam/${p.module!.rankId}`)}
+            className="mt-4 h-11 w-full rounded-xl bg-white text-[15px] font-semibold text-toss-blue active:scale-[0.98]"
+          >
+            시험 보기
+          </button>
+        </Reveal>
+      )}
+
+      <Reveal order={5} className="mt-8 space-y-2 px-1">
         <SecondaryButton onClick={() => navigate("/learn")}>개념 목록 보기</SecondaryButton>
         <button
           type="button"

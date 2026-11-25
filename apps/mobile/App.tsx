@@ -10,12 +10,12 @@ import { StatusBar } from "expo-status-bar";
 import { WebView } from "react-native-webview";
 
 /**
- * 한수 웹 URL.
- * 배포된 공개 주소를 넣으세요. 로컬 테스트는 EXPO_PUBLIC_WEB_URL 로 덮어쓸 수 있습니다.
- * 예: EXPO_PUBLIC_WEB_URL=http://192.168.0.10:43212 npm start
+ * 한수 웹 URL (Railway).
+ * 로컬 테스트: EXPO_PUBLIC_WEB_URL=http://192.168.0.10:43212 npm start
+ * 온보딩은 웹이 /welcome 으로 알아서 보냄.
  */
 const WEB_URL =
-  process.env.EXPO_PUBLIC_WEB_URL?.trim() || "https://example.com";
+  process.env.EXPO_PUBLIC_WEB_URL?.trim() || "https://hansu.up.railway.app";
 
 export default function App() {
   const webRef = useRef<WebView>(null);

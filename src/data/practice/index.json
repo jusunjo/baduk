@@ -1,33 +1,33 @@
 {
   "totalConcepts": 65,
-  "totalProblems": 860,
+  "totalProblems": 1300,
   "tracks": [
     {
       "track": "seed",
-      "concepts": 17,
-      "problems": 190
+      "concepts": 16,
+      "problems": 320
     },
     {
       "track": "sprout",
-      "concepts": 12,
-      "problems": 180
+      "concepts": 13,
+      "problems": 260
     },
     {
       "track": "leaf",
       "concepts": 12,
-      "problems": 180
+      "problems": 240
     },
     {
       "track": "tree",
       "concepts": 12,
-      "problems": 180
+      "problems": 240
     },
     {
       "track": "forest",
       "concepts": 12,
-      "problems": 130
+      "problems": 240
     }
   ],
-  "updatedAt": "2026-11-25T04:59:07.412Z",
-  "source": "goproblems.com"
+  "updatedAt": "2026-11-25T05:25:31.644Z",
+  "source": "handcrafted-inspired-by-goproblems"
 }

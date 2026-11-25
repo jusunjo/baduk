@@ -12,7 +12,11 @@ export function useHansuAsk() {
   const { session, feedback } = useAiBoard();
   const chat = useAiChat();
   const meta = pageMeta(pathname);
-  const onBoard = pathname.startsWith("/learn/") || pathname.startsWith("/practice/");
+  const onBoard =
+    pathname.startsWith("/learn/") ||
+    pathname.startsWith("/practice/") ||
+    pathname.startsWith("/mission/") ||
+    pathname.startsWith("/exam/");
   const canBoardFeedback = onBoard && !!session;
 
   const ask = useCallback(
@@ -30,8 +34,8 @@ export function useHansuAsk() {
             total: p.total,
             streakDays: p.streakDays,
             missionDoneToday: p.missionDoneToday,
-            nextTitle: p.next?.title ?? null,
-            curriculumTitle: p.curriculum?.title ?? null,
+            nextTitle: p.nextTitle,
+            curriculumTitle: p.course?.title ?? null,
           }),
           pageTitle: meta.title,
           boardSession: canBoardFeedback ? session : null,
@@ -55,10 +59,10 @@ export function useHansuAsk() {
       canBoardFeedback,
       chat.loading,
       meta.title,
-      p.curriculum?.title,
+      p.course?.title,
       p.done,
       p.missionDoneToday,
-      p.next?.title,
+      p.nextTitle,
       p.rank,
       p.streakDays,
       p.total,

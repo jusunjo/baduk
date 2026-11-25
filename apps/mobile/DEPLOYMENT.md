@@ -6,14 +6,8 @@
 
 이 앱은 웹을 WebView로 엽니다. **공개 HTTPS URL**이 있어야 합니다.
 
-1. 루트에서 웹 빌드·호스팅 (Vercel / Railway / Cloudflare 등)
-2. `apps/mobile/.env` 작성:
-
-```bash
-EXPO_PUBLIC_WEB_URL=https://여기에-한수-웹주소
-```
-
-3. `App.tsx` 기본값도 같은 URL로 바꿔 두면 안전합니다.
+웹은 이미 Railway에 떠 있습니다: https://hansu.up.railway.app  
+(`App.tsx` / `.env` 기본값도 이 주소입니다.)
 
 ## 1. 의존성 · Expo 로그인
 
