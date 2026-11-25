@@ -58,6 +58,32 @@ body {
     radial-gradient(circle at 100% 100%, rgba(28, 176, 246, 0.08), transparent 45%);
 }
 
+/* 다크 배경 위 가독성 (WCAG에 가깝게) */
+.duo-t1 {
+  color: #ffffff;
+}
+.duo-t2 {
+  color: #d6dee2;
+}
+.duo-t3 {
+  color: #aeb8be;
+}
+.duo-t-green {
+  color: #7ac70c;
+}
+.duo-t-green-hi {
+  color: #89e219;
+}
+.duo-t-red {
+  color: #ff6b6b;
+}
+.duo-t-berry {
+  color: #dfa8ff;
+}
+.duo-t-blue {
+  color: #4cc3ff;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

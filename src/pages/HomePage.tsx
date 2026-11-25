@@ -21,8 +21,8 @@ export function HomePage() {
           <HudChip icon={<XpIcon />} value={p.xp} tone="text-[#1CB0F6]" bg="bg-[#DDF4FF]" />
           <div className="ml-auto min-w-[112px]">
             <div className="mb-1 flex items-center justify-between text-[11px] font-extrabold">
-              <span className="text-duo-wolf">오늘 목표</span>
-              <span className="tabular-nums text-duo-eel">
+              <span className="text-[#5C656B]">오늘 목표</span>
+              <span className="tabular-nums text-[#3C3C3C]">
                 {p.xpToday}/{p.xpGoal}
               </span>
             </div>

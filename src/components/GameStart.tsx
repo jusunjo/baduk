@@ -79,11 +79,9 @@ export function GameStart({
         }`}
       >
         <Logo size={56} className="animate-pop" />
-        <p className="mt-3 font-display text-[13px] font-semibold tracking-wide text-white/55">한수</p>
-        <p className="mt-1 text-[22px] font-bold tracking-tight text-white">
-          {rankLabel}로 시작
-        </p>
-        <p className="mt-1 text-[14px] font-medium text-white/60">{boardSize}줄 판 · 어렵지 않아요</p>
+        <p className="duo-t2 mt-3 font-display text-[13px] font-semibold tracking-wide">한수</p>
+        <p className="duo-t1 mt-1 text-[22px] font-bold tracking-tight">{rankLabel}로 시작</p>
+        <p className="duo-t2 mt-1 text-[14px] font-semibold">{boardSize}줄 판 · 어렵지 않아요</p>
       </div>
     </div>
   );

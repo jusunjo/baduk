@@ -53,7 +53,6 @@ export function MissionPlay({
 
   useEffect(() => {
     onStep?.(0, exercises.length);
-    // 최초 진행만 알림 — onStep 참조 변경으로 루프 나지 않게
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercises.length]);
 
@@ -139,18 +138,21 @@ export function MissionPlay({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="shrink-0 px-1">
-        <div className="mb-3 inline-flex items-center gap-1.5 rounded-lg bg-[#CE82FF]/15 px-2 py-1">
-          <span className="flex h-4 w-4 items-center justify-center rounded-md bg-duo-berry text-[10px] font-black text-white">
+        <div className="mb-3 inline-flex items-center gap-1.5 rounded-lg bg-[#CE82FF]/20 px-2.5 py-1">
+          <span className="flex h-4 w-4 items-center justify-center rounded-md bg-[#CE82FF] text-[10px] font-black text-white">
             ◆
           </span>
-          <span className="text-[12px] font-extrabold text-duo-berry">{title}</span>
+          <span className="duo-t-berry text-[12px] font-extrabold">{title}</span>
         </div>
-        <p className="break-keep text-[22px] font-extrabold leading-snug text-white">{ex.prompt}</p>
-        {ex.hint && !feedback ? <p className="mt-2 text-[13px] font-bold text-duo-night-mute">힌트: {ex.hint}</p> : null}
+        <p className="duo-t1 break-keep text-[22px] font-extrabold leading-snug">{ex.prompt}</p>
+        {ex.hint && !feedback ? <p className="duo-t2 mt-2 text-[13px] font-bold">힌트: {ex.hint}</p> : null}
       </div>
 
       <div className="relative mt-3 flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden">
-        <div className="w-full max-w-[min(100%,340px)] rounded-[24px] bg-duo-night-2 p-2.5 ring-2 ring-duo-night-line">
+        <div
+          className="w-full max-w-[min(100%,340px)] rounded-[24px] p-2.5"
+          style={{ backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F" }}
+        >
           <Board
             size={ex.size}
             board={board}
@@ -168,21 +170,22 @@ export function MissionPlay({
           <div className="mt-4 flex w-full shrink-0 flex-col gap-2.5 px-1">
             {(ex.choices ?? []).map((c) => {
               const tone = choiceTone(c.at);
-              const cls =
+              const style =
                 tone === "correct"
-                  ? "bg-[#58CC02]/15 text-duo-green ring-duo-green"
+                  ? { backgroundColor: "rgba(88,204,2,0.18)", boxShadow: "inset 0 0 0 2px #58CC02", color: "#89E219" }
                   : tone === "wrong"
-                    ? "bg-[#FF4B4B]/15 text-duo-cardinal ring-duo-cardinal"
+                    ? { backgroundColor: "rgba(255,75,75,0.16)", boxShadow: "inset 0 0 0 2px #FF4B4B", color: "#FF6B6B" }
                     : tone === "dim"
-                      ? "bg-duo-night-2 text-duo-night-mute ring-duo-night-line opacity-50"
-                      : "bg-duo-night-2 text-white ring-duo-night-line active:bg-duo-night-3";
+                      ? { backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F", color: "#AEB8BE", opacity: 0.55 }
+                      : { backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F", color: "#FFFFFF" };
               return (
                 <button
                   key={keyOf(c.at)}
                   type="button"
                   disabled={ok}
                   onClick={() => onTap(c.at)}
-                  className={`flex min-h-[56px] w-full items-center justify-center rounded-2xl px-4 py-3 text-[17px] font-extrabold ring-2 transition active:translate-y-[2px] disabled:active:translate-y-0 ${cls}`}
+                  style={style}
+                  className="flex min-h-[56px] w-full items-center justify-center rounded-2xl px-4 py-3 text-[17px] font-extrabold transition active:translate-y-[2px] disabled:active:translate-y-0"
                 >
                   {c.label}
                 </button>
@@ -194,16 +197,24 @@ export function MissionPlay({
 
       {feedback ? (
         <div
-          className={`mt-3 shrink-0 rounded-2xl px-4 py-3 ${
-            ok ? "bg-[#58CC02]/15 text-duo-green" : "bg-[#FF4B4B]/12 text-duo-cardinal"
-          }`}
+          className="mt-3 shrink-0 rounded-2xl px-4 py-3"
+          style={
+            ok
+              ? { backgroundColor: "rgba(88,204,2,0.16)", color: "#89E219" }
+              : { backgroundColor: "rgba(255,75,75,0.14)", color: "#FF6B6B" }
+          }
         >
           <p className="text-[15px] font-extrabold">{ok ? "정답!" : "아쉬워요"}</p>
-          <p className="mt-0.5 break-keep text-[14px] font-semibold opacity-90">{feedback}</p>
+          <p className="mt-0.5 break-keep text-[14px] font-semibold" style={{ color: ok ? "#D6F5A8" : "#FFC2C2" }}>
+            {feedback}
+          </p>
         </div>
       ) : null}
 
-      <div className="shrink-0 border-t-2 border-duo-night-line pt-3 pb-[max(16px,calc(env(safe-area-inset-bottom)+4px))]">
+      <div
+        className="shrink-0 pt-3 pb-[max(16px,calc(env(safe-area-inset-bottom)+4px))]"
+        style={{ borderTop: "2px solid #37464F" }}
+      >
         {ex.type === "read" && !ok ? (
           <PrimaryButton night onClick={() => succeed(ex.correctText ?? `알겠어요 · +${XP_PER_CORRECT} XP`)}>
             확인

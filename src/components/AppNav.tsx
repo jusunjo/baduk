@@ -61,7 +61,7 @@ export function BottomNav() {
                   end={t.to === "/"}
                   onClick={() => sfx.play("tap")}
                   className={`flex h-full flex-col items-center justify-center gap-0.5 text-[11px] font-extrabold transition active:scale-95 ${
-                    active ? "text-duo-green" : "text-duo-hare"
+                    active ? "text-[#58CC02]" : "text-[#777777]"
                   }`}
                 >
                   <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden>

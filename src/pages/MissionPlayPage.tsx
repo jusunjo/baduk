@@ -58,8 +58,8 @@ function Mission({ missionId }: { missionId: string }) {
       <Screen lesson fit progress={1} hearts={0} onClose={() => navigate("/", { replace: true })}>
         <div className="flex flex-1 flex-col items-center justify-center px-2 text-center">
           <BrokenHeart />
-          <p className="mt-4 text-[22px] font-extrabold text-white">하트가 다 닳았어요</p>
-          <p className="mt-2 break-keep text-[15px] text-duo-hare">잠깐 쉬었다가 다시 도전해 봐요.</p>
+          <p className="duo-t1 mt-4 text-[22px] font-extrabold">하트가 다 닳았어요</p>
+          <p className="duo-t2 mt-2 break-keep text-[15px] font-semibold">잠깐 쉬었다가 다시 도전해 봐요.</p>
         </div>
         <div className="pb-[max(12px,env(safe-area-inset-bottom))]">
           <PrimaryButton

@@ -366,7 +366,7 @@ function NodePopover({
       <button
         type="button"
         onClick={onClose}
-        className="absolute right-3 top-3 text-[18px] leading-none text-duo-hare"
+        className="absolute right-3 top-3 text-[18px] leading-none text-[#777777]"
         aria-label="닫기"
       >
         ×

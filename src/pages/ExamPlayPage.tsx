@@ -210,62 +210,53 @@ function ExamProblemView({
   );
 
   return (
-    <Screen
-      fit
-      onClose={onClose}
-      title="승급 시험"
-      right={
-        <span className="text-[13px] font-semibold tabular-nums text-toss-mute">
-          {index + 1} / {total}
-        </span>
-      }
-      cta={
-        solved ? (
-          <PrimaryButton onClick={() => onResult(solved === "ok")}>
-            {index + 1 >= total ? "결과 보기" : "다음"}
-          </PrimaryButton>
-        ) : (
-          <div className="flex h-14 items-center justify-center gap-2 rounded-2xl bg-toss-soft2 text-[15px] font-semibold text-toss-body">
-            <span className={`h-4 w-4 rounded-full ${playAs === "W" ? "bg-white ring-1 ring-toss-line" : "bg-toss-ink"}`} />
-            {playAs === "W" ? "백" : "흑"} 차례 · 한 수만요
+    <Screen lesson fit progress={(index + 1) / Math.max(1, total)} onClose={onClose}>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="min-h-[100px] shrink-0 px-1">
+          <div className="mb-3 inline-flex items-center gap-1.5 rounded-lg bg-[#CE82FF]/20 px-2.5 py-1">
+            <span className="duo-t-berry text-[12px] font-extrabold">
+              {problem.rankDisplay} · {index + 1}/{total}
+            </span>
           </div>
-        )
-      }
-    >
-      <div className="min-h-[100px] shrink-0 px-1">
-        <p className="text-[13px] font-semibold text-toss-mute">
-          {problem.rankDisplay} · {index + 1}/{total} · {EXAM_PASS_SCORE}개 이상 통과
-        </p>
-        <p className="mt-2 break-keep text-[22px] font-bold leading-[1.4] tracking-tight text-toss-ink">
-          {solved === "ok" && problem.explanation ? problem.explanation : problem.prompt}
-        </p>
-        {!solved && problem.tip && (
-          <p className="mt-2 break-keep text-[14px] leading-relaxed text-toss-mute">{problem.tip}</p>
-        )}
-        {solved === "ng" && (
-          <p className="mt-2 break-keep text-[14px] font-medium text-toss-orange">아쉬워요. 다음 문제로 가요.</p>
-        )}
-      </div>
-
-      <div ref={stageRef} className="relative mt-3 flex min-h-0 flex-1 items-center justify-center">
-        {praise && solved === "ok" && <PraiseBadge key={praise.id} text={praise.text} tone={praise.tone} />}
-        <div
-          className="rounded-[28px] bg-gradient-to-b from-[#f7efe2] to-white p-3 ring-1 ring-black/[0.04]"
-          style={{ width: side || undefined }}
-        >
-          <Board
-            size={board.length}
-            board={board}
-            onPlay={onPlay}
-            interactive={!solved}
-            lastMove={lastMove}
-            wrongFlash={wrong}
-            showSize={false}
-            className="max-w-none"
-          />
+          <p className="duo-t1 break-keep text-[22px] font-extrabold leading-snug">
+            {solved === "ok" && problem.explanation ? problem.explanation : problem.prompt}
+          </p>
+          {!solved && problem.tip ? <p className="duo-t2 mt-2 break-keep text-[14px] font-semibold leading-relaxed">{problem.tip}</p> : null}
+          {solved === "ng" ? <p className="duo-t-red mt-2 break-keep text-[14px] font-extrabold">아쉬워요. 다음 문제로 가요.</p> : null}
         </div>
+
+        <div ref={stageRef} className="relative mt-3 flex min-h-0 flex-1 items-center justify-center">
+          {praise && solved === "ok" && <PraiseBadge key={praise.id} text={praise.text} tone={praise.tone} />}
+          <div
+            className="rounded-[24px] p-2.5"
+            style={{ width: side || undefined, backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F" }}
+          >
+            <Board
+              size={board.length}
+              board={board}
+              onPlay={onPlay}
+              interactive={!solved}
+              lastMove={lastMove}
+              wrongFlash={wrong}
+              showSize={false}
+              className="max-w-none"
+            />
+          </div>
+        </div>
+
+        <div className="shrink-0 pt-3 pb-[max(12px,env(safe-area-inset-bottom))]" style={{ borderTop: "2px solid #37464F" }}>
+          {solved ? (
+            <PrimaryButton night onClick={() => onResult(solved === "ok")}>
+              {index + 1 >= total ? "결과 보기" : "계속하기"}
+            </PrimaryButton>
+          ) : (
+            <PrimaryButton night disabled>
+              {playAs === "W" ? "백" : "흑"} 차례 · 한 수만요
+            </PrimaryButton>
+          )}
+        </div>
+        <BoardBuddy />
       </div>
-      <BoardBuddy />
     </Screen>
   );
 }

@@ -57,7 +57,7 @@ export function WelcomePage() {
         <Headline night>{"바둑을 얼마나\n알고 있나요?"}</Headline>
       </Reveal>
       <Reveal order={1}>
-        <p className="mt-3 break-keep text-[15px] leading-relaxed text-[#C4CDD1]">
+        <p className="duo-t2 mt-3 break-keep text-[15px] font-semibold leading-relaxed">
           잘 모르겠으면 ‘처음이에요’를 고르세요. 나중에 바꿀 수 있어요.
         </p>
       </Reveal>
@@ -140,7 +140,7 @@ function TitleScreen({ onStart }: { onStart: () => void }) {
             <h1 className="break-keep text-[22px] font-extrabold leading-snug tracking-tight text-white">
               바둑, 생각보다 어렵지 않아요
             </h1>
-            <p className="mt-2 break-keep text-[14px] leading-relaxed text-[#C4CDD1]">
+            <p className="duo-t2 mt-2 break-keep text-[14px] font-semibold leading-relaxed">
               판 위에 돌을 놓으며 규칙을 익혀요. 몰라도 바로 시작해요.
             </p>
           </div>
