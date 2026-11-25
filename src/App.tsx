@@ -41,18 +41,11 @@ export function App() {
   }, [pathname]);
 
   useEffect(() => {
-    const night =
-      pathname === "/welcome" ||
-      pathname.startsWith("/mission") ||
-      pathname.startsWith("/exam") ||
-      (pathname.startsWith("/practice/") && pathname !== "/practice") ||
-      pathname.startsWith("/board3d");
     const color = "#131F24";
     const meta = document.querySelector('meta[name="theme-color"]');
     meta?.setAttribute("content", color);
     document.documentElement.style.backgroundColor = color;
     document.body.style.backgroundColor = color;
-    void night;
   }, [pathname]);
 
   if (!currentRank && pathname !== "/welcome" && pathname !== "/board3d") {
