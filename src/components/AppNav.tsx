@@ -25,8 +25,19 @@ const TABS: { to: string; label: string; icon: ReactNode }[] = [
     ),
   },
   {
+    to: "/practice",
+    label: "문제",
+    icon: (
+      <>
+        <rect x="5" y="5" width="14" height="14" rx="2.5" {...stroke} />
+        <circle cx="9.5" cy="10" r="1.5" fill="currentColor" />
+        <circle cx="14.5" cy="14" r="1.5" fill="currentColor" opacity="0.45" />
+      </>
+    ),
+  },
+  {
     to: "/path",
-    label: "목표",
+    label: "급수",
     icon: <path d="M6 19V6.5h8.5l-1.6 2.8 1.6 2.8H6" {...stroke} />,
   },
 ];

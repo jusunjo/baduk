@@ -7,9 +7,11 @@ import { HomePage } from "./pages/HomePage";
 import { LearnPage } from "./pages/LearnPage";
 import { LessonPlayPage } from "./pages/LessonPlayPage";
 import { PathPage } from "./pages/PathPage";
+import { PracticePage } from "./pages/PracticePage";
+import { PracticePlayPage } from "./pages/PracticePlayPage";
 import { WelcomePage } from "./pages/WelcomePage";
 
-const TABS = ["/", "/learn", "/path"];
+const TABS = ["/", "/learn", "/practice", "/path"];
 
 function useNativeBack() {
   const navigate = useNavigate();
@@ -44,6 +46,8 @@ export function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/learn" element={<LearnPage />} />
         <Route path="/learn/:lessonId" element={<LessonPlayPage />} />
+        <Route path="/practice" element={<PracticePage />} />
+        <Route path="/practice/:lessonId/:problemId" element={<PracticePlayPage />} />
         <Route path="/path" element={<PathPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

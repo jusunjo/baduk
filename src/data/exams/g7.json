@@ -1,0 +1,603 @@
+{
+  "meta": {
+    "apiRank": "7k",
+    "file": "g7",
+    "count": 10,
+    "fetchedAt": "2026-11-25T01:46:19.194Z",
+    "source": "handmade"
+  },
+  "problems": [
+    {
+      "id": "g7-01",
+      "sourceId": "handmade-g7-01",
+      "apiRank": "7k",
+      "rankDisplay": "7급",
+      "prompt": "흑을 살리려면?",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 7
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 7
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 7,
+        "y": 7
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g7-02",
+      "sourceId": "handmade-g7-02",
+      "apiRank": "7k",
+      "rankDisplay": "7급",
+      "prompt": "백이 두 눈을 만들기 전, 살릴 급소를 백으로 두세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 6,
+            "y": 5
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 7,
+            "y": 5
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 6
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 7,
+            "y": 6
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 7
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 6,
+            "y": 7
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 7,
+            "y": 7
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 7
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 7
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 6,
+        "y": 6
+      },
+      "playAs": "W"
+    },
+    {
+      "id": "g7-03",
+      "sourceId": "handmade-g7-03",
+      "apiRank": "7k",
+      "rankDisplay": "7급",
+      "prompt": "흰 집 쪽에 침투하세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 8,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 9,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 4
+          }
+        }
+      ],
+      "size": 13,
+      "answer": [
+        {
+          "x": 9,
+          "y": 3
+        },
+        {
+          "x": 8,
+          "y": 3
+        },
+        {
+          "x": 9,
+          "y": 4
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g7-04",
+      "sourceId": "handmade-g7-04",
+      "apiRank": "7k",
+      "rankDisplay": "7급",
+      "prompt": "선수 따내기 — 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 7,
+            "y": 7
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 7
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 7
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 7,
+        "y": 8
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g7-05",
+      "sourceId": "handmade-g7-05",
+      "apiRank": "7k",
+      "rankDisplay": "7급",
+      "prompt": "그물로 흰 돌을 가두세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 6,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 7
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 5
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 7,
+        "y": 6
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g7-06",
+      "sourceId": "handmade-g7-06",
+      "apiRank": "7k",
+      "rankDisplay": "7급",
+      "prompt": "축의 첫 단수를 두세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 5,
+        "y": 4
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g7-07",
+      "sourceId": "handmade-g7-07",
+      "apiRank": "7k",
+      "rankDisplay": "7급",
+      "prompt": "가짜 눈을 지키세요. 가운데를 두세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 7
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 7
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 6,
+            "y": 8
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 6,
+        "y": 6
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g7-08",
+      "sourceId": "handmade-g7-08",
+      "apiRank": "7k",
+      "rankDisplay": "7급",
+      "prompt": "흑을 이으세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 6
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 4,
+        "y": 5
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g7-09",
+      "sourceId": "handmade-g7-09",
+      "apiRank": "7k",
+      "rankDisplay": "7급",
+      "prompt": "왼쪽 위 경계를 밀어 보세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        }
+      ],
+      "size": 13,
+      "answer": [
+        {
+          "x": 2,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 3
+        },
+        {
+          "x": 4,
+          "y": 3
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g7-10",
+      "sourceId": "handmade-g7-10",
+      "apiRank": "7k",
+      "rankDisplay": "7급",
+      "prompt": "귀 근처 단수를 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 0
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 2,
+        "y": 1
+      },
+      "playAs": "B"
+    }
+  ]
+}

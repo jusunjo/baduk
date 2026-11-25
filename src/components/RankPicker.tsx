@@ -1,10 +1,6 @@
-import { useState } from "react";
 import { RANKS, type Rank, type RankId } from "@/lib/ranks";
 import { haptic } from "@/lib/native";
-import { actions } from "@/lib/store";
 import { MiniBoard } from "./Board";
-import { PrimaryButton } from "./Screen";
-import { Sheet } from "./Sheet";
 
 export function RankOptions({
   ranks = RANKS,
@@ -62,40 +58,16 @@ export function RankOptions({
   );
 }
 
-export function RankSheet({ current, onClose }: { current: RankId; onClose: () => void }) {
-  const [value, setValue] = useState<RankId>(current);
-  return (
-    <Sheet
-      title="지금 실력은 어느 정도인가요?"
-      description="급수에 맞는 판 크기와 개념부터 보여 드려요"
-      onClose={onClose}
-      footer={
-        <PrimaryButton
-          onClick={() => {
-            actions.setCurrentRank(value);
-            onClose();
-          }}
-        >
-          {value === current ? "닫기" : "이 급수로 바꾸기"}
-        </PrimaryButton>
-      }
-    >
-      <RankOptions value={value} onChange={setValue} />
-    </Sheet>
-  );
-}
-
-export function RankButton({ label, onClick }: { label: string; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex h-9 items-center gap-1 rounded-pill bg-white px-3.5 text-[14px] font-semibold text-toss-ink shadow-[0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-toss-line transition active:scale-95"
-    >
-      {label}
-      <svg viewBox="0 0 20 20" className="h-4 w-4 text-toss-mute" fill="none" aria-hidden>
-        <path d="m5 8 5 5 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
-  );
+/** 표시만 — 현재 급수는 온보딩·승급 시험 외에는 바꾸지 않음 */
+export function RankBadge({ label, onClick }: { label: string; onClick?: () => void }) {
+  const className =
+    "flex h-9 items-center rounded-pill bg-white px-3.5 text-[14px] font-semibold text-toss-ink shadow-[0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-toss-line";
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={`${className} transition active:scale-95`}>
+        {label}
+      </button>
+    );
+  }
+  return <span className={className}>{label}</span>;
 }

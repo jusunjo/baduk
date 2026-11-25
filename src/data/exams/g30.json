@@ -1,0 +1,414 @@
+{
+  "meta": {
+    "apiRank": "30k",
+    "file": "g30",
+    "count": 10,
+    "fetchedAt": "2026-11-25T01:46:19.191Z",
+    "source": "handmade"
+  },
+  "problems": [
+    {
+      "id": "g30-01",
+      "sourceId": "handmade-g30-01",
+      "apiRank": "30k",
+      "rankDisplay": "30급",
+      "prompt": "흰 돌이 단수예요. 따내 보세요.",
+      "tip": "남은 숨구멍을 막아요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 4
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g30-02",
+      "sourceId": "handmade-g30-02",
+      "apiRank": "30k",
+      "rankDisplay": "30급",
+      "prompt": "귀 근처 흰 돌이 단수예요. 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 0
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 2,
+        "y": 1
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g30-03",
+      "sourceId": "handmade-g30-03",
+      "apiRank": "30k",
+      "rankDisplay": "30급",
+      "prompt": "변의 흰 돌을 따내 보세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 0
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 1
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 5,
+        "y": 2
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g30-04",
+      "sourceId": "handmade-g30-04",
+      "apiRank": "30k",
+      "rankDisplay": "30급",
+      "prompt": "흰 돌 숨구멍이 2개예요. 하나를 막아 단수로 만드세요.",
+      "tip": "어느 쪽이든 한 칸만 막아도 돼요.",
+      "explanation": "숨구멍 2개 → 단수 → 따내기 순서로 익혀요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        }
+      ],
+      "size": 7,
+      "answer": [
+        {
+          "x": 3,
+          "y": 2
+        },
+        {
+          "x": 3,
+          "y": 4
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g30-05",
+      "sourceId": "handmade-g30-05",
+      "apiRank": "30k",
+      "rankDisplay": "30급",
+      "prompt": "흑부터 두세요. 빛나는 곳이면 어디든 괜찮아요.",
+      "explanation": "첫 수는 부담 없이 두어도 돼요.",
+      "setup": [],
+      "size": 7,
+      "answer": "any",
+      "playAs": "B"
+    },
+    {
+      "id": "g30-06",
+      "sourceId": "handmade-g30-06",
+      "apiRank": "30k",
+      "rankDisplay": "30급",
+      "prompt": "가운데 쪽 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 5
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 4
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g30-07",
+      "sourceId": "handmade-g30-07",
+      "apiRank": "30k",
+      "rankDisplay": "30급",
+      "prompt": "가운데 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 4
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 4,
+        "y": 5
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g30-08",
+      "sourceId": "handmade-g30-08",
+      "apiRank": "30k",
+      "rankDisplay": "30급",
+      "prompt": "흰 돌 두 개 덩어리가 단수예요. 통째로 따내세요.",
+      "explanation": "덩어리도 숨구멍이 0이 되면 한꺼번에 잡혀요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 4
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g30-09",
+      "sourceId": "handmade-g30-09",
+      "apiRank": "30k",
+      "rankDisplay": "30급",
+      "prompt": "변에 붙은 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 0,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 0,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 3
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 0,
+        "y": 4
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g30-10",
+      "sourceId": "handmade-g30-10",
+      "apiRank": "30k",
+      "rankDisplay": "30급",
+      "prompt": "흑 돌을 한 칸 늘여 이어 보세요.",
+      "tip": "끊기지 않게 옆칸에 두세요.",
+      "explanation": "이으면 숨구멍을 같이 써요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 3
+      },
+      "playAs": "B"
+    }
+  ]
+}

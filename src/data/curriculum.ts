@@ -1,5 +1,6 @@
 import type { Answer } from "@/lib/board";
 import { getRank, type RankId, type TrackId } from "@/lib/ranks";
+import { sprout, leaf, tree, forest } from "./tracks";
 
 export type StoneColor = "B" | "W";
 
@@ -15,8 +16,8 @@ export interface LessonStep {
   tip?: string;
   /** 판을 이 모양으로 새로 깐다. 없으면 직전 단계의 판(내가 둔 돌 포함)을 그대로 이어 쓴다. */
   setup?: { color: StoneColor; at: Point }[];
-  /** 이 단계에서만 보여 줄 판 크기 (19줄 → 5줄 소개용) */
-  size?: 5 | 7 | 9 | 13 | 19;
+  /** 이 단계에서만 보여 줄 판 크기 (19줄 → 작은 판 소개용) */
+  size?: 7 | 9 | 13 | 19;
   /** 유저가 두어야 할 자리. "any"는 빈 자리 아무 곳, libertiesOf는 그 돌 덩어리의 숨구멍 */
   answer?: Answer;
   /** 정답 돌 색. 기본 흑 */
@@ -51,7 +52,7 @@ export interface Problem {
   /** 오답 복습 때 짧게 보여 줄 해설 */
   explanation?: string;
   setup?: { color: StoneColor; at: Point }[];
-  size?: 5 | 7 | 9 | 13 | 19;
+  size?: 7 | 9 | 13 | 19;
   answer: Answer;
   playAs?: StoneColor;
   highlight?: Point[];
@@ -72,7 +73,7 @@ export interface Lesson {
   id: string;
   title: string;
   subtitle: string;
-  boardSize: 5 | 7 | 9 | 13 | 19;
+  boardSize: 7 | 9 | 13 | 19;
   minutes: number;
   vibe: string;
   /** 앞 레슨에서 이 레슨으로 넘어올 때 하는 말 */
@@ -100,19 +101,21 @@ export interface TrackCurriculum {
   chapters: Chapter[];
 }
 
-const C = { x: 2, y: 2 };
-const GAME_ROW = [0, 1, 2, 3, 4].map((x) => ({ x, y: 2 }));
+/** 7줄 천원 — 옛 5줄 중심(2,2)에서 옮김 */
+const C = { x: 3, y: 3 };
+/** 첫 판: 7줄 가운데를 가로로 끝까지 막아 판을 둘로 나눔 */
+const GAME_ROW = [0, 1, 2, 3, 4, 5, 6].map((x) => ({ x, y: 3 }));
 const GAME_MOVE = {
   answer: GAME_ROW,
-  reply: (p: Point) => ({ x: p.x, y: 3 }),
+  reply: (p: Point) => ({ x: p.x, y: 4 }),
   autoNext: true,
   wrongHint: "빛나는 점 중에서 골라 보세요.",
 };
 const AROUND_C = [
-  { x: 2, y: 1 },
-  { x: 1, y: 2 },
   { x: 3, y: 2 },
   { x: 2, y: 3 },
+  { x: 4, y: 3 },
+  { x: 3, y: 4 },
 ];
 const BLACK_CORNER = [
   { color: "B" as const, at: { x: 2, y: 0 } },
@@ -121,15 +124,15 @@ const BLACK_CORNER = [
   { color: "B" as const, at: { x: 0, y: 2 } },
 ];
 const WHITE_CORNER = [
-  { color: "W" as const, at: { x: 2, y: 4 } },
-  { color: "W" as const, at: { x: 2, y: 3 } },
-  { color: "W" as const, at: { x: 3, y: 2 } },
-  { color: "W" as const, at: { x: 4, y: 2 } },
+  { color: "W" as const, at: { x: 4, y: 6 } },
+  { color: "W" as const, at: { x: 4, y: 5 } },
+  { color: "W" as const, at: { x: 5, y: 4 } },
+  { color: "W" as const, at: { x: 6, y: 4 } },
 ];
 
 const seed: TrackCurriculum = {
   track: "seed",
-  title: "씨앗 · 5줄 판",
+  title: "규칙 · 7줄 판",
   chapters: [
     {
       id: "seed-big-picture",
@@ -140,13 +143,13 @@ const seed: TrackCurriculum = {
           id: "seed-first-game",
           title: "첫 판",
           subtitle: "몰라도 괜찮아요, 일단 두어 보기",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 2,
           vibe: "어렵지 않은 시작",
           steps: [
             {
               text: "흑부터 둬요. 빛나는 점 중 아무 데나 눌러 보세요.",
-              tip: "바둑은 어렵지 않아요. 규칙은 두면서 자연스럽게 익혀요.",
+              tip: "7줄 판이에요. 가운데 줄을 가로로 이으면 판이 둘로 나뉘어요.",
               ...GAME_MOVE,
             },
             {
@@ -160,12 +163,21 @@ const seed: TrackCurriculum = {
               ...GAME_MOVE,
             },
             {
-              text: "좋아요, 두 칸만 더!",
+              text: "좋아요, 계속 이어요.",
               tip: "돌은 칸 안이 아니라 선이 만나는 점에 놓아요.",
               ...GAME_MOVE,
             },
             {
-              text: "마지막 한 수예요. 줄을 끝까지 이어 보세요.",
+              text: "양끝까지 막아 보세요.",
+              tip: "7줄이니 가로로 일곱 점이 한 줄이에요.",
+              ...GAME_MOVE,
+            },
+            {
+              text: "거의 다 왔어요. 남은 빛나는 점을 이어 주세요.",
+              ...GAME_MOVE,
+            },
+            {
+              text: "마지막 한 수예요. 줄을 끝까지 막아 보세요.",
               ...GAME_MOVE,
             },
             {
@@ -175,14 +187,14 @@ const seed: TrackCurriculum = {
               cta: "이긴 이유 보기",
             },
             {
-              text: "흑 돌이 줄을 그어 위쪽 빈칸 10개를 감쌌어요. 이렇게 돌로 둘러싼 땅을 ‘집’이라고 해요.",
-              highlight: [0, 1].flatMap((y) => [0, 1, 2, 3, 4].map((x) => ({ x, y }))),
+              text: "흑이 7줄을 가로막아 위쪽 21칸을 감쌌어요. 이렇게 돌로 둘러싼 땅을 ‘집’이라고 해요.",
+              highlight: [0, 1, 2].flatMap((y) => [0, 1, 2, 3, 4, 5, 6].map((x) => ({ x, y }))),
               score: true,
               cta: "백 땅 보기",
             },
             {
-              text: "백은 아래쪽 5칸뿐이에요. 바둑은 이렇게 집을 더 많이 지은 쪽이 이겨요.",
-              highlight: [0, 1, 2, 3, 4].map((x) => ({ x, y: 4 })),
+              text: "백은 아래쪽 14칸뿐이에요. 바둑은 이렇게 집을 더 많이 지은 쪽이 이겨요.",
+              highlight: [5, 6].flatMap((y) => [0, 1, 2, 3, 4, 5, 6].map((x) => ({ x, y }))),
               score: true,
               cta: "진짜 바둑 알아보기",
             },
@@ -192,7 +204,7 @@ const seed: TrackCurriculum = {
           id: "seed-read-ahead",
           title: "진짜 바둑은 수 싸움",
           subtitle: "상대의 다음 수를 읽어요",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 2,
           vibe: "수 읽기",
           bridge: "방금은 연습이라 줄만 쭉 그었죠. 진짜 바둑은 훨씬 치열해요.",
@@ -247,8 +259,8 @@ const seed: TrackCurriculum = {
             {
               text: "괜찮아요, 다시 볼게요. 아까 첫 판에서 흑과 백은 돌로 줄을 그어 판을 나눠 가졌어요.",
               setup: [
-                ...[0, 1, 2, 3, 4].map((x) => ({ color: "B" as const, at: { x, y: 2 } })),
-                ...[0, 1, 2, 3, 4].map((x) => ({ color: "W" as const, at: { x, y: 3 } })),
+                ...[0, 1, 2, 3, 4, 5, 6].map((x) => ({ color: "B" as const, at: { x, y: 3 } })),
+                ...[0, 1, 2, 3, 4, 5, 6].map((x) => ({ color: "W" as const, at: { x, y: 4 } })),
               ],
               score: true,
               cta: "계속 보기",
@@ -284,7 +296,7 @@ const seed: TrackCurriculum = {
           id: "seed-breath",
           title: "돌도 숨을 쉬어요",
           subtitle: "숨구멍을 막으면 따낼 수 있어요",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 4,
           vibe: "숨구멍과 따내기",
           libertiesFor: "W",
@@ -340,9 +352,9 @@ const seed: TrackCurriculum = {
                 explanation: "숨구멍이 하나 남았을 때 그 자리를 막으면 따내요.",
                 setup: [
                   { color: "W", at: C },
-                  { color: "B", at: { x: 1, y: 2 } },
-                  { color: "B", at: { x: 3, y: 2 } },
                   { color: "B", at: { x: 2, y: 3 } },
+                  { color: "B", at: { x: 4, y: 3 } },
+                  { color: "B", at: { x: 3, y: 4 } },
                 ],
                 answer: { libertiesOf: C },
                 highlight: [],
@@ -355,8 +367,8 @@ const seed: TrackCurriculum = {
                 explanation: "옆(상하좌우) 빈자리가 숨구멍이에요.",
                 setup: [
                   { color: "W", at: C },
-                  { color: "B", at: { x: 1, y: 2 } },
-                  { color: "B", at: { x: 3, y: 2 } },
+                  { color: "B", at: { x: 2, y: 3 } },
+                  { color: "B", at: { x: 4, y: 3 } },
                 ],
                 answer: { libertiesOf: C },
                 highlight: [],
@@ -379,7 +391,7 @@ const seed: TrackCurriculum = {
           id: "seed-edge-breath",
           title: "가장자리는 숨이 적어요",
           subtitle: "가운데 4 · 변 3 · 귀 2",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 4,
           vibe: "자리마다 다른 숨구멍",
           libertiesFor: "W",
@@ -464,7 +476,7 @@ const seed: TrackCurriculum = {
           id: "seed-group-capture",
           title: "붙은 돌은 한 덩어리",
           subtitle: "덩어리째 따내기",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 3,
           vibe: "덩어리 따내기",
           libertiesFor: "W",
@@ -568,7 +580,7 @@ const seed: TrackCurriculum = {
           id: "seed-capture",
           title: "따내기 퀴즈",
           subtitle: "어디를 막으면 잡힐까요?",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 3,
           vibe: "따내기 실력 확인",
           libertiesFor: "W",
@@ -581,11 +593,11 @@ const seed: TrackCurriculum = {
                 tip: "가운데·변·귀, 한 점·덩어리 모두 같은 규칙이에요.",
                 setup: [
                   { color: "W", at: C },
-                  { color: "B", at: { x: 1, y: 2 } },
-                  { color: "B", at: { x: 3, y: 2 } },
                   { color: "B", at: { x: 2, y: 3 } },
+                  { color: "B", at: { x: 4, y: 3 } },
+                  { color: "B", at: { x: 3, y: 4 } },
                 ],
-                highlight: [{ x: 2, y: 1 }],
+                highlight: [{ x: 3, y: 2 }],
                 cta: "예시 보기",
               },
             ],
@@ -594,9 +606,9 @@ const seed: TrackCurriculum = {
                 text: "이 흰 돌은 단수예요. 남은 숨구멍을 막아 따내 보세요.",
                 setup: [
                   { color: "W", at: C },
-                  { color: "B", at: { x: 1, y: 2 } },
-                  { color: "B", at: { x: 3, y: 2 } },
                   { color: "B", at: { x: 2, y: 3 } },
+                  { color: "B", at: { x: 4, y: 3 } },
+                  { color: "B", at: { x: 3, y: 4 } },
                 ],
                 answer: { libertiesOf: C },
                 highlight: [],
@@ -611,9 +623,9 @@ const seed: TrackCurriculum = {
                 explanation: "숨구멍 하나만 남은 자리를 막으면 됩니다.",
                 setup: [
                   { color: "W", at: C },
-                  { color: "B", at: { x: 1, y: 2 } },
-                  { color: "B", at: { x: 3, y: 2 } },
                   { color: "B", at: { x: 2, y: 3 } },
+                  { color: "B", at: { x: 4, y: 3 } },
+                  { color: "B", at: { x: 3, y: 4 } },
                 ],
                 answer: { libertiesOf: C },
                 highlight: [],
@@ -680,7 +692,7 @@ const seed: TrackCurriculum = {
           id: "seed-atari-1",
           title: "단수 만들기",
           subtitle: "잡히기 직전으로 몰아요",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 2,
           vibe: "단수 치기",
           libertiesFor: "W",
@@ -690,11 +702,11 @@ const seed: TrackCurriculum = {
               text: "흰 돌의 숨구멍이 2개 남았어요. 하나를 막아 단수로 만들어 보세요.",
               setup: [
                 { color: "W", at: C },
-                { color: "B", at: { x: 1, y: 2 } },
-                { color: "B", at: { x: 2, y: 1 } },
+                { color: "B", at: { x: 2, y: 3 } },
+                { color: "B", at: { x: 3, y: 2 } },
               ],
               answer: { libertiesOf: C },
-              reply: (p) => (p.x === 3 ? { x: 2, y: 3 } : { x: 3, y: 2 }),
+              reply: (p) => (p.x === 4 ? { x: 3, y: 4 } : { x: 4, y: 3 }),
               feedback: "단수! 그런데 백이 도망쳤어요.",
               wrongHint: "흰 돌 바로 옆 빈자리를 눌러요.",
             },
@@ -707,9 +719,9 @@ const seed: TrackCurriculum = {
               text: "단수일 때 상대가 도망가기 전에 바로 따내면 돼요. 따내 보세요!",
               setup: [
                 { color: "W", at: C },
-                { color: "B", at: { x: 1, y: 2 } },
-                { color: "B", at: { x: 2, y: 1 } },
+                { color: "B", at: { x: 2, y: 3 } },
                 { color: "B", at: { x: 3, y: 2 } },
+                { color: "B", at: { x: 4, y: 3 } },
               ],
               answer: { libertiesOf: C },
               highlight: [],
@@ -726,7 +738,7 @@ const seed: TrackCurriculum = {
           id: "seed-escape",
           title: "단수에서 도망가기",
           subtitle: "내 돌을 살려요",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 2,
           vibe: "도망가기",
           libertiesFor: "B",
@@ -736,15 +748,15 @@ const seed: TrackCurriculum = {
               text: "내 흑 돌이 단수예요! 숫자가 1이죠.",
               setup: [
                 { color: "B", at: C },
-                { color: "W", at: { x: 1, y: 2 } },
-                { color: "W", at: { x: 2, y: 1 } },
+                { color: "W", at: { x: 2, y: 3 } },
                 { color: "W", at: { x: 3, y: 2 } },
+                { color: "W", at: { x: 4, y: 3 } },
               ],
               cta: "도망가 보기",
             },
             {
               text: "남은 숨구멍 쪽으로 한 칸 늘어서 도망가 보세요.",
-              answer: { x: 2, y: 3 },
+              answer: { x: 3, y: 4 },
               highlight: [],
               feedback: "숨구멍이 3개로 늘었어요. 살았어요!",
               wrongHint: "흑 돌 아래쪽이 유일한 숨구멍이에요.",
@@ -778,7 +790,7 @@ const seed: TrackCurriculum = {
           id: "seed-connect-1",
           title: "돌을 이어 지켜요",
           subtitle: "이어진 돌은 숨구멍을 함께 써요",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 2,
           vibe: "연결의 감각",
           libertiesFor: "B",
@@ -788,10 +800,10 @@ const seed: TrackCurriculum = {
               text: "흑 두 점이 떨어져 있고, 백이 그 사이를 노리고 있어요.",
               tip: "백이 가운데에 두면 두 흑 돌이 갈라져서 따로따로 공격받아요.",
               setup: [
-                { color: "B", at: { x: 1, y: 2 } },
-                { color: "B", at: { x: 3, y: 2 } },
-                { color: "W", at: { x: 2, y: 1 } },
-                { color: "W", at: { x: 2, y: 3 } },
+                { color: "B", at: { x: 2, y: 3 } },
+                { color: "B", at: { x: 4, y: 3 } },
+                { color: "W", at: { x: 3, y: 2 } },
+                { color: "W", at: { x: 3, y: 4 } },
               ],
               cta: "지키는 법 보기",
             },
@@ -811,7 +823,7 @@ const seed: TrackCurriculum = {
           id: "seed-cut",
           title: "끊어서 약하게",
           subtitle: "상대 돌을 갈라놓아요",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 2,
           vibe: "끊기",
           libertiesFor: "W",
@@ -820,10 +832,10 @@ const seed: TrackCurriculum = {
             {
               text: "흰 돌 두 개 사이가 비어 있어요. 흑이 가운데를 차지해서 둘을 끊어 보세요.",
               setup: [
-                { color: "W", at: { x: 1, y: 2 } },
-                { color: "W", at: { x: 3, y: 2 } },
-                { color: "B", at: { x: 2, y: 1 } },
-                { color: "B", at: { x: 2, y: 3 } },
+                { color: "W", at: { x: 2, y: 3 } },
+                { color: "W", at: { x: 4, y: 3 } },
+                { color: "B", at: { x: 3, y: 2 } },
+                { color: "B", at: { x: 3, y: 4 } },
               ],
               answer: C,
               highlight: [],
@@ -832,19 +844,19 @@ const seed: TrackCurriculum = {
             },
             {
               text: "끊어진 돌은 각자 숨구멍이 3개뿐이에요. 하나씩 잡으러 가 볼까요? 왼쪽 흰 돌부터요.",
-              answer: { libertiesOf: { x: 1, y: 2 } },
+              answer: { libertiesOf: { x: 2, y: 3 } },
               autoNext: true,
               wrongHint: "왼쪽 흰 돌 옆 빈자리를 눌러요.",
             },
             {
               text: "백이 가만있진 않겠지만, 이번엔 계속 몰아붙여 보세요.",
-              answer: { libertiesOf: { x: 1, y: 2 } },
+              answer: { libertiesOf: { x: 2, y: 3 } },
               autoNext: true,
               wrongHint: "왼쪽 흰 돌 옆 빈자리를 눌러요.",
             },
             {
               text: "단수! 따내 보세요.",
-              answer: { libertiesOf: { x: 1, y: 2 } },
+              answer: { libertiesOf: { x: 2, y: 3 } },
               feedback: "끊어서 잡았어요!",
               wrongHint: "남은 숨구멍은 하나뿐이에요.",
             },
@@ -865,7 +877,7 @@ const seed: TrackCurriculum = {
           id: "seed-no-entry",
           title: "숨구멍 없는 자리",
           subtitle: "놓자마자 잡히는 곳엔 못 둬요",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 2,
           vibe: "착수 금지",
           bridge: "바둑엔 둘 수 없는 자리가 딱 하나 있어요.",
@@ -903,7 +915,7 @@ const seed: TrackCurriculum = {
           id: "seed-ko",
           title: "패",
           subtitle: "바로 되따낼 수 없어요",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 2,
           vibe: "패",
           bridge: "따내고, 되따내고… 끝없이 반복되면 어떡할까요?",
@@ -947,7 +959,7 @@ const seed: TrackCurriculum = {
           id: "seed-eyes",
           title: "눈 두 개면 살아요",
           subtitle: "백이 들어올 수 없는 빈자리",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 3,
           vibe: "두 눈",
           bridge: "아무리 둘러싸여도 절대 잡히지 않는 돌이 있어요.",
@@ -1006,7 +1018,7 @@ const seed: TrackCurriculum = {
           id: "seed-territory-intro",
           title: "구석은 집 짓기 좋은 곳",
           subtitle: "판 끝이 벽이 되어 줘요",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 2,
           vibe: "적은 돌로 집 짓기",
           bridge: "잡고 지키고 사는 법까지 알았으니, 다시 집 짓기로 돌아가요.",
@@ -1040,7 +1052,7 @@ const seed: TrackCurriculum = {
           id: "seed-count",
           title: "집 세기",
           subtitle: "판이 끝나면 누가 이겼을까?",
-          boardSize: 5,
+          boardSize: 7,
           minutes: 2,
           vibe: "집 세기",
           bridge: "마지막이에요. 끝난 판에서 누가 이겼는지 세어 볼게요.",
@@ -1068,8 +1080,8 @@ const seed: TrackCurriculum = {
               cta: "다음으로",
             },
             {
-              text: "이제 5줄 판에서 바둑 한 판을 끝까지 이해할 수 있어요. 왕초보 졸업이에요!",
-              tip: "다음은 7줄 판에서 더 넓게 둬 볼 차례예요.",
+              text: "이제 7줄 판에서 바둑 한 판을 끝까지 이해할 수 있어요. 왕초보 졸업이에요!",
+              tip: "다음은 같은 7줄에서 숨구멍·따내기를 더 익혀 볼 차례예요.",
               score: true,
               cta: "졸업하기",
             },
@@ -1080,336 +1092,12 @@ const seed: TrackCurriculum = {
   ],
 };
 
-const sprout: TrackCurriculum = {
-  track: "sprout",
-  title: "새싹 · 7줄 판",
-  chapters: [
-    {
-      id: "sprout-eyes",
-      title: "두 눈",
-      blurb: "죽지 않는 모양의 비밀",
-      lessons: [
-        {
-          id: "sprout-two-eyes",
-          title: "두 눈이 있으면 살아요",
-          subtitle: "숨구멍을 두 칸 확보해요",
-          boardSize: 7,
-          minutes: 4,
-          vibe: "사는 모양",
-          steps: [
-            {
-              text: "집이 두 칸(두 눈)이면, 상대가 한 번에 막을 수 없어 살아요.",
-              tip: "한 눈만 있으면 위험해요.",
-              setup: [
-                { color: "B", at: { x: 2, y: 2 } },
-                { color: "B", at: { x: 3, y: 2 } },
-                { color: "B", at: { x: 4, y: 2 } },
-                { color: "B", at: { x: 2, y: 3 } },
-                { color: "B", at: { x: 4, y: 3 } },
-                { color: "B", at: { x: 2, y: 4 } },
-                { color: "B", at: { x: 3, y: 4 } },
-                { color: "B", at: { x: 4, y: 4 } },
-              ],
-              cta: "두 번째 눈 만들기",
-            },
-            {
-              text: "오른쪽 아래를 막아 두 번째 눈을 완성해 보세요.",
-              setup: [
-                { color: "B", at: { x: 2, y: 2 } },
-                { color: "B", at: { x: 3, y: 2 } },
-                { color: "B", at: { x: 4, y: 2 } },
-                { color: "B", at: { x: 2, y: 3 } },
-                { color: "B", at: { x: 4, y: 3 } },
-                { color: "B", at: { x: 2, y: 4 } },
-                { color: "B", at: { x: 3, y: 4 } },
-              ],
-              answer: { x: 4, y: 4 },
-              feedback: "두 눈이 생겼어요. 이 모양은 쉽게 안 죽어요.",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: "sprout-atari",
-      title: "단수",
-      blurb: "숨구멍이 하나 남은 상태",
-      lessons: [
-        {
-          id: "sprout-atari-1",
-          title: "단수를 알아채요",
-          subtitle: "한 수 더 두면 잡히는 순간",
-          boardSize: 7,
-          minutes: 3,
-          vibe: "위험 신호",
-          libertiesFor: "W",
-          steps: [
-            {
-              text: "흰 돌의 숨구멍이 하나예요. 이걸 ‘단수’라고 해요.",
-              tip: "단수를 보면 따낼지, 도망갈지 생각해요.",
-              setup: [
-                { color: "W", at: { x: 3, y: 3 } },
-                { color: "B", at: { x: 2, y: 3 } },
-                { color: "B", at: { x: 4, y: 3 } },
-                { color: "B", at: { x: 3, y: 4 } },
-              ],
-              highlight: [{ x: 3, y: 2 }],
-              cta: "따내 보기",
-            },
-            {
-              text: "마지막 숨구멍을 막아 따내 보세요.",
-              setup: [
-                { color: "W", at: { x: 3, y: 3 } },
-                { color: "B", at: { x: 2, y: 3 } },
-                { color: "B", at: { x: 4, y: 3 } },
-                { color: "B", at: { x: 3, y: 4 } },
-              ],
-              answer: { x: 3, y: 2 },
-              feedback: "단수를 막는 수가 바로 따내기예요.",
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
-
-const leaf: TrackCurriculum = {
-  track: "leaf",
-  title: "잎새 · 9줄 판",
-  chapters: [
-    {
-      id: "leaf-territory",
-      title: "집이란?",
-      blurb: "내 돌로 둘러싼 빈 공간",
-      lessons: [
-        {
-          id: "leaf-house",
-          title: "집을 만들어 보아요",
-          subtitle: "빈 칸을 내 것으로",
-          boardSize: 9,
-          minutes: 4,
-          vibe: "집의 감각",
-          steps: [
-            {
-              text: "바둑은 상대보다 집을 더 많이 만들면 이겨요.",
-              setup: [
-                { color: "B", at: { x: 1, y: 1 } },
-                { color: "B", at: { x: 2, y: 1 } },
-                { color: "B", at: { x: 1, y: 2 } },
-              ],
-              cta: "구석을 이어 보기",
-            },
-            {
-              text: "왼쪽 위를 이어서, 구석 집을 더 단단히 해 보세요.",
-              setup: [
-                { color: "B", at: { x: 1, y: 1 } },
-                { color: "B", at: { x: 2, y: 1 } },
-                { color: "B", at: { x: 1, y: 2 } },
-              ],
-              answer: { x: 0, y: 1 },
-              feedback: "구석·변은 집이 잘 생기는 자리예요.",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: "leaf-end",
-      title: "끝내기 맛보기",
-      blurb: "한 판을 마무리하는 감각",
-      lessons: [
-        {
-          id: "leaf-pass-feel",
-          title: "더 둘 곳이 없을 때",
-          subtitle: "집만 세면 돼요",
-          boardSize: 9,
-          minutes: 3,
-          vibe: "끝내기 감각",
-          steps: [
-            {
-              text: "양쪽이 경계를 나누면, 남은 빈 칸이 집이 돼요. 큰 집 쪽을 골라 보세요.",
-              setup: [
-                { color: "B", at: { x: 2, y: 2 } },
-                { color: "B", at: { x: 3, y: 2 } },
-                { color: "B", at: { x: 4, y: 3 } },
-                { color: "W", at: { x: 6, y: 6 } },
-                { color: "W", at: { x: 5, y: 6 } },
-                { color: "W", at: { x: 6, y: 5 } },
-              ],
-              answer: [
-                { x: 1, y: 1 },
-                { x: 2, y: 1 },
-                { x: 1, y: 2 },
-              ],
-              feedback: "집 쪽에 두는 게 끝내기의 기본 감각이에요.",
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
-
-const tree: TrackCurriculum = {
-  track: "tree",
-  title: "나무 · 13줄 판",
-  chapters: [
-    {
-      id: "tree-opening",
-      title: "첫 돌은 어디에?",
-      blurb: "포석의 기본 감각",
-      lessons: [
-        {
-          id: "tree-corner",
-          title: "구석부터",
-          subtitle: "집이 빨리 생기는 자리",
-          boardSize: 13,
-          minutes: 3,
-          vibe: "포석의 시작",
-          steps: [
-            {
-              text: "큰 판에서는 보통 구석 근처부터 집을 지어요.",
-              highlight: [
-                { x: 3, y: 3 },
-                { x: 9, y: 3 },
-                { x: 3, y: 9 },
-                { x: 9, y: 9 },
-              ],
-              cta: "구석에 두기",
-            },
-            {
-              text: "왼쪽 위 화점 근처에 첫 수를 두어 보세요.",
-              answer: [
-                { x: 2, y: 2 },
-                { x: 3, y: 3 },
-                { x: 2, y: 3 },
-                { x: 3, y: 2 },
-              ],
-              feedback: "구석을 먼저 잡는 게 포석의 시작이에요.",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: "tree-life",
-      title: "사활 입문",
-      blurb: "살고 죽는 모양 읽기",
-      lessons: [
-        {
-          id: "tree-life-1",
-          title: "눈 하나로는 부족해요",
-          subtitle: "한 눈은 위험해요",
-          boardSize: 13,
-          minutes: 4,
-          vibe: "사활 감각",
-          steps: [
-            {
-              text: "눈이 하나뿐이면 상대가 메울 수 있어요. 두 번째 눈 자리를 지켜 보세요.",
-              setup: [
-                { color: "B", at: { x: 5, y: 5 } },
-                { color: "B", at: { x: 6, y: 5 } },
-                { color: "B", at: { x: 7, y: 5 } },
-                { color: "B", at: { x: 5, y: 6 } },
-                { color: "B", at: { x: 7, y: 6 } },
-                { color: "B", at: { x: 5, y: 7 } },
-                { color: "B", at: { x: 6, y: 7 } },
-                { color: "B", at: { x: 7, y: 7 } },
-                { color: "W", at: { x: 4, y: 5 } },
-                { color: "W", at: { x: 4, y: 6 } },
-                { color: "W", at: { x: 4, y: 7 } },
-                { color: "W", at: { x: 8, y: 5 } },
-                { color: "W", at: { x: 8, y: 6 } },
-                { color: "W", at: { x: 8, y: 7 } },
-              ],
-              answer: { x: 6, y: 6 },
-              feedback: "가운데를 지키면 두 눈으로 살 수 있어요.",
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
-
-const forest: TrackCurriculum = {
-  track: "forest",
-  title: "숲 · 19줄 판",
-  chapters: [
-    {
-      id: "forest-whole",
-      title: "한 판의 흐름",
-      blurb: "포석 → 중반 → 끝내기",
-      lessons: [
-        {
-          id: "forest-flow",
-          title: "대국의 세 단계",
-          subtitle: "큰 그림을 먼저",
-          boardSize: 19,
-          minutes: 3,
-          vibe: "큰 판의 리듬",
-          steps: [
-            {
-              text: "처음엔 구석과 변(포석), 중간에 싸움(중반), 마지막에 집 정리(끝내기)예요.",
-              highlight: [
-                { x: 3, y: 3 },
-                { x: 9, y: 9 },
-                { x: 15, y: 15 },
-              ],
-              cta: "첫 수 두기",
-            },
-            {
-              text: "19줄에서도 첫 수는 구석이 기본이에요. 오른쪽 아래 화점 근처에 두어 보세요.",
-              answer: [
-                { x: 15, y: 15 },
-                { x: 15, y: 16 },
-                { x: 16, y: 15 },
-                { x: 16, y: 16 },
-              ],
-              feedback: "큰 판도 작은 판에서 익힌 원칙이 그대로예요.",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: "forest-shape",
-      title: "좋은 모양",
-      blurb: "효율적인 돌의 배치",
-      lessons: [
-        {
-          id: "forest-shape-1",
-          title: "날일자·한칸",
-          subtitle: "너무 붙지도, 너무 멀지도 않게",
-          boardSize: 19,
-          minutes: 4,
-          vibe: "모양의 감각",
-          steps: [
-            {
-              text: "흑이 화점에 있어요. 날일자(한 칸 대각)로 확장해 보세요.",
-              setup: [{ color: "B", at: { x: 3, y: 3 } }],
-              answer: [
-                { x: 5, y: 2 },
-                { x: 2, y: 5 },
-                { x: 5, y: 4 },
-                { x: 4, y: 5 },
-              ],
-              feedback: "날일자는 넓으면서도 연결이 쉬운 모양이에요.",
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
-
 export const CURRICULUM: Record<TrackId, TrackCurriculum> = {
   seed,
-  sprout,
-  leaf,
-  tree,
-  forest,
+  sprout: sprout as TrackCurriculum,
+  leaf: leaf as TrackCurriculum,
+  tree: tree as TrackCurriculum,
+  forest: forest as TrackCurriculum,
 };
 
 export function curriculumForRank(rankId: RankId): TrackCurriculum {
@@ -1441,6 +1129,67 @@ export function previewStep(lesson: Lesson): LessonStep | null {
     return null;
   }
   return lesson.steps[0] ?? null;
+}
+
+/** 홈용 — 돌이 있는 문제/스텝을 우선해 의미 있는 미리보기 */
+export function homePractice(lesson: Lesson): {
+  kind: "problem" | "step";
+  title: string;
+  tip?: string;
+  size: 7 | 9 | 13 | 19;
+  setup?: { color: StoneColor; at: Point }[];
+  highlight?: Point[];
+  problemCount: number;
+} | null {
+  const size = lesson.boardSize;
+  if (lesson.session) {
+    const problems = lesson.session.problems;
+    const pick =
+      problems.find((p) => (p.setup?.length ?? 0) > 0) ??
+      problems[0] ??
+      null;
+    if (pick) {
+      return {
+        kind: "problem",
+        title: pick.prompt,
+        tip: pick.tip ?? pick.explanation,
+        size: pick.size ?? size,
+        setup: pick.setup,
+        highlight: pick.highlight,
+        problemCount: problems.length,
+      };
+    }
+    const step =
+      [...lesson.session.concept, ...lesson.session.example].find((s) => (s.setup?.length ?? 0) > 0) ??
+      lesson.session.concept[0] ??
+      lesson.session.example[0] ??
+      null;
+    if (!step) return null;
+    return {
+      kind: "step",
+      title: step.text,
+      tip: step.tip,
+      size: step.size ?? size,
+      setup: step.setup,
+      highlight: step.highlight,
+      problemCount: problems.length,
+    };
+  }
+  const step =
+    lesson.steps.find((s) => (s.setup?.length ?? 0) > 0) ??
+    lesson.steps.find((s) => !!s.answer) ??
+    lesson.steps[0] ??
+    null;
+  if (!step) return null;
+  return {
+    kind: step.answer ? "problem" : "step",
+    title: step.text,
+    tip: step.tip,
+    size: step.size ?? size,
+    setup: step.setup,
+    highlight: step.highlight,
+    problemCount: lesson.steps.filter((s) => !!s.answer).length,
+  };
 }
 
 /** 세션/레거시 answer 스텝을 평탄화 (검증용) */

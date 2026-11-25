@@ -1,0 +1,472 @@
+{
+  "meta": {
+    "apiRank": "15k",
+    "file": "g15",
+    "count": 10,
+    "fetchedAt": "2026-11-25T01:46:19.193Z",
+    "source": "handmade"
+  },
+  "problems": [
+    {
+      "id": "g15-01",
+      "sourceId": "handmade-g15-01",
+      "apiRank": "15k",
+      "rankDisplay": "15급",
+      "prompt": "왼쪽 위를 이어서 구석 집을 더 단단히 하세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 2
+          }
+        }
+      ],
+      "size": 9,
+      "answer": {
+        "x": 2,
+        "y": 2
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g15-02",
+      "sourceId": "handmade-g15-02",
+      "apiRank": "15k",
+      "rankDisplay": "15급",
+      "prompt": "흑 집을 더 닫는 수는?",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 3
+          }
+        }
+      ],
+      "size": 9,
+      "answer": [
+        {
+          "x": 2,
+          "y": 2
+        },
+        {
+          "x": 2,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 2
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g15-03",
+      "sourceId": "handmade-g15-03",
+      "apiRank": "15k",
+      "rankDisplay": "15급",
+      "prompt": "상대 집을 줄이는 침입 급소는?",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 6,
+            "y": 1
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 7,
+            "y": 1
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 7,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 7,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 2
+          }
+        }
+      ],
+      "size": 9,
+      "answer": {
+        "x": 6,
+        "y": 2
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g15-04",
+      "sourceId": "handmade-g15-04",
+      "apiRank": "15k",
+      "rankDisplay": "15급",
+      "prompt": "흑에서 날일자로 넓혀 보세요.",
+      "tip": "한 칸 뛰고 옆칸(날일)이에요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        }
+      ],
+      "size": 9,
+      "answer": [
+        {
+          "x": 3,
+          "y": 4
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 1,
+          "y": 4
+        },
+        {
+          "x": 0,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 0
+        },
+        {
+          "x": 4,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g15-05",
+      "sourceId": "handmade-g15-05",
+      "apiRank": "15k",
+      "rankDisplay": "15급",
+      "prompt": "한칸 뜀으로 확장하세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        }
+      ],
+      "size": 9,
+      "answer": [
+        {
+          "x": 4,
+          "y": 6
+        },
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 6,
+          "y": 4
+        },
+        {
+          "x": 2,
+          "y": 4
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g15-06",
+      "sourceId": "handmade-g15-06",
+      "apiRank": "15k",
+      "rankDisplay": "15급",
+      "prompt": "끊기지 않게 이어 주세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        }
+      ],
+      "size": 9,
+      "answer": {
+        "x": 4,
+        "y": 3
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g15-07",
+      "sourceId": "handmade-g15-07",
+      "apiRank": "15k",
+      "rankDisplay": "15급",
+      "prompt": "단수인 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 4
+          }
+        }
+      ],
+      "size": 9,
+      "answer": {
+        "x": 4,
+        "y": 5
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g15-08",
+      "sourceId": "handmade-g15-08",
+      "apiRank": "15k",
+      "rankDisplay": "15급",
+      "prompt": "왼쪽 위 집 쪽을 골라 보세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 7,
+            "y": 7
+          }
+        }
+      ],
+      "size": 9,
+      "answer": [
+        {
+          "x": 2,
+          "y": 2
+        },
+        {
+          "x": 3,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 3
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g15-09",
+      "sourceId": "handmade-g15-09",
+      "apiRank": "15k",
+      "rankDisplay": "15급",
+      "prompt": "가운데 흰 돌을 따내 보세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 4
+          }
+        }
+      ],
+      "size": 9,
+      "answer": {
+        "x": 4,
+        "y": 5
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g15-10",
+      "sourceId": "handmade-g15-10",
+      "apiRank": "15k",
+      "rankDisplay": "15급",
+      "prompt": "단수인 흰 돌을 따내세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        }
+      ],
+      "size": 9,
+      "answer": {
+        "x": 2,
+        "y": 3
+      },
+      "playAs": "B"
+    }
+  ]
+}

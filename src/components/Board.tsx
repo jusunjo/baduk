@@ -6,6 +6,7 @@ export function Board({
   size,
   board,
   highlights = [],
+  ghosts = [],
   territory = [],
   onPlay,
   interactive = true,
@@ -18,6 +19,8 @@ export function Board({
   size: number;
   board: Grid;
   highlights?: Point[];
+  /** AI·힌트용 반투명 제안 돌 */
+  ghosts?: { color: StoneColor; at: Point }[];
   territory?: { color: StoneColor; points: Point[] }[];
   onPlay?: (p: Point) => void;
   interactive?: boolean;
@@ -28,15 +31,27 @@ export function Board({
   showSize?: boolean;
   className?: string;
 }) {
+  const n = board.length || size;
   const hi = useMemo(() => new Set(highlights.map(keyOf)), [highlights]);
   const labelled = useMemo(
     () => (libertiesFor ? groups(board).filter((g) => libertiesFor === "both" || g.color === libertiesFor) : []),
     [board, libertiesFor],
   );
-  /** Edge margin in grid cells; must clear an edge stone plus its atari ring. */
-  const gap = 100 / (size - 1 + 2 * 0.7);
-  const pad = gap * 0.7;
-  const stoneR = gap * 0.46;
+
+  /**
+   * Intersection-centered layout.
+   * padCells: empty margin outside the outer lines so edge stones / rings stay inside the rounded clip.
+   */
+  const padCells = 0.85;
+  const gap = 100 / (n - 1 + 2 * padCells);
+  const pad = gap * padCells;
+  const stoneR = gap * 0.44;
+  const span = 100 - pad * 2;
+
+  const xy = (p: Point) => ({
+    cx: pad + (p.x * span) / (n - 1),
+    cy: pad + (p.y * span) / (n - 1),
+  });
 
   return (
     <div className={`relative mx-auto w-full max-w-[360px] select-none ${className}`}>
@@ -46,16 +61,22 @@ export function Board({
           background: "linear-gradient(160deg, #f0d4a0 0%, #e2b87a 55%, #d4a66a 100%)",
         }}
       >
-        <svg viewBox={`0 0 100 100`} className="h-full w-full" role="img" aria-label={`${size}줄 바둑판`}>
+        <svg
+          viewBox="0 0 100 100"
+          className="h-full w-full"
+          role="img"
+          aria-label={`${n}줄 바둑판`}
+          preserveAspectRatio="xMidYMid meet"
+        >
           <defs>
             <filter id="stone-shadow" x="-40%" y="-40%" width="180%" height="180%">
               <feDropShadow dx="0.4" dy="0.8" stdDeviation="0.7" floodOpacity="0.28" />
             </filter>
           </defs>
 
-          {/* grid */}
-          {Array.from({ length: size }, (_, i) => {
-            const v = pad + (i * (100 - pad * 2)) / (size - 1);
+          {/* grid lines — n × n intersections */}
+          {Array.from({ length: n }, (_, i) => {
+            const v = pad + (i * span) / (n - 1);
             return (
               <g key={`line-${i}`}>
                 <line x1={pad} y1={v} x2={100 - pad} y2={v} stroke="#5c3d1e" strokeWidth="0.45" strokeOpacity="0.75" />
@@ -64,17 +85,15 @@ export function Board({
             );
           })}
 
-          {/* star points for larger boards */}
-          {starPoints(size).map((p) => {
-            const { cx, cy } = toSvg(p, size, pad);
-            return <circle key={keyOf(p)} cx={cx} cy={cy} r={0.9} fill="#5c3d1e" opacity="0.7" />;
+          {starPoints(n).map((p) => {
+            const { cx, cy } = xy(p);
+            return <circle key={keyOf(p)} cx={cx} cy={cy} r={Math.min(1.1, gap * 0.08)} fill="#5c3d1e" opacity="0.7" />;
           })}
 
-          {/* territory wash */}
           {territory.flatMap((t) =>
             t.points.map((p) => {
-              const { cx, cy } = toSvg(p, size, pad);
-              const r = gap * 0.42;
+              const { cx, cy } = xy(p);
+              const r = gap * 0.38;
               return (
                 <rect
                   key={`ter-${t.color}-${keyOf(p)}`}
@@ -84,38 +103,45 @@ export function Board({
                   height={r * 2}
                   rx={r * 0.35}
                   fill={t.color === "B" ? "rgba(25,31,40,0.28)" : "rgba(255,255,255,0.6)"}
-                  className="animate-pop"
-                  style={POP}
                 />
               );
             }),
           )}
 
-          {/* highlights */}
+          {/* highlights — SVG-native pulse (CSS scale breaks intersection sync) */}
           {highlights.map((p) => {
-            const { cx, cy } = toSvg(p, size, pad);
+            const { cx, cy } = xy(p);
+            const r = stoneR * 0.92;
             return (
-              <circle
-                key={`hi-${keyOf(p)}`}
-                cx={cx}
-                cy={cy}
-                r={stoneR * 0.95}
-                fill="none"
-                stroke="#3182F6"
-                strokeWidth="0.7"
-                strokeDasharray="1.6 1.2"
-                className="animate-breathe"
-                style={POP}
-                opacity="0.85"
-              />
+              <g key={`hi-${keyOf(p)}`} transform={`translate(${cx} ${cy})`} pointerEvents="none">
+                <circle r={r} fill="rgba(49,130,246,0.14)">
+                  <animate attributeName="opacity" values="0.55;1;0.55" dur="1.8s" repeatCount="indefinite" />
+                </circle>
+                <circle
+                  r={r}
+                  fill="none"
+                  stroke="#3182F6"
+                  strokeWidth="0.75"
+                  strokeDasharray="1.6 1.2"
+                  opacity="0.9"
+                >
+                  <animate attributeName="r" values={`${r};${r * 1.1};${r}`} dur="1.8s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.95;0.55;0.95" dur="1.8s" repeatCount="indefinite" />
+                </circle>
+              </g>
             );
           })}
 
-          {/* stones */}
+          {ghosts.map((g) => {
+            if (board[g.at.y]?.[g.at.x]) return null;
+            const { cx, cy } = xy(g.at);
+            return <GhostStone key={`ghost-${keyOf(g.at)}-${g.color}`} cx={cx} cy={cy} r={stoneR} color={g.color} />;
+          })}
+
           {board.map((row, y) =>
             row.map((cell, x) => {
               if (!cell) return null;
-              const { cx, cy } = toSvg({ x, y }, size, pad);
+              const { cx, cy } = xy({ x, y });
               return <Stone key={`${x}-${y}-${cell}`} cx={cx} cy={cy} r={stoneR} color={cell} />;
             }),
           )}
@@ -123,28 +149,21 @@ export function Board({
           {labelled.map((g) => {
             const danger = g.liberties.length === 1;
             const rep = [...g.stones].sort((a, b) => a.y - b.y || a.x - b.x)[0];
-            const { cx, cy } = toSvg(rep, size, pad);
+            const { cx, cy } = xy(rep);
             return (
               <g key={`lib-${keyOf(rep)}`} className="pointer-events-none">
                 {danger &&
                   g.stones.map((s) => {
-                    const c = toSvg(s, size, pad);
+                    const c = xy(s);
                     return (
-                      <circle
-                        key={`gasp-${keyOf(s)}`}
-                        cx={c.cx}
-                        cy={c.cy}
-                        r={stoneR * 1.12}
-                        fill="none"
-                        stroke="#F04452"
-                        strokeWidth="0.9"
-                        className="animate-gasp"
-                        style={POP}
-                      />
+                      <g key={`gasp-${keyOf(s)}`} transform={`translate(${c.cx} ${c.cy})`}>
+                        <circle r={stoneR * 1.12} fill="none" stroke="#F04452" strokeWidth="0.9">
+                          <animate attributeName="opacity" values="0.95;0.4;0.95" dur="0.9s" repeatCount="indefinite" />
+                        </circle>
+                      </g>
                     );
                   })}
                 <text
-                  key={g.liberties.length}
                   x={cx}
                   y={cy}
                   textAnchor="middle"
@@ -152,8 +171,6 @@ export function Board({
                   fontSize={stoneR * 0.95}
                   fontWeight={700}
                   fill={danger ? "#F04452" : g.color === "B" ? "#fff" : "#191F28"}
-                  className="animate-pop"
-                  style={POP}
                 >
                   {g.liberties.length}
                 </text>
@@ -161,36 +178,28 @@ export function Board({
             );
           })}
 
-          {lastMove && !libertiesFor && (
-            (() => {
-              const { cx, cy } = toSvg(lastMove, size, pad);
-              const color = board[lastMove.y][lastMove.x];
-              return (
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={1.15}
-                  fill={color === "B" ? "#fff" : "#191F28"}
-                  className="animate-pop"
-                  style={POP}
-                />
-              );
-            })()
-          )}
+          {lastMove && !libertiesFor && (() => {
+            const { cx, cy } = xy(lastMove);
+            const color = board[lastMove.y]?.[lastMove.x];
+            return <circle cx={cx} cy={cy} r={1.15} fill={color === "B" ? "#fff" : "#191F28"} />;
+          })()}
 
-          {wrongFlash && (
-            (() => {
-              const { cx, cy } = toSvg(wrongFlash, size, pad);
-              return <circle cx={cx} cy={cy} r={stoneR * 0.9} fill="#F04452" opacity="0.35" className="animate-shake" />;
-            })()
-          )}
+          {wrongFlash && (() => {
+            const { cx, cy } = xy(wrongFlash);
+            return (
+              <g transform={`translate(${cx} ${cy})`}>
+                <circle r={stoneR * 0.9} fill="#F04452" opacity="0.35">
+                  <animate attributeName="opacity" values="0.45;0.1;0.45;0" dur="0.36s" fill="freeze" />
+                </circle>
+              </g>
+            );
+          })()}
 
-          {/* tap targets */}
           {interactive &&
-            Array.from({ length: size }, (_, y) =>
-              Array.from({ length: size }, (_, x) => {
-                const { cx, cy } = toSvg({ x, y }, size, pad);
-                const occupied = !!board[y][x];
+            Array.from({ length: n }, (_, y) =>
+              Array.from({ length: n }, (_, x) => {
+                const { cx, cy } = xy({ x, y });
+                const occupied = !!board[y]?.[x];
                 const marked = hi.has(keyOf({ x, y }));
                 return (
                   <circle
@@ -198,7 +207,7 @@ export function Board({
                     cx={cx}
                     cy={cy}
                     r={stoneR * 1.05}
-                    fill={marked && !occupied ? "rgba(49,130,246,0.12)" : "transparent"}
+                    fill={marked && !occupied ? "rgba(49,130,246,0.1)" : "transparent"}
                     className={occupied ? "pointer-events-none" : "cursor-pointer"}
                     onClick={() => !occupied && onPlay?.({ x, y })}
                   />
@@ -207,48 +216,57 @@ export function Board({
             )}
         </svg>
       </div>
-      {showSize && <p className="mt-2 text-center text-[12px] font-medium tabular-nums text-toss-mute">{size}×{size}</p>}
+      {showSize && <p className="mt-2 text-center text-[12px] font-medium tabular-nums text-toss-mute">{n}×{n}</p>}
     </div>
   );
 }
 
-const POP = { transformBox: "fill-box", transformOrigin: "center" } as const;
-
 function Stone({ cx, cy, r, color }: { cx: number; cy: number; r: number; color: StoneColor }) {
   if (color === "B") {
     return (
-      <g filter="url(#stone-shadow)" className="animate-pop" style={POP}>
-        <circle cx={cx} cy={cy} r={r} fill="#1a1f27" />
-        <circle cx={cx - r * 0.28} cy={cy - r * 0.3} r={r * 0.28} fill="#fff" opacity="0.18" />
+      <g filter="url(#stone-shadow)" transform={`translate(${cx} ${cy})`}>
+        <circle r={r} fill="#1a1f27">
+          <animate attributeName="r" values={`${r * 0.7};${r * 1.04};${r}`} dur="0.42s" fill="freeze" />
+        </circle>
+        <circle cx={-r * 0.28} cy={-r * 0.3} r={r * 0.28} fill="#fff" opacity="0.18" />
       </g>
     );
   }
   return (
-    <g filter="url(#stone-shadow)" className="animate-pop" style={POP}>
-      <circle cx={cx} cy={cy} r={r} fill="#f7f8fa" stroke="#d1d5db" strokeWidth="0.35" />
-      <circle cx={cx - r * 0.25} cy={cy - r * 0.28} r={r * 0.22} fill="#fff" opacity="0.7" />
+    <g filter="url(#stone-shadow)" transform={`translate(${cx} ${cy})`}>
+      <circle r={r} fill="#f7f8fa" stroke="#d1d5db" strokeWidth="0.35">
+        <animate attributeName="r" values={`${r * 0.7};${r * 1.04};${r}`} dur="0.42s" fill="freeze" />
+      </circle>
+      <circle cx={-r * 0.25} cy={-r * 0.28} r={r * 0.22} fill="#fff" opacity="0.7" />
     </g>
   );
 }
 
-function toSvg(p: Point, size: number, pad: number) {
-  const span = 100 - pad * 2;
-  return {
-    cx: pad + (p.x * span) / (size - 1),
-    cy: pad + (p.y * span) / (size - 1),
-  };
+function GhostStone({ cx, cy, r, color }: { cx: number; cy: number; r: number; color: StoneColor }) {
+  return (
+    <g transform={`translate(${cx} ${cy})`} opacity="0.42" pointerEvents="none">
+      <circle
+        r={r}
+        fill={color === "B" ? "#1a1f27" : "#f7f8fa"}
+        stroke={color === "B" ? "none" : "#d1d5db"}
+        strokeWidth={color === "B" ? 0 : 0.35}
+        strokeDasharray="1.2 0.9"
+      />
+      <circle r={r * 1.05} fill="none" stroke="#3182F6" strokeWidth="0.55" strokeDasharray="1.4 1" opacity="0.85" />
+    </g>
+  );
 }
 
 function starPoints(size: number): Point[] {
-  if (size === 5) return [{ x: 2, y: 2 }];
   if (size === 7) return [{ x: 3, y: 3 }];
-  if (size === 9) return [
-    { x: 2, y: 2 },
-    { x: 6, y: 2 },
-    { x: 4, y: 4 },
-    { x: 2, y: 6 },
-    { x: 6, y: 6 },
-  ];
+  if (size === 9)
+    return [
+      { x: 2, y: 2 },
+      { x: 6, y: 2 },
+      { x: 4, y: 4 },
+      { x: 2, y: 6 },
+      { x: 6, y: 6 },
+    ];
   if (size === 13) {
     const pts = [3, 6, 9];
     return pts.flatMap((y) => pts.map((x) => ({ x, y })));
@@ -261,9 +279,8 @@ function starPoints(size: number): Point[] {
 }
 
 /** Mini preview board used in onboarding rank cards */
-export function MiniBoard({ size }: { size: 5 | 7 | 9 | 13 | 19 }) {
+export function MiniBoard({ size }: { size: 7 | 9 | 13 | 19 }) {
   const n = Math.min(size, 9);
-  const lines = n;
   return (
     <div
       className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
@@ -271,8 +288,8 @@ export function MiniBoard({ size }: { size: 5 | 7 | 9 | 13 | 19 }) {
       aria-hidden
     >
       <svg viewBox="0 0 20 20" className="h-8 w-8">
-        {Array.from({ length: lines }, (_, i) => {
-          const v = 2 + (i * 16) / (lines - 1);
+        {Array.from({ length: n }, (_, i) => {
+          const v = 2 + (i * 16) / (n - 1);
           return (
             <g key={i}>
               <line x1="2" y1={v} x2="18" y2={v} stroke="#5c3d1e" strokeWidth="0.5" opacity="0.7" />
@@ -280,8 +297,7 @@ export function MiniBoard({ size }: { size: 5 | 7 | 9 | 13 | 19 }) {
             </g>
           );
         })}
-        <circle cx="7" cy="8" r="1.6" fill="#191F28" />
-        <circle cx="12.5" cy="12" r="1.6" fill="#fff" stroke="#d1d5db" strokeWidth="0.3" />
+        <circle cx="10" cy="10" r="1.5" fill="#191F28" />
       </svg>
     </div>
   );

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Screen } from "@/components/Screen";
 import type { Lesson } from "@/data/curriculum";
 import { useProgress } from "@/lib/progress";
-import { TRACKS } from "@/lib/ranks";
 
 /** Horizontal offsets (px) that make the nodes snake down the screen. */
 const ZIGZAG = [0, 44, 70, 44, 0, -44, -70, -44];
@@ -22,17 +21,18 @@ export function LearnPage() {
     if (lesson.id === p.next?.id) return "current";
     return p.lessons.findIndex((l) => l.id === lesson.id) > nextIdx ? "locked" : "done";
   };
-  const track = TRACKS[p.rank.track];
 
   let n = 0;
   return (
     <Screen nav gray>
       <div className="px-1 pt-1">
-        <p className="text-[13px] font-semibold text-toss-mute">{track.label} · {p.rank.boardSize}줄 · 부담 없이</p>
+        <p className="text-[13px] font-semibold text-toss-mute">
+          {p.rank.label} · {p.rank.boardSize}줄 판
+        </p>
         <p className="mt-1 text-[22px] font-bold tracking-tight text-toss-ink">
           {p.done}/{p.total} 레슨 완료
         </p>
-        <p className="mt-1 break-keep text-[14px] text-toss-mute">어려운 이론보다, 두면서 익히는 길이에요.</p>
+        <p className="mt-1 break-keep text-[14px] text-toss-mute">급수는 두면서 올라가요. 지금은 이 판의 개념만 익히면 돼요.</p>
       </div>
 
       <div className="mt-5 space-y-6 pb-10">

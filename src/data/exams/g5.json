@@ -1,0 +1,543 @@
+{
+  "meta": {
+    "apiRank": "5k",
+    "file": "g5",
+    "count": 10,
+    "fetchedAt": "2026-11-25T01:46:19.194Z",
+    "source": "handmade"
+  },
+  "problems": [
+    {
+      "id": "g5-01",
+      "sourceId": "handmade-g5-01",
+      "apiRank": "5k",
+      "rankDisplay": "5급",
+      "prompt": "오른쪽 아래 화점 근처에 두어 보세요.",
+      "setup": [],
+      "size": 19,
+      "answer": [
+        {
+          "x": 15,
+          "y": 15
+        },
+        {
+          "x": 14,
+          "y": 15
+        },
+        {
+          "x": 15,
+          "y": 14
+        },
+        {
+          "x": 16,
+          "y": 15
+        },
+        {
+          "x": 15,
+          "y": 16
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g5-02",
+      "sourceId": "handmade-g5-02",
+      "apiRank": "5k",
+      "rankDisplay": "5급",
+      "prompt": "포석에 어울리는 첫 수는?",
+      "setup": [],
+      "size": 19,
+      "answer": [
+        {
+          "x": 3,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 15
+        },
+        {
+          "x": 15,
+          "y": 3
+        },
+        {
+          "x": 15,
+          "y": 15
+        },
+        {
+          "x": 2,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 2
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g5-03",
+      "sourceId": "handmade-g5-03",
+      "apiRank": "5k",
+      "rankDisplay": "5급",
+      "prompt": "흰 돌이 변으로 기대지 못하게 막아 보세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        }
+      ],
+      "size": 19,
+      "answer": [
+        {
+          "x": 3,
+          "y": 4
+        },
+        {
+          "x": 4,
+          "y": 3
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g5-04",
+      "sourceId": "handmade-g5-04",
+      "apiRank": "5k",
+      "rankDisplay": "5급",
+      "prompt": "흰 돌의 활로를 줄이세요 — 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 9,
+            "y": 9
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 10,
+            "y": 9
+          }
+        }
+      ],
+      "size": 19,
+      "answer": {
+        "x": 9,
+        "y": 10
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g5-05",
+      "sourceId": "handmade-g5-05",
+      "apiRank": "5k",
+      "rankDisplay": "5급",
+      "prompt": "흑 화점에서 날일자로 확장해 보세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        }
+      ],
+      "size": 19,
+      "answer": [
+        {
+          "x": 4,
+          "y": 5
+        },
+        {
+          "x": 5,
+          "y": 4
+        },
+        {
+          "x": 2,
+          "y": 5
+        },
+        {
+          "x": 1,
+          "y": 4
+        },
+        {
+          "x": 4,
+          "y": 1
+        },
+        {
+          "x": 5,
+          "y": 2
+        },
+        {
+          "x": 2,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 2
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g5-06",
+      "sourceId": "handmade-g5-06",
+      "apiRank": "5k",
+      "rankDisplay": "5급",
+      "prompt": "한칸 뜀으로 확장하세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 9,
+            "y": 9
+          }
+        }
+      ],
+      "size": 19,
+      "answer": [
+        {
+          "x": 9,
+          "y": 11
+        },
+        {
+          "x": 9,
+          "y": 7
+        },
+        {
+          "x": 11,
+          "y": 9
+        },
+        {
+          "x": 7,
+          "y": 9
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g5-07",
+      "sourceId": "handmade-g5-07",
+      "apiRank": "5k",
+      "rankDisplay": "5급",
+      "prompt": "끊긴 흑을 이으세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 10,
+            "y": 9
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 9,
+            "y": 10
+          }
+        }
+      ],
+      "size": 19,
+      "answer": {
+        "x": 9,
+        "y": 9
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g5-08",
+      "sourceId": "handmade-g5-08",
+      "apiRank": "5k",
+      "rankDisplay": "5급",
+      "prompt": "왼쪽 위 경계를 밀어 보세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        }
+      ],
+      "size": 19,
+      "answer": [
+        {
+          "x": 2,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 3
+        },
+        {
+          "x": 4,
+          "y": 3
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g5-09",
+      "sourceId": "handmade-g5-09",
+      "apiRank": "5k",
+      "rankDisplay": "5급",
+      "prompt": "흑 경계를 한 줄 미세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 14,
+            "y": 14
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 15,
+            "y": 14
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 16,
+            "y": 14
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 14,
+            "y": 16
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 15,
+            "y": 16
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 16,
+            "y": 16
+          }
+        }
+      ],
+      "size": 19,
+      "answer": [
+        {
+          "x": 14,
+          "y": 15
+        },
+        {
+          "x": 15,
+          "y": 15
+        },
+        {
+          "x": 16,
+          "y": 15
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g5-10",
+      "sourceId": "handmade-g5-10",
+      "apiRank": "5k",
+      "rankDisplay": "5급",
+      "prompt": "백으로 두 눈 급소를 두세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 8
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 9
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 8,
+            "y": 10
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 9,
+            "y": 10
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 10
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 8
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 9
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 10
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 11,
+            "y": 8
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 11,
+            "y": 9
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 11,
+            "y": 10
+          }
+        }
+      ],
+      "size": 19,
+      "answer": {
+        "x": 9,
+        "y": 9
+      },
+      "playAs": "W"
+    }
+  ]
+}

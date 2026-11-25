@@ -1,6 +1,5 @@
 import { findLesson, previewStep } from "@/data/curriculum";
 import type { Rank } from "./ranks";
-import { TRACKS } from "./ranks";
 
 export type PageAskProgress = {
   rank: Rank | null;
@@ -17,7 +16,9 @@ export function pageMeta(pathname: string): { id: string; title: string } {
   if (pathname === "/") return { id: "home", title: "오늘" };
   if (pathname === "/learn") return { id: "learn", title: "개념 목록" };
   if (pathname.startsWith("/learn/")) return { id: "lesson", title: "레슨" };
-  if (pathname === "/path") return { id: "path", title: "목표" };
+  if (pathname === "/practice") return { id: "practice", title: "문제 풀이" };
+  if (pathname.startsWith("/practice/")) return { id: "practice-play", title: "문제" };
+  if (pathname === "/path") return { id: "path", title: "나의 급수" };
   return { id: "other", title: "한수" };
 }
 
@@ -26,28 +27,27 @@ export function buildPageContext(pathname: string, progress: PageAskProgress): s
   const lines: string[] = [
     `앱: 한수`,
     `현재 화면: ${meta.title} (${pathname})`,
-    `톤: 바둑은 생각보다 어렵지 않다.`,
+    `톤: 바둑은 생각보다 어렵지 않다. 급수가 올라가는 게 핵심 보상.`,
   ];
 
   if (progress.rank) {
-    const track = TRACKS[progress.rank.track];
     lines.push(
-      `급수: ${progress.rank.label}`,
+      `현재 급수: ${progress.rank.label}`,
       `의미: ${progress.rank.meaning}`,
-      `트랙: ${track.label} · ${track.boardSize}줄 · ${track.blurb}`,
+      `판 크기: ${progress.rank.boardSize}줄`,
       `진도: ${progress.done}/${progress.total}`,
       `연속: ${progress.streakDays}일 · 오늘 미션 ${progress.missionDoneToday ? "완료" : "미완료"}`,
     );
-    if (progress.curriculumTitle) lines.push(`커리큘럼: ${progress.curriculumTitle}`);
+    if (progress.curriculumTitle) lines.push(`학습 구간: ${progress.curriculumTitle}`);
     if (progress.nextTitle) lines.push(`다음 레슨: ${progress.nextTitle}`);
   }
 
   if (pathname === "/welcome") {
-    lines.push("구성: 5줄 판 미리보기, 시작 → 급수 선택 → 입장 → 첫 레슨. 모르면 ‘처음이에요’.");
+    lines.push("구성: 7줄 판 미리보기, 시작 → 급수 선택 → 입장 → 첫 레슨. 모르면 ‘처음이에요’.");
   } else if (pathname === "/") {
-    lines.push("구성: 연속 학습, 오늘 미션, 트랙 캐릭터, 다음 레슨 CTA. 미션은 레슨 1개 완료.");
+    lines.push("구성: 나의 급수, 연속 학습, 오늘 미션, 돌 동료, 다음 레슨 CTA. 미션은 레슨 1개 완료.");
   } else if (pathname === "/learn") {
-    lines.push("구성: 챕터·레슨 맵. 완료/현재/잠김. 앞 레슨 후 다음 개방.");
+    lines.push("구성: 현재 급수·판 크기, 챕터·레슨 맵. 완료/현재/잠김. 앞 레슨 후 다음 개방.");
   } else if (pathname.startsWith("/learn/")) {
     const lessonId = pathname.split("/")[2] ?? "";
     lines.push(`레슨 ID: ${lessonId}`);
@@ -74,8 +74,10 @@ export function buildPageContext(pathname: string, progress: PageAskProgress): s
         }
       }
     }
+  } else if (pathname === "/practice" || pathname.startsWith("/practice/")) {
+    lines.push("구성: 개념과 분리된 문제 풀이. 해금된 레슨의 문제만 모아서 품.");
   } else if (pathname === "/path") {
-    lines.push("구성: 현재 급수, 목표, 씨앗→숲 경로. 목표는 선택.");
+    lines.push("구성: 지금 급수, 목표 급수, 급수 사다리(처음이에요→1급). 목표는 선택.");
   }
 
   return lines.join("\n");

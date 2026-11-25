@@ -1,0 +1,569 @@
+{
+  "meta": {
+    "apiRank": "3k",
+    "file": "g3",
+    "count": 10,
+    "fetchedAt": "2026-11-25T01:46:19.195Z",
+    "source": "handmade"
+  },
+  "problems": [
+    {
+      "id": "g3-01",
+      "sourceId": "handmade-g3-01",
+      "apiRank": "3k",
+      "rankDisplay": "3급",
+      "prompt": "형세에 맞는 첫 화점 수는?",
+      "setup": [],
+      "size": 19,
+      "answer": [
+        {
+          "x": 3,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 15
+        },
+        {
+          "x": 15,
+          "y": 3
+        },
+        {
+          "x": 15,
+          "y": 15
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g3-02",
+      "sourceId": "handmade-g3-02",
+      "apiRank": "3k",
+      "rankDisplay": "3급",
+      "prompt": "급소 따내기 — 단수인 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 10
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 9,
+            "y": 10
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 10,
+            "y": 9
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 11,
+            "y": 10
+          }
+        }
+      ],
+      "size": 19,
+      "answer": {
+        "x": 10,
+        "y": 11
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g3-03",
+      "sourceId": "handmade-g3-03",
+      "apiRank": "3k",
+      "rankDisplay": "3급",
+      "prompt": "흑이 단수예요. 먼저 도망가세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 6
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 6
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 6,
+            "y": 5
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 7,
+            "y": 6
+          }
+        }
+      ],
+      "size": 19,
+      "answer": {
+        "x": 6,
+        "y": 7
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g3-04",
+      "sourceId": "handmade-g3-04",
+      "apiRank": "3k",
+      "rankDisplay": "3급",
+      "prompt": "그물로 가두세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 9,
+            "y": 9
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 10
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 10,
+            "y": 8
+          }
+        }
+      ],
+      "size": 19,
+      "answer": {
+        "x": 10,
+        "y": 9
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g3-05",
+      "sourceId": "handmade-g3-05",
+      "apiRank": "3k",
+      "rankDisplay": "3급",
+      "prompt": "두 눈을 완성하세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 10,
+            "y": 8
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 10,
+            "y": 9
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 8,
+            "y": 10
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 9,
+            "y": 10
+          }
+        }
+      ],
+      "size": 19,
+      "answer": {
+        "x": 10,
+        "y": 10
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g3-06",
+      "sourceId": "handmade-g3-06",
+      "apiRank": "3k",
+      "rankDisplay": "3급",
+      "prompt": "침투 급소를 두세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 14,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 15,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 16,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 16,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 16,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 13,
+            "y": 3
+          }
+        }
+      ],
+      "size": 19,
+      "answer": [
+        {
+          "x": 15,
+          "y": 3
+        },
+        {
+          "x": 14,
+          "y": 3
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g3-07",
+      "sourceId": "handmade-g3-07",
+      "apiRank": "3k",
+      "rankDisplay": "3급",
+      "prompt": "끊긴 흑을 이으세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 10
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 9,
+            "y": 10
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 8,
+            "y": 11
+          }
+        }
+      ],
+      "size": 19,
+      "answer": {
+        "x": 8,
+        "y": 10
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g3-08",
+      "sourceId": "handmade-g3-08",
+      "apiRank": "3k",
+      "rankDisplay": "3급",
+      "prompt": "끝내기 — 경계를 미세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 5
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 5
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 5
+          }
+        }
+      ],
+      "size": 19,
+      "answer": [
+        {
+          "x": 3,
+          "y": 4
+        },
+        {
+          "x": 4,
+          "y": 4
+        },
+        {
+          "x": 5,
+          "y": 4
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g3-09",
+      "sourceId": "handmade-g3-09",
+      "apiRank": "3k",
+      "rankDisplay": "3급",
+      "prompt": "축의 첫 단수를 치세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 4
+          }
+        }
+      ],
+      "size": 19,
+      "answer": {
+        "x": 6,
+        "y": 5
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g3-10",
+      "sourceId": "handmade-g3-10",
+      "apiRank": "3k",
+      "rankDisplay": "3급",
+      "prompt": "백으로 살릴 급소를 두세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 10
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 11,
+            "y": 10
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 12,
+            "y": 10
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 11
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 12,
+            "y": 11
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 12
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 11,
+            "y": 12
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 12,
+            "y": 12
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 9,
+            "y": 10
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 9,
+            "y": 11
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 9,
+            "y": 12
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 13,
+            "y": 10
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 13,
+            "y": 11
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 13,
+            "y": 12
+          }
+        }
+      ],
+      "size": 19,
+      "answer": {
+        "x": 11,
+        "y": 11
+      },
+      "playAs": "W"
+    }
+  ]
+}

@@ -2,9 +2,9 @@ import { useState } from "react";
 import { PrimaryButton } from "./Screen";
 import { Sheet } from "./Sheet";
 
-/** 5→19 판이 넓어지는 길을 한눈에 */
-export function BoardGrowth({ active = 5 }: { active?: 5 | 7 | 9 | 13 | 19 }) {
-  const sizes = [5, 7, 9, 13, 19] as const;
+/** 7→19 판이 넓어지는 길을 한눈에 */
+export function BoardGrowth({ active = 7 }: { active?: 7 | 9 | 13 | 19 }) {
+  const sizes = [7, 9, 13, 19] as const;
   return (
     <div className="rounded-[24px] bg-toss-soft2 p-4">
       <div className="flex items-end justify-between gap-1.5">
@@ -38,7 +38,7 @@ export function BoardGrowth({ active = 5 }: { active?: 5 | 7 | 9 | 13 | 19 }) {
 }
 
 /** 왜 이 판으로 배우는지 — ‘어렵지 않다’를 먼저 */
-export function WhySmallBoard({ size }: { size: 5 | 7 | 9 | 13 | 19 }) {
+export function WhySmallBoard({ size }: { size: 7 | 9 | 13 | 19 }) {
   const [open, setOpen] = useState(false);
   if (size === 19) return null;
   return (

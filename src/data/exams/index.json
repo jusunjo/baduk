@@ -1,0 +1,54 @@
+{
+  "seedUser": "hansu-handmade-v1",
+  "total": 90,
+  "apiCallsUsed": 0,
+  "ranks": [
+    {
+      "file": "g30.json",
+      "apiRank": "30k",
+      "count": 10
+    },
+    {
+      "file": "g25.json",
+      "apiRank": "25k",
+      "count": 10
+    },
+    {
+      "file": "g20.json",
+      "apiRank": "20k",
+      "count": 10
+    },
+    {
+      "file": "g15.json",
+      "apiRank": "15k",
+      "count": 10
+    },
+    {
+      "file": "g10.json",
+      "apiRank": "10k",
+      "count": 10
+    },
+    {
+      "file": "g7.json",
+      "apiRank": "7k",
+      "count": 10
+    },
+    {
+      "file": "g5.json",
+      "apiRank": "5k",
+      "count": 10
+    },
+    {
+      "file": "g3.json",
+      "apiRank": "3k",
+      "count": 10
+    },
+    {
+      "file": "g1.json",
+      "apiRank": "1k",
+      "count": 10
+    }
+  ],
+  "updatedAt": "2026-11-25T01:46:19.196Z",
+  "note": "자작 승급 시험 (급수당 최대 10문제). RapidAPI 시드는 fetch:exams."
+}

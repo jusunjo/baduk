@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Board } from "@/components/Board";
-import { WhySmallBoard } from "@/components/BoardSizes";
+import { BoardBuddy } from "@/components/BoardBuddy";
 import { CompleteCard, Confetti, PraiseBadge, pickPraise } from "@/components/Celebrate";
 import { LearningRoadmap } from "@/components/LearningRoadmap";
 import { PrimaryButton, Reveal, Screen, SecondaryButton } from "@/components/Screen";
@@ -12,11 +12,55 @@ import {
   type LessonStep,
   type Point,
   type Problem,
+  type StoneColor,
 } from "@/data/curriculum";
+import { aiBoard, gridToStones, useAiBoard } from "@/lib/aiBoard";
+import { aiChat } from "@/lib/aiChat";
 import { applySetup, computeTerritory, emptyBoard, isAnswer, playMove, resolveAnswer, type Grid } from "@/lib/board";
 import { haptic } from "@/lib/native";
 import { useProgress } from "@/lib/progress";
 import { actions } from "@/lib/store";
+
+function useSyncAiBoard(opts: {
+  lessonId: string;
+  board: Grid;
+  prompt?: string;
+  playAs?: StoneColor;
+  stepKey: string;
+}) {
+  const { feedback } = useAiBoard();
+  useEffect(() => {
+    aiBoard.setSession({
+      lessonId: opts.lessonId,
+      size: opts.board.length,
+      stones: gridToStones(opts.board),
+      prompt: opts.prompt,
+      playAs: opts.playAs,
+    });
+  }, [opts.lessonId, opts.board, opts.prompt, opts.playAs]);
+
+  useEffect(() => {
+    aiBoard.clearFeedback();
+    aiChat.clear();
+  }, [opts.stepKey]);
+
+  useEffect(() => () => aiBoard.clearSession(), []);
+
+  return feedback;
+}
+
+function mergeHighlights(base: Point[] | undefined, ai: Point[] | undefined): Point[] {
+  if (!base?.length && !ai?.length) return [];
+  const seen = new Set<string>();
+  const out: Point[] = [];
+  for (const p of [...(base ?? []), ...(ai ?? [])]) {
+    const k = `${p.x},${p.y}`;
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(p);
+  }
+  return out;
+}
 
 type LegacyPhase = "play" | "bridge" | "done";
 type SessionPhase = "concept" | "example" | "problems" | "review" | "bridge" | "done";
@@ -160,6 +204,14 @@ function SessionPlay({
   const activeHighlight = currentProblem?.highlight ?? teachStep?.highlight;
   const activeWrongHint = currentProblem?.wrongHint ?? teachStep?.wrongHint;
   const activeAutoNext = currentProblem?.autoNext ?? teachStep?.autoNext;
+
+  const aiFeedback = useSyncAiBoard({
+    lessonId: lesson.id,
+    board,
+    prompt: currentProblem?.prompt ?? teachStep?.text,
+    playAs: activePlayAs,
+    stepKey: `${phase}-${stepIdx}-${problemIdx}-${reviewQueue[0] ?? ""}`,
+  });
   const activeReply = currentProblem?.reply ?? teachStep?.reply;
   const activeFeedback = currentProblem?.feedback ?? teachStep?.feedback;
   const activeLiberties = currentProblem?.libertiesFor ?? lesson.libertiesFor;
@@ -350,6 +402,7 @@ function SessionPlay({
     const after = isAnswer(point, resolved, board) ? playMove(board, point, activePlayAs) : null;
     if (after) {
       haptic.correct();
+      aiBoard.clearFeedback();
       const opponent = activePlayAs === "W" ? "B" : "W";
       const captured =
         board.flat().filter((c) => c === opponent).length - after.flat().filter((c) => c === opponent).length;
@@ -539,11 +592,18 @@ function SessionPlay({
           <div className="max-h-full w-full overflow-y-auto">
             <CompleteCard
               kind={!nxt ? "track" : chapterEnds ? "chapter" : "lesson"}
-              title={!nxt ? `${p.curriculum?.title ?? ""} 과정을 마쳤어요` : chapterEnds ? chapterTitle : lesson.title}
+              title={
+                !nxt
+                  ? `${p.rank!.label}, 이 구간을 마쳤어요`
+                  : chapterEnds
+                    ? chapterTitle
+                    : lesson.title
+              }
               done={p.done}
               total={p.total}
               chapterDone={chapterLessons.filter((l) => p.completed[l.id]).length}
               chapterTotal={chapterLessons.length}
+              rankLabel={p.rank!.label}
             />
           </div>
         ) : teachStep?.visual === "roadmap" ? (
@@ -559,15 +619,17 @@ function SessionPlay({
               <Board
                 size={board.length}
                 board={board}
-                highlights={
+                highlights={mergeHighlights(
                   playing
                     ? []
                     : needsPlay
-                      ? (activeHighlight ?? (resolved === "any" ? [] : resolved)).filter((h) => !board[h.y][h.x])
+                      ? (activeHighlight ?? (resolved === "any" ? [] : resolved)).filter((h) => !board[h.y]?.[h.x])
                       : solved
                         ? []
-                        : activeHighlight
-                }
+                        : activeHighlight,
+                  aiFeedback?.highlights,
+                )}
+                ghosts={aiFeedback?.ghosts}
                 territory={territory}
                 libertiesFor={activeLiberties}
                 onPlay={onPlay}
@@ -582,17 +644,16 @@ function SessionPlay({
         )}
       </div>
 
-      <div className="mt-3 flex min-h-[44px] shrink-0 items-center justify-center px-1 text-center">
+      <div className="mt-3 flex min-h-[52px] shrink-0 flex-col items-stretch justify-center gap-2 px-0 text-center">
         {hint && needsPlay ? (
           <Reveal key={hint}>
-            <p className="break-keep text-[14px] font-medium text-toss-orange">{hint}</p>
+            <p className="break-keep px-1 text-[14px] font-medium text-toss-orange">{hint}</p>
           </Reveal>
         ) : teachStep?.score && (phase === "concept" || phase === "example") ? (
           <Score territory={territory} />
-        ) : playingPhase && !teachStep?.visual ? (
-          <WhySmallBoard size={lesson.boardSize} />
         ) : null}
       </div>
+      {playingPhase && !teachStep?.visual ? <BoardBuddy /> : null}
     </Screen>
   );
 }
@@ -680,6 +741,14 @@ function LegacyPlay({
   const nextChapter = nxt ? findLesson(p.rank!.track, nxt.id)?.chapter : null;
   const chapterEnds = !!nextChapter && nextChapter.id !== chapterId;
 
+  const aiFeedback = useSyncAiBoard({
+    lessonId: lesson.id,
+    board,
+    prompt: step?.text,
+    playAs: step?.playAs ?? "B",
+    stepKey: `${phase}-${stepIdx}`,
+  });
+
   const goNext = (target = step?.goto ?? stepIdx + 1) => {
     if (target < total) {
       setBoard(entryBoard(lesson, target, board));
@@ -706,6 +775,7 @@ function LegacyPlay({
     const after = isAnswer(point, resolved, board) ? playMove(board, point, step.playAs ?? "B") : null;
     if (after) {
       haptic.correct();
+      aiBoard.clearFeedback();
       const opponent = step.playAs === "W" ? "B" : "W";
       const captured =
         board.flat().filter((c) => c === opponent).length - after.flat().filter((c) => c === opponent).length;
@@ -844,11 +914,18 @@ function LegacyPlay({
           <div className="max-h-full w-full overflow-y-auto">
             <CompleteCard
               kind={!nxt ? "track" : chapterEnds ? "chapter" : "lesson"}
-              title={!nxt ? `${p.curriculum?.title ?? ""} 과정을 마쳤어요` : chapterEnds ? chapterTitle : lesson.title}
+              title={
+                !nxt
+                  ? `${p.rank!.label}, 이 구간을 마쳤어요`
+                  : chapterEnds
+                    ? chapterTitle
+                    : lesson.title
+              }
               done={p.done}
               total={p.total}
               chapterDone={chapterLessons.filter((l) => p.completed[l.id]).length}
               chapterTotal={chapterLessons.length}
+              rankLabel={p.rank!.label}
             />
           </div>
         ) : step.visual === "roadmap" ? (
@@ -864,15 +941,17 @@ function LegacyPlay({
               <Board
                 size={size}
                 board={board}
-                highlights={
+                highlights={mergeHighlights(
                   playing
                     ? []
                     : needsPlay
-                      ? (step.highlight ?? (resolved === "any" ? [] : resolved)).filter((h) => !board[h.y][h.x])
+                      ? (step.highlight ?? (resolved === "any" ? [] : resolved)).filter((h) => !board[h.y]?.[h.x])
                       : solved || phase !== "play"
                         ? []
-                        : step.highlight
-                }
+                        : step.highlight,
+                  aiFeedback?.highlights,
+                )}
+                ghosts={aiFeedback?.ghosts}
                 territory={territory}
                 libertiesFor={lesson.libertiesFor}
                 onPlay={onPlay}
@@ -892,17 +971,16 @@ function LegacyPlay({
         )}
       </div>
 
-      <div className="mt-3 flex min-h-[44px] shrink-0 items-center justify-center px-1 text-center">
+      <div className="mt-3 flex min-h-[52px] shrink-0 flex-col items-stretch justify-center gap-2 px-0 text-center">
         {hint && needsPlay ? (
           <Reveal key={hint}>
-            <p className="break-keep text-[14px] font-medium text-toss-orange">{hint}</p>
+            <p className="break-keep px-1 text-[14px] font-medium text-toss-orange">{hint}</p>
           </Reveal>
         ) : step.score && phase === "play" ? (
           <Score territory={territory} />
-        ) : step.visual || phase !== "play" ? null : (
-          <WhySmallBoard size={lesson.boardSize} />
-        )}
+        ) : null}
       </div>
+      {phase === "play" && !step.visual ? <BoardBuddy /> : null}
     </Screen>
   );
 }

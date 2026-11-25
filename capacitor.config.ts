@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.apelo.hansu",
+  appId: "com.jusun.hansu",
   appName: "한수",
   webDir: "dist",
   backgroundColor: "#ffffff",

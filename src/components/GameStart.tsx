@@ -1,22 +1,21 @@
 import { useEffect, useState } from "react";
 import { haptic } from "@/lib/native";
 import type { TrackId } from "@/lib/ranks";
-import { TRACKS } from "@/lib/ranks";
-import { CompanionArt } from "./Companion";
+import { Logo } from "./Logo";
 
 type Phase = "board" | "stone" | "title" | "out";
 
 export function GameStart({
   boardSize,
-  track,
+  rankLabel,
   onDone,
 }: {
-  boardSize: 5 | 7 | 9 | 13 | 19;
+  boardSize: 7 | 9 | 13 | 19;
   track: TrackId;
+  rankLabel: string;
   onDone: () => void;
 }) {
   const [phase, setPhase] = useState<Phase>("board");
-  const label = TRACKS[track].label;
 
   useEffect(() => {
     const timers = [
@@ -79,12 +78,12 @@ export function GameStart({
           phase === "title" || phase === "out" ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
         }`}
       >
-        <CompanionArt track={track} stage={0} mood="intro" size={56} />
+        <Logo size={56} className="animate-pop" />
         <p className="mt-3 font-display text-[13px] font-semibold tracking-wide text-white/55">한수</p>
         <p className="mt-1 text-[22px] font-bold tracking-tight text-white">
-          {label} 구간 시작
+          {rankLabel}로 시작
         </p>
-        <p className="mt-1 text-[14px] font-medium text-white/60">{boardSize}줄 · 어렵지 않아요</p>
+        <p className="mt-1 text-[14px] font-medium text-white/60">{boardSize}줄 판 · 어렵지 않아요</p>
       </div>
     </div>
   );

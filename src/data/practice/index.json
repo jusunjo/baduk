@@ -1,0 +1,33 @@
+{
+  "totalConcepts": 65,
+  "totalProblems": 860,
+  "tracks": [
+    {
+      "track": "seed",
+      "concepts": 17,
+      "problems": 190
+    },
+    {
+      "track": "sprout",
+      "concepts": 12,
+      "problems": 180
+    },
+    {
+      "track": "leaf",
+      "concepts": 12,
+      "problems": 180
+    },
+    {
+      "track": "tree",
+      "concepts": 12,
+      "problems": 180
+    },
+    {
+      "track": "forest",
+      "concepts": 12,
+      "problems": 130
+    }
+  ],
+  "updatedAt": "2026-11-25T04:59:07.412Z",
+  "source": "goproblems.com"
+}

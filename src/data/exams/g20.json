@@ -1,0 +1,599 @@
+{
+  "meta": {
+    "apiRank": "20k",
+    "file": "g20",
+    "count": 10,
+    "fetchedAt": "2026-11-25T01:46:19.192Z",
+    "source": "handmade"
+  },
+  "problems": [
+    {
+      "id": "g20-01",
+      "sourceId": "handmade-g20-01",
+      "apiRank": "20k",
+      "rankDisplay": "20급",
+      "prompt": "흰 돌을 단수로 만드세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 1
+          }
+        }
+      ],
+      "size": 7,
+      "answer": [
+        {
+          "x": 3,
+          "y": 2
+        },
+        {
+          "x": 2,
+          "y": 3
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g20-02",
+      "sourceId": "handmade-g20-02",
+      "apiRank": "20k",
+      "rankDisplay": "20급",
+      "prompt": "그물로 가두세요. 달아날 길을 막아요.",
+      "explanation": "옆길을 막으면 그물이 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 4,
+        "y": 3
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g20-03",
+      "sourceId": "handmade-g20-03",
+      "apiRank": "20k",
+      "rankDisplay": "20급",
+      "prompt": "단수인 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 2
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 4,
+        "y": 3
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g20-04",
+      "sourceId": "handmade-g20-04",
+      "apiRank": "20k",
+      "rankDisplay": "20급",
+      "prompt": "흑을 이어서 한 덩어리로 만드세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 1
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 2
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g20-05",
+      "sourceId": "handmade-g20-05",
+      "apiRank": "20k",
+      "rankDisplay": "20급",
+      "prompt": "흰 두 점이 단수예요. 따내세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 4,
+        "y": 4
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g20-06",
+      "sourceId": "handmade-g20-06",
+      "apiRank": "20k",
+      "rankDisplay": "20급",
+      "prompt": "흑이 살려면 어디를 둘까요?",
+      "tip": "두 눈을 만드는 급소예요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 1,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 1,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 4
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 4,
+        "y": 4
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g20-07",
+      "sourceId": "handmade-g20-07",
+      "apiRank": "20k",
+      "rankDisplay": "20급",
+      "prompt": "상대를 먼저 단수로 만드세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 4
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 4
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g20-08",
+      "sourceId": "handmade-g20-08",
+      "apiRank": "20k",
+      "rankDisplay": "20급",
+      "prompt": "귀의 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 0
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 0,
+        "y": 1
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g20-09",
+      "sourceId": "handmade-g20-09",
+      "apiRank": "20k",
+      "rankDisplay": "20급",
+      "prompt": "백으로 두 눈을 완성하세요.",
+      "explanation": "한가운데가 두 번째 눈 자리예요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 4
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 4,
+        "y": 4
+      },
+      "playAs": "W"
+    },
+    {
+      "id": "g20-10",
+      "sourceId": "handmade-g20-10",
+      "apiRank": "20k",
+      "rankDisplay": "20급",
+      "prompt": "끊긴 흑을 한 수로 이으세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 2,
+        "y": 3
+      },
+      "playAs": "B"
+    }
+  ]
+}

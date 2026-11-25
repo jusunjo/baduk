@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Board } from "@/components/Board";
-import { CompanionArt } from "@/components/Companion";
 import { GameStart } from "@/components/GameStart";
 import { Logo } from "@/components/Logo";
 import { RankOptions } from "@/components/RankPicker";
@@ -25,7 +24,9 @@ export function WelcomePage() {
   }, [current, navigate, rank.track]);
 
   if (step === "boot") {
-    return <GameStart boardSize={rank.boardSize} track={rank.track} onDone={finishBoot} />;
+    return (
+      <GameStart boardSize={rank.boardSize} track={rank.track} rankLabel={rank.label} onDone={finishBoot} />
+    );
   }
 
   if (step === "intro") {
@@ -65,25 +66,25 @@ export function WelcomePage() {
 }
 
 function TitleScreen({ onStart }: { onStart: () => void }) {
-  const [board, setBoard] = useState<Grid>(() => emptyBoard(5));
+  const [board, setBoard] = useState<Grid>(() => emptyBoard(7));
   const [lastMove, setLastMove] = useState<{ x: number; y: number } | null>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const show = window.setTimeout(() => setReady(true), 40);
     const black = window.setTimeout(() => {
-      const next = playMove(emptyBoard(5), { x: 2, y: 2 }, "B");
+      const next = playMove(emptyBoard(7), { x: 3, y: 3 }, "B");
       if (next) {
         setBoard(next);
-        setLastMove({ x: 2, y: 2 });
+        setLastMove({ x: 3, y: 3 });
         haptic.tap();
       }
     }, 520);
     const white = window.setTimeout(() => {
       setBoard((prev) => {
-        const next = playMove(prev, { x: 3, y: 2 }, "W");
+        const next = playMove(prev, { x: 4, y: 3 }, "W");
         if (next) {
-          setLastMove({ x: 3, y: 2 });
+          setLastMove({ x: 4, y: 3 });
           haptic.tap();
           return next;
         }
@@ -104,26 +105,21 @@ function TitleScreen({ onStart }: { onStart: () => void }) {
       >
         <div className="flex items-center gap-2 pt-2">
           <Logo size={26} />
-          <span className="text-[13px] font-semibold text-toss-mute">쉬운 바둑</span>
+          <span className="font-display text-[17px] font-semibold tracking-tight text-toss-ink">한수</span>
         </div>
 
         <div className="mt-7">
-          <h1 className="font-display text-[44px] font-bold leading-none tracking-tight text-toss-ink">한수</h1>
-          <p className="mt-3 break-keep text-[18px] font-semibold leading-snug tracking-tight text-toss-ink">
+          <h1 className="break-keep text-[26px] font-bold leading-[1.4] tracking-tight text-toss-ink">
             바둑, 생각보다 어렵지 않아요
-          </p>
+          </h1>
           <p className="mt-2 max-w-[20em] break-keep text-[15px] leading-relaxed text-toss-body">
             판 위에 돌을 놓아 보며 규칙을 익혀요. 몰라도 바로 시작할 수 있어요.
           </p>
         </div>
 
         <div className="relative mt-8 flex flex-1 items-center justify-center">
-          <div className="absolute -right-1 -top-3 z-10 sm:right-2">
-            <CompanionArt track="seed" stage={0} mood="intro" size={64} />
-          </div>
           <div className="w-full max-w-[340px] rounded-[32px] bg-gradient-to-b from-[#f7efe2] to-white p-3.5 shadow-[0_16px_40px_rgba(92,61,30,0.12)] ring-1 ring-black/[0.04]">
-            <Board size={5} board={board} lastMove={lastMove} interactive={false} showSize={false} className="max-w-none" />
-            <p className="mt-2.5 text-center text-[12px] font-semibold text-[#8a6a3d]">5줄 판 · 첫 돌부터</p>
+            <Board size={7} board={board} lastMove={lastMove} interactive={false} showSize={false} className="max-w-none" />
           </div>
         </div>
       </div>

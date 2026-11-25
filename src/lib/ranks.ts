@@ -20,7 +20,7 @@ export interface Rank {
   /** 급수 옆 설명글 */
   meaning: string;
   /** 이 급수에서 주로 쓰는 판 크기 */
-  boardSize: 5 | 7 | 9 | 13 | 19;
+  boardSize: 7 | 9 | 13 | 19;
   /** 학습 트랙 키 */
   track: TrackId;
   /** 정렬용 실력 점수 (클수록 강함) */
@@ -31,13 +31,13 @@ export type TrackId = "seed" | "sprout" | "leaf" | "tree" | "forest";
 
 export const TRACKS: Record<
   TrackId,
-  { label: string; boardSize: 5 | 7 | 9 | 13 | 19; blurb: string }
+  { label: string; boardSize: 7 | 9 | 13 | 19; blurb: string }
 > = {
-  seed: { label: "씨앗", boardSize: 5, blurb: "규칙의 뼈대만, 부담 없이" },
-  sprout: { label: "새싹", boardSize: 7, blurb: "활로·두 눈도 생각보다 단순해요" },
-  leaf: { label: "잎새", boardSize: 9, blurb: "집 짓기까지, 한 판을 끝낼 수 있어요" },
-  tree: { label: "나무", boardSize: 13, blurb: "포석·사활도 기본만 익히면 돼요" },
-  forest: { label: "숲", boardSize: 19, blurb: "큰 판도 같은 규칙으로 두어요" },
+  seed: { label: "입문", boardSize: 7, blurb: "규칙의 뼈대만, 부담 없이" },
+  sprout: { label: "기초", boardSize: 7, blurb: "활로·두 눈도 생각보다 단순해요" },
+  leaf: { label: "중급", boardSize: 9, blurb: "집 짓기까지, 한 판을 끝낼 수 있어요" },
+  tree: { label: "상급", boardSize: 13, blurb: "포석·사활도 기본만 익히면 돼요" },
+  forest: { label: "실전", boardSize: 19, blurb: "큰 판도 같은 규칙으로 두어요" },
 };
 
 export const RANKS: Rank[] = [
@@ -46,7 +46,7 @@ export const RANKS: Rank[] = [
     label: "처음이에요",
     short: "입문",
     meaning: "몰라도 괜찮아요. 바둑은 처음부터 어렵지 않게 익힐 수 있어요",
-    boardSize: 5,
+    boardSize: 7,
     track: "seed",
     level: 0,
   },
@@ -55,7 +55,7 @@ export const RANKS: Rank[] = [
     label: "30급",
     short: "30급",
     meaning: "규칙을 막 알기 시작했어요. 지금은 감각만 잡아도 충분해요",
-    boardSize: 5,
+    boardSize: 7,
     track: "seed",
     level: 1,
   },

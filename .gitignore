@@ -5,5 +5,9 @@ dist
 .env
 .env.*
 !.env.example
+# RapidAPI / GoProblems 원본 응답 (용량·재배포). 변환본 JSON 은 커밋 가능
+src/data/exams/raw/
+src/data/practice/raw/
+src/data/practice/raw-goproblems/
 ios/App/App/public
 android/app/src/main/assets/public

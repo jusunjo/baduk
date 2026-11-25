@@ -1,0 +1,487 @@
+{
+  "meta": {
+    "apiRank": "25k",
+    "file": "g25",
+    "count": 10,
+    "fetchedAt": "2026-11-25T01:46:19.192Z",
+    "source": "handmade"
+  },
+  "problems": [
+    {
+      "id": "g25-01",
+      "sourceId": "handmade-g25-01",
+      "apiRank": "25k",
+      "rankDisplay": "25급",
+      "prompt": "단수인 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 3
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g25-02",
+      "sourceId": "handmade-g25-02",
+      "apiRank": "25k",
+      "rankDisplay": "25급",
+      "prompt": "흑이 단수예요. 도망갈 칸에 두세요.",
+      "tip": "남은 숨구멍 쪽으로 늘어요.",
+      "explanation": "단수일 때 늘어서 숨구멍을 늘려요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 4
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g25-03",
+      "sourceId": "handmade-g25-03",
+      "apiRank": "25k",
+      "rankDisplay": "25급",
+      "prompt": "오른쪽 아래를 막아 두 번째 눈을 완성하세요.",
+      "explanation": "눈이 두 개면 잡혀도 살아요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 4,
+        "y": 4
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g25-04",
+      "sourceId": "handmade-g25-04",
+      "apiRank": "25k",
+      "rankDisplay": "25급",
+      "prompt": "흰 돌이 아래로 달아나지 못하게 막아 보세요.",
+      "explanation": "달아날 길을 먼저 막는 게 그물이에요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 4
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g25-05",
+      "sourceId": "handmade-g25-05",
+      "apiRank": "25k",
+      "rankDisplay": "25급",
+      "prompt": "귀 쪽 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 5
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 5,
+        "y": 6
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g25-06",
+      "sourceId": "handmade-g25-06",
+      "apiRank": "25k",
+      "rankDisplay": "25급",
+      "prompt": "흰 두 점 사이를 끊어 보세요.",
+      "explanation": "끊으면 각각 따로 잡으러 갈 수 있어요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 3
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g25-07",
+      "sourceId": "handmade-g25-07",
+      "apiRank": "25k",
+      "rankDisplay": "25급",
+      "prompt": "흑으로 가운데를 지켜 가짜 눈을 막으세요.",
+      "explanation": "가운데를 지키면 눈이 진짜로 남아요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 5
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 3
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g25-08",
+      "sourceId": "handmade-g25-08",
+      "apiRank": "25k",
+      "rankDisplay": "25급",
+      "prompt": "변의 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 1,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 0,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 6
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 2,
+        "y": 5
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g25-09",
+      "sourceId": "handmade-g25-09",
+      "apiRank": "25k",
+      "rankDisplay": "25급",
+      "prompt": "먼저 단수를 치세요.",
+      "tip": "축의 첫 수는 단수예요.",
+      "explanation": "단수를 이어 치면 축이 시작돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 1
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 2
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g25-10",
+      "sourceId": "handmade-g25-10",
+      "apiRank": "25k",
+      "rankDisplay": "25급",
+      "prompt": "흰 돌이 단수예요. 따내세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 3,
+        "y": 5
+      },
+      "playAs": "B"
+    }
+  ]
+}

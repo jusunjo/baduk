@@ -1,0 +1,480 @@
+{
+  "meta": {
+    "apiRank": "10k",
+    "file": "g10",
+    "count": 10,
+    "fetchedAt": "2026-11-25T01:46:19.193Z",
+    "source": "handmade"
+  },
+  "problems": [
+    {
+      "id": "g10-01",
+      "sourceId": "handmade-g10-01",
+      "apiRank": "10k",
+      "rankDisplay": "10급",
+      "prompt": "왼쪽 위 화점 근처에 첫 수를 두어 보세요.",
+      "setup": [],
+      "size": 13,
+      "answer": [
+        {
+          "x": 3,
+          "y": 3
+        },
+        {
+          "x": 2,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 4
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g10-02",
+      "sourceId": "handmade-g10-02",
+      "apiRank": "10k",
+      "rankDisplay": "10급",
+      "prompt": "네 화점 중 한곳에 두세요.",
+      "setup": [],
+      "size": 13,
+      "answer": [
+        {
+          "x": 3,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 9
+        },
+        {
+          "x": 9,
+          "y": 3
+        },
+        {
+          "x": 9,
+          "y": 9
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g10-03",
+      "sourceId": "handmade-g10-03",
+      "apiRank": "10k",
+      "rankDisplay": "10급",
+      "prompt": "흑이 이미 한 구석을 잡았어요. 다른 구석으로!",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        }
+      ],
+      "size": 13,
+      "answer": [
+        {
+          "x": 3,
+          "y": 9
+        },
+        {
+          "x": 9,
+          "y": 3
+        },
+        {
+          "x": 9,
+          "y": 9
+        },
+        {
+          "x": 2,
+          "y": 9
+        },
+        {
+          "x": 9,
+          "y": 2
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g10-04",
+      "sourceId": "handmade-g10-04",
+      "apiRank": "10k",
+      "rankDisplay": "10급",
+      "prompt": "흰 돌이 단수예요. 따내는 수는 강한 선수예요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 6,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 6
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 6,
+        "y": 7
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g10-05",
+      "sourceId": "handmade-g10-05",
+      "apiRank": "10k",
+      "rankDisplay": "10급",
+      "prompt": "가장 급한 수(단수 처리)를 두세요.",
+      "tip": "내 돌이 단수예요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 5
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 6,
+            "y": 5
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 5,
+        "y": 6
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g10-06",
+      "sourceId": "handmade-g10-06",
+      "apiRank": "10k",
+      "rankDisplay": "10급",
+      "prompt": "가운데를 지키면 두 눈으로 살 수 있어요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 5
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 5,
+            "y": 7
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 7
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 7,
+            "y": 7
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 6,
+        "y": 6
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g10-07",
+      "sourceId": "handmade-g10-07",
+      "apiRank": "10k",
+      "rankDisplay": "10급",
+      "prompt": "흰 진영 안쪽 빈칸에 흑으로 들어가 보세요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 9,
+            "y": 9
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 9
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 9,
+            "y": 10
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 11,
+            "y": 10
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 10,
+            "y": 11
+          }
+        }
+      ],
+      "size": 13,
+      "answer": [
+        {
+          "x": 10,
+          "y": 10
+        },
+        {
+          "x": 11,
+          "y": 9
+        }
+      ],
+      "playAs": "B"
+    },
+    {
+      "id": "g10-08",
+      "sourceId": "handmade-g10-08",
+      "apiRank": "10k",
+      "rankDisplay": "10급",
+      "prompt": "끊긴 흑을 이으세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 6
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 6,
+            "y": 6
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 5,
+            "y": 7
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 5,
+        "y": 6
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g10-09",
+      "sourceId": "handmade-g10-09",
+      "apiRank": "10k",
+      "rankDisplay": "10급",
+      "prompt": "단수인 흰 돌을 따내세요.",
+      "explanation": "단수인 돌을 따내면 돼요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        }
+      ],
+      "size": 13,
+      "answer": {
+        "x": 2,
+        "y": 3
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g10-10",
+      "sourceId": "handmade-g10-10",
+      "apiRank": "10k",
+      "rankDisplay": "10급",
+      "prompt": "흑 경계를 한 줄 미세요.",
+      "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 4,
+            "y": 2
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 4
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 4,
+            "y": 4
+          }
+        }
+      ],
+      "size": 13,
+      "answer": [
+        {
+          "x": 2,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 3
+        },
+        {
+          "x": 4,
+          "y": 3
+        }
+      ],
+      "playAs": "B"
+    }
+  ]
+}

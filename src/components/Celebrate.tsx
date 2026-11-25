@@ -77,6 +77,7 @@ export function CompleteCard({
   total,
   chapterDone,
   chapterTotal,
+  rankLabel,
 }: {
   kind: "lesson" | "chapter" | "track";
   title: string;
@@ -84,8 +85,11 @@ export function CompleteCard({
   total: number;
   chapterDone: number;
   chapterTotal: number;
+  /** 급수 중심 축하 문구용 */
+  rankLabel?: string;
 }) {
-  const badge = kind === "lesson" ? "레슨 완료" : kind === "chapter" ? "챕터 완료" : "과정 졸업";
+  const badge =
+    kind === "lesson" ? "레슨 완료" : kind === "chapter" ? "챕터 완료" : rankLabel ? `${rankLabel} 구간 완료` : "과정 졸업";
   const color = kind === "lesson" ? "bg-toss-blue shadow-[0_8px_0_#1B64DA]" : "bg-toss-orange shadow-[0_8px_0_#d9771a]";
   return (
     <div className="flex w-full flex-col items-center rounded-[28px] bg-toss-soft2 px-5 py-7 text-center">
@@ -109,10 +113,15 @@ export function CompleteCard({
       <p className="mt-1 animate-rise-in break-keep text-[20px] font-bold tracking-tight text-toss-ink" style={{ animationDelay: "220ms" }}>
         {title}
       </p>
+      {kind === "track" && rankLabel && (
+        <p className="mt-2 animate-rise-in break-keep text-[14px] font-medium text-toss-body" style={{ animationDelay: "260ms" }}>
+          이 급수에서 배울 개념을 모두 익혔어요
+        </p>
+      )}
 
       <div className="mt-6 grid w-full animate-rise-in grid-cols-2 gap-2" style={{ animationDelay: "320ms" }}>
         <Meter label="이번 챕터" value={chapterDone} total={chapterTotal} />
-        <Meter label="전체 과정" value={done} total={total} />
+        <Meter label="이 급수" value={done} total={total} />
       </div>
     </div>
   );
