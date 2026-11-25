@@ -1,6 +1,5 @@
 import { RANKS, type Rank, type RankId } from "@/lib/ranks";
 import { haptic } from "@/lib/native";
-import { MiniBoard } from "./Board";
 
 export function RankOptions({
   ranks = RANKS,
@@ -26,42 +25,57 @@ export function RankOptions({
                 onChange(r.id);
               }}
               aria-pressed={on}
-              className={`flex w-full items-start gap-3 rounded-2xl px-3.5 py-3.5 text-left transition active:scale-[0.985] ${
+              style={
                 dark
-                  ? on
-                    ? "bg-duo-blue/15 ring-2 ring-duo-blue"
-                    : "bg-duo-night-2 ring-2 ring-duo-night-line"
+                  ? {
+                      backgroundColor: on ? "rgba(28, 176, 246, 0.16)" : "#1A2C33",
+                      boxShadow: on ? "inset 0 0 0 2px #1CB0F6" : "inset 0 0 0 2px #37464F",
+                    }
+                  : undefined
+              }
+              className={`flex w-full items-center gap-3 rounded-2xl px-3.5 py-3.5 text-left transition active:scale-[0.985] ${
+                dark
+                  ? ""
                   : on
                     ? "bg-toss-blue/10 ring-2 ring-toss-blue"
                     : "bg-toss-soft2 hover:bg-toss-soft"
               }`}
             >
-              <MiniBoard size={r.boardSize} />
-              <span className="min-w-0 flex-1 pt-0.5">
+              <span className="min-w-0 flex-1">
                 <span className="flex flex-wrap items-center gap-1.5">
                   <span
-                    className={`text-[16px] font-extrabold ${
-                      on ? "text-duo-blue" : dark ? "text-white" : "text-toss-ink"
-                    }`}
+                    className="text-[16px] font-extrabold"
+                    style={{
+                      color: on ? "#1CB0F6" : dark ? "#FFFFFF" : undefined,
+                    }}
                   >
                     {r.label}
                   </span>
-                  <span className={`text-[12px] font-bold ${on ? "text-duo-blue/80" : "text-duo-hare"}`}>
+                  <span
+                    className="text-[12px] font-bold"
+                    style={{
+                      color: on ? "rgba(28, 176, 246, 0.85)" : dark ? "#C4CDD1" : undefined,
+                    }}
+                  >
                     {r.boardSize}줄 판
                   </span>
                 </span>
-                <span className={`mt-1 block break-keep text-[13px] leading-snug ${dark ? "text-duo-hare" : "text-toss-mute"}`}>
+                <span
+                  className="mt-1 block break-keep text-[13px] leading-snug"
+                  style={{ color: dark ? "#C4CDD1" : undefined }}
+                >
                   {r.meaning}
                 </span>
               </span>
               <span
-                className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition ${
+                className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition"
+                style={
                   on
-                    ? "bg-duo-blue text-white"
+                    ? { backgroundColor: "#1CB0F6", color: "#FFFFFF" }
                     : dark
-                      ? "bg-duo-night ring-2 ring-duo-night-line"
-                      : "bg-white ring-1 ring-toss-line"
-                }`}
+                      ? { backgroundColor: "#131F24", boxShadow: "inset 0 0 0 2px #37464F" }
+                      : undefined
+                }
                 aria-hidden
               >
                 {on && (
