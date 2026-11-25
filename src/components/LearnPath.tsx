@@ -185,6 +185,9 @@ function buildSections(p: ReturnType<typeof useProgress>): PathSection[] {
   const sections: PathSection[] = [];
   const tones: PathSection["tone"][] = ["blue", "green", "orange", "purple"];
 
+  // 규칙 입문 코스 = 30급 세션의 앞부분
+  const onG30Track = !p.rank || p.rank.id === "beginner" || p.rank.id === "g30";
+
   p.course!.units.forEach((unit, ui) => {
     const nodes: PathNode[] = unit.lessons.map((lesson) => ({
       key: lesson.id,
@@ -196,28 +199,26 @@ function buildSections(p: ReturnType<typeof useProgress>): PathSection[] {
     nodes.push({ key: `chest:${unit.id}`, title: "상자", kind: "chest", unitDone });
     sections.push({
       id: unit.id,
-      title: unit.title,
+      title: onG30Track ? `30급 · ${unit.title}` : unit.title,
       tone: tones[ui % tones.length]!,
       nodes,
     });
   });
 
-  if (p.rank?.id === "beginner" && p.courseComplete) {
+  // 30급 본편(잡기·연결 등) — 입문 코스 뒤에 이어 붙임
+  const g30Mod = onG30Track ? getRankModule("g30") : p.module;
+  if (g30Mod && onG30Track) {
     sections.push({
-      id: "promote-g30",
-      title: "다음 급수",
-      tone: "orange",
-      nodes: [{ key: "promote:g30", title: "30급 시작", kind: "promote", unitDone: true }],
+      ...rankModuleSection(g30Mod, "green"),
+      title: "30급 · 잡기 · 살리기 · 연결",
     });
-  }
-
-  if (p.module) {
+  } else if (p.module) {
     sections.push(rankModuleSection(p.module, "green"));
   }
 
-  // 현재 급수 이후는 잠긴 채로 세로로 이어서 보여 준다
-  const myLevel = p.rank?.level ?? 0;
-  const upcoming = RANKS.filter((r) => r.level > myLevel);
+  // 현재보다 높은 급수만 잠긴 미리보기 (30급은 위 세션에 포함되므로 제외)
+  const myLevel = p.rank?.id === "beginner" ? 1 : (p.rank?.level ?? 0);
+  const upcoming = RANKS.filter((r) => r.level > myLevel && r.id !== "beginner");
   upcoming.forEach((rank, i) => {
     const tone = tones[(sections.length + i) % tones.length]!;
     const mod = getRankModule(rank.id);

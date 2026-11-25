@@ -36,7 +36,9 @@ export function WelcomePage() {
   }, []);
 
   const finishBoot = useCallback(() => {
-    actions.completeOnboarding(current, null);
+    // ‘처음이에요’는 30급 규칙 입문 세션으로 시작
+    const startRank = current === "beginner" ? "g30" : current;
+    actions.completeOnboarding(startRank, null);
     const first = courseLessonsFlat()[0]?.lesson;
     navigate(first ? `/mission/${first.id}` : "/learn", { replace: true });
   }, [current, navigate]);

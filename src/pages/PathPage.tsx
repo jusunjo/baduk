@@ -46,8 +46,9 @@ export function PathPage() {
       <div className="mt-6">
         <p className="duo-t3 mb-3 px-1 text-[13px] font-extrabold uppercase tracking-wide">급수 사다리</p>
         <ul className="space-y-2.5">
-          {RANKS.map((r) => {
-            const state = r.level < myLevel ? "done" : r.level === myLevel ? "now" : "soon";
+          {RANKS.filter((r) => r.id !== "beginner").map((r) => {
+            const state =
+              r.level < myLevel ? "done" : r.level === myLevel || (p.rank.id === "beginner" && r.id === "g30") ? "now" : "soon";
             return (
               <li
                 key={r.id}

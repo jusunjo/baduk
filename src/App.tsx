@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { PageAsk } from "./components/PageAsk";
 import { setupNative } from "./lib/native";
-import { useStore } from "./lib/store";
+import { actions, useStore } from "./lib/store";
 import { ExamPlayPage } from "./pages/ExamPlayPage";
 import { HomePage } from "./pages/HomePage";
 import { LearnPage } from "./pages/LearnPage";
@@ -47,6 +47,11 @@ export function App() {
     document.documentElement.style.backgroundColor = color;
     document.body.style.backgroundColor = color;
   }, [pathname]);
+
+  // 예전 ‘입문’ 저장값은 30급 세션으로 승격
+  useEffect(() => {
+    if (currentRank === "beginner") actions.setCurrentRank("g30");
+  }, [currentRank]);
 
   if (!currentRank && pathname !== "/welcome" && pathname !== "/board3d") {
     return <Navigate to="/welcome" replace />;
