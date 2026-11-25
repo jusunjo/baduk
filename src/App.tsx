@@ -13,7 +13,7 @@ import { PracticePage } from "./pages/PracticePage";
 import { PracticePlayPage } from "./pages/PracticePlayPage";
 import { WelcomePage } from "./pages/WelcomePage";
 
-const TABS = ["/", "/learn", "/practice", "/path"];
+const TABS = ["/", "/learn", "/practice", "/path"]; // /learn redirects to /
 
 function useNativeBack() {
   const navigate = useNavigate();

@@ -123,7 +123,7 @@ export function PathPage() {
       )}
 
       <Reveal order={5} className="mt-8 space-y-2 px-1">
-        <SecondaryButton onClick={() => navigate("/learn")}>개념 목록 보기</SecondaryButton>
+        <SecondaryButton onClick={() => navigate("/")}>학습 패스 보기</SecondaryButton>
         <button
           type="button"
           onClick={() => {

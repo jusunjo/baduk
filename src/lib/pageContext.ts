@@ -13,8 +13,8 @@ export type PageAskProgress = {
 
 export function pageMeta(pathname: string): { id: string; title: string } {
   if (pathname === "/welcome") return { id: "welcome", title: "시작 화면" };
-  if (pathname === "/") return { id: "home", title: "오늘" };
-  if (pathname === "/learn") return { id: "learn", title: "개념 목록" };
+  if (pathname === "/") return { id: "home", title: "배우기" };
+  if (pathname === "/learn") return { id: "learn", title: "배우기" };
   if (pathname.startsWith("/learn/")) return { id: "lesson", title: "레슨" };
   if (pathname.startsWith("/mission/")) return { id: "mission", title: "미션" };
   if (pathname.startsWith("/exam/")) return { id: "exam", title: "승급 시험" };
@@ -46,10 +46,8 @@ export function buildPageContext(pathname: string, progress: PageAskProgress): s
 
   if (pathname === "/welcome") {
     lines.push("구성: 7줄 판 미리보기, 시작 → 급수 선택 → 입장 → 첫 레슨. 모르면 ‘처음이에요’.");
-  } else if (pathname === "/") {
-    lines.push("구성: 나의 급수, 연속 학습, 오늘 미션, 돌 동료, 다음 레슨 CTA. 미션은 레슨 1개 완료.");
-  } else if (pathname === "/learn") {
-    lines.push("구성: Course 유닛 + 급수 파트 사다리. 완료/현재/잠김. 앞 미션 후 다음 개방. 승급 시험 CTA.");
+  } else if (pathname === "/" || pathname === "/learn") {
+    lines.push("구성: 듀오링고식 지그재그 원형 노드 패스. 유닛 배너 + START 노드. 텍스트 최소, 탭하면 시작.");
   } else if (pathname.startsWith("/mission/")) {
     lines.push("구성: PlayGo식 짧은 미션(read/choice/move). 판 위에서 규칙·감각 연습.");
   } else if (pathname.startsWith("/exam/")) {
