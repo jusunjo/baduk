@@ -26,7 +26,7 @@ export function LearnPath() {
   const navigate = useNavigate();
   const p = useProgress();
   const [open, setOpen] = useState<string | null>(null);
-  const currentRef = useRef<HTMLDivElement | null>(null);
+  const currentRef = useRef<HTMLLIElement | null>(null);
 
   useEffect(() => {
     if (!currentRef.current) return;
