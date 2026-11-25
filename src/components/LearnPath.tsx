@@ -97,10 +97,10 @@ export function LearnPath() {
                   <li
                     key={node.key}
                     ref={st === "current" ? currentRef : undefined}
-                    className="relative z-[1] flex w-full justify-center"
+                    className={`relative flex w-full justify-center ${isOpen ? "z-30" : "z-[1]"}`}
                     style={{ scrollMarginTop: "140px" }}
                   >
-                    <div className="flex flex-col items-center" style={{ marginLeft: x }}>
+                    <div className="relative flex flex-col items-center" style={{ marginLeft: x }}>
                       {st === "current" && !isOpen && <StartTip />}
                       <PathCircle
                         state={st}
@@ -407,28 +407,49 @@ function NodePopover({
   onClose: () => void;
 }) {
   return (
-    <div
-      className="relative mt-3 w-[min(100%,280px)] rounded-[20px] p-4"
-      style={{ backgroundColor: "#1A2C33", border: "2px solid #37464F", boxShadow: "0 6px 0 #0B1519" }}
-    >
+    <>
+      {/* 바깥 탭하면 닫힘 — 레이아웃은 밀지 않음 */}
       <button
         type="button"
-        onClick={onClose}
-        className="absolute right-3 top-3 text-[20px] font-bold leading-none text-[#AEB8BE]"
+        className="fixed inset-0 z-20 cursor-default"
         aria-label="닫기"
+        onClick={onClose}
+      />
+      <div
+        className="absolute left-1/2 top-[calc(100%+14px)] z-30 w-[260px] rounded-[20px] p-4"
+        style={{
+          marginLeft: -130,
+          backgroundColor: "#1A2C33",
+          border: "2px solid #37464F",
+          boxShadow: "0 10px 28px rgba(0,0,0,0.45)",
+        }}
+        role="dialog"
+        aria-label={title}
       >
-        ×
-      </button>
-      <p className="duo-t1 pr-6 text-[17px] font-extrabold">{title}</p>
-      <button
-        type="button"
-        onClick={onStart}
-        className="mt-3 flex h-12 w-full items-center justify-center rounded-2xl text-[16px] font-extrabold text-white transition active:translate-y-[3px]"
-        style={{ backgroundColor: "#58CC02", boxShadow: "0 4px 0 #46A302" }}
-      >
-        {state === "done" ? "다시" : "시작"}
-      </button>
-    </div>
+        <span
+          className="absolute -top-2 left-1/2 h-3.5 w-3.5 -ml-[7px] rotate-45"
+          style={{ backgroundColor: "#1A2C33", borderLeft: "2px solid #37464F", borderTop: "2px solid #37464F" }}
+          aria-hidden
+        />
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-3 top-3 text-[20px] font-bold leading-none text-[#AEB8BE]"
+          aria-label="닫기"
+        >
+          ×
+        </button>
+        <p className="duo-t1 pr-6 text-[17px] font-extrabold">{title}</p>
+        <button
+          type="button"
+          onClick={onStart}
+          className="mt-3 flex h-12 w-full items-center justify-center rounded-2xl text-[16px] font-extrabold text-white transition active:translate-y-[3px]"
+          style={{ backgroundColor: "#58CC02", boxShadow: "0 4px 0 #46A302" }}
+        >
+          {state === "done" ? "다시" : "시작"}
+        </button>
+      </div>
+    </>
   );
 }
 
