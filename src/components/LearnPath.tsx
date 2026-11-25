@@ -6,7 +6,7 @@ import { sfx } from "@/lib/sfx";
 import { actions } from "@/lib/store";
 
 /** Duolingo-style horizontal snake offsets (px) */
-const ZIGZAG = [0, 52, 78, 52, 0, -52, -78, -52];
+const ZIGZAG = [0, 56, 88, 56, 0, -56, -88, -56];
 
 type NodeState = "done" | "current" | "locked";
 
@@ -28,14 +28,15 @@ type PathSection = {
 export function LearnPath() {
   const navigate = useNavigate();
   const p = useProgress();
-  const [open, setOpen] = useState<string | null>(p.nextId);
+  /** 듀오처럼 처음엔 START 팁만 — 탭해야 팝오버 */
+  const [open, setOpen] = useState<string | null>(null);
   const currentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!currentRef.current) return;
     const t = window.setTimeout(() => {
       currentRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
-    }, 120);
+    }, 180);
     return () => window.clearTimeout(t);
   }, [p.nextId]);
 
@@ -52,15 +53,15 @@ export function LearnPath() {
   let zig = 0;
 
   return (
-    <div className="relative pb-10">
+    <div className="relative pb-16 pt-1">
       {sections.map((sec, si) => {
         const playable = sec.nodes.filter((n) => n.kind === "mission" || n.kind === "exam");
         const anyCurrent = playable.some((n) => stateOf(n.key) === "current");
         const allDone = playable.every((n) => stateOf(n.key) === "done");
         return (
-          <section key={sec.id} className="mb-1">
+          <section key={sec.id} className="mb-3">
             <UnitBanner title={sec.title} tone={sec.tone} active={anyCurrent} done={allDone} />
-            <div className="relative flex flex-col items-center gap-8 py-7">
+            <div className="relative flex flex-col items-center gap-9 overflow-visible py-8">
               <PathTrail />
               {si % 2 === 1 ? <SideDecor side="left" /> : <SideDecor side="right" />}
               {sec.nodes.map((node) => {
@@ -87,8 +88,8 @@ export function LearnPath() {
                   <div
                     key={node.key}
                     ref={st === "current" ? currentRef : undefined}
-                    className={`relative flex flex-col items-center ${isOpen ? "z-30" : "z-10"}`}
-                    style={{ transform: `translateX(${x}px)` }}
+                    className={`relative flex flex-col items-center ${isOpen ? "z-30 mb-2" : "z-10"}`}
+                    style={{ transform: `translateX(${x}px)`, scrollMarginTop: "160px" }}
                   >
                     {st === "current" && !isOpen && <StartTip />}
                     <PathCircle
@@ -107,7 +108,6 @@ export function LearnPath() {
                       <NodePopover
                         title={node.title}
                         state={st}
-                        offset={-x * 0.65}
                         onStart={() => {
                           sfx.play("start");
                           if (node.kind === "exam" && node.item?.kind === "rank-exam") {
@@ -116,6 +116,7 @@ export function LearnPath() {
                             navigate(`/mission/${node.key}`);
                           }
                         }}
+                        onClose={() => setOpen(null)}
                       />
                     )}
                   </div>
@@ -132,9 +133,9 @@ export function LearnPath() {
 function PathTrail() {
   return (
     <div
-      className="pointer-events-none absolute inset-y-8 left-1/2 w-3 -translate-x-1/2 rounded-full opacity-40"
+      className="pointer-events-none absolute inset-y-10 left-1/2 w-[10px] -translate-x-1/2 rounded-full opacity-50"
       style={{
-        backgroundImage: "repeating-linear-gradient(to bottom, #CECECE 0 10px, transparent 10px 18px)",
+        backgroundImage: "repeating-linear-gradient(to bottom, #D4D4D4 0 8px, transparent 8px 16px)",
       }}
       aria-hidden
     />
@@ -144,11 +145,11 @@ function PathTrail() {
 function SideDecor({ side }: { side: "left" | "right" }) {
   return (
     <div
-      className={`pointer-events-none absolute top-16 ${side === "left" ? "left-2" : "right-2"} opacity-90`}
+      className={`pointer-events-none absolute top-20 ${side === "left" ? "left-1" : "right-1"}`}
       aria-hidden
     >
-      <svg width="56" height="64" viewBox="0 0 56 64" fill="none">
-        <ellipse cx="28" cy="48" rx="18" ry="8" fill="#89E219" opacity="0.55" />
+      <svg width="52" height="60" viewBox="0 0 56 64" fill="none">
+        <ellipse cx="28" cy="48" rx="18" ry="8" fill="#89E219" opacity="0.45" />
         <circle cx="20" cy="34" r="12" fill="#58CC02" />
         <circle cx="34" cy="30" r="14" fill="#7AC70C" />
         <circle cx="28" cy="22" r="10" fill="#58CC02" />
@@ -233,40 +234,40 @@ function UnitBanner({
   active: boolean;
   done: boolean;
 }) {
-  const bg =
+  const palette =
     tone === "green"
-      ? "bg-[#58CC02]"
+      ? { bg: "#58CC02", deep: "#46A302" }
       : tone === "orange"
-        ? "bg-[#FF9600]"
+        ? { bg: "#FF9600", deep: "#E07E00" }
         : tone === "purple"
-          ? "bg-[#CE82FF]"
-          : "bg-duo-blue";
-  const deep =
-    tone === "green"
-      ? "#46A302"
-      : tone === "orange"
-        ? "#E07E00"
-        : tone === "purple"
-          ? "#A568D0"
-          : "#1899D6";
+          ? { bg: "#CE82FF", deep: "#A568D0" }
+          : { bg: "#1CB0F6", deep: "#1899D6" };
+
   return (
     <div
-      className={`relative mx-1 overflow-hidden rounded-2xl px-4 py-3.5 text-white ${bg} ${
-        !active && !done ? "opacity-75" : ""
-      }`}
-      style={{ boxShadow: `0 4px 0 ${deep}` }}
+      className="relative mx-0 overflow-hidden rounded-2xl px-4 py-4 text-white"
+      style={{
+        background: palette.bg,
+        boxShadow: `0 4px 0 ${palette.deep}`,
+        opacity: !active && !done ? 0.55 : 1,
+      }}
     >
-      <p className="relative z-10 text-[17px] font-extrabold tracking-tight">{title}</p>
-      {done ? <span className="relative z-10 text-[12px] font-bold text-white/90">완료</span> : null}
-      <span className="pointer-events-none absolute -right-2 -top-4 h-20 w-20 rounded-full bg-white/15" aria-hidden />
-      <span className="pointer-events-none absolute -bottom-6 right-10 h-16 w-16 rounded-full bg-white/10" aria-hidden />
+      <div className="relative z-10 flex items-center justify-between gap-2">
+        <p className="text-[16px] font-extrabold tracking-tight drop-shadow-sm">{title}</p>
+        {done ? <span className="shrink-0 text-[12px] font-bold text-white/95">완료</span> : null}
+        {active && !done ? (
+          <span className="shrink-0 rounded-pill bg-white/25 px-2 py-0.5 text-[11px] font-extrabold">지금</span>
+        ) : null}
+      </div>
+      <span className="pointer-events-none absolute -right-3 -top-5 h-24 w-24 rounded-full bg-white/20" aria-hidden />
+      <span className="pointer-events-none absolute -bottom-8 right-8 h-20 w-20 rounded-full bg-black/10" aria-hidden />
     </div>
   );
 }
 
 function StartTip() {
   return (
-    <span className="absolute -top-9 z-20 animate-pop whitespace-nowrap rounded-xl bg-[#58CC02] px-3 py-1 text-[13px] font-extrabold uppercase tracking-wide text-white shadow-[0_3px_0_#46A302]">
+    <span className="absolute -top-10 z-20 animate-pop whitespace-nowrap rounded-xl bg-[#58CC02] px-3.5 py-1.5 text-[13px] font-extrabold uppercase tracking-wide text-white shadow-[0_3px_0_#46A302]">
       시작
       <span className="absolute -bottom-[5px] left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 bg-[#58CC02]" />
     </span>
@@ -285,21 +286,21 @@ function PathCircle({
   const locked = state === "locked";
   const current = state === "current";
   const face = locked
-    ? "bg-[#E5E5E5] shadow-[0_6px_0_#C9CED4]"
+    ? "bg-[#E5E5E5] shadow-[0_7px_0_#C9CED4]"
     : kind === "exam"
-      ? "bg-[#FFC800] shadow-[0_6px_0_#E29F03] active:translate-y-[4px] active:shadow-[0_2px_0_#E29F03]"
-      : "bg-[#58CC02] shadow-[0_6px_0_#46A302] active:translate-y-[4px] active:shadow-[0_2px_0_#46A302]";
+      ? "bg-[#FFC800] shadow-[0_7px_0_#E29F03] active:translate-y-[4px] active:shadow-[0_3px_0_#E29F03]"
+      : "bg-[#58CC02] shadow-[0_7px_0_#46A302] active:translate-y-[4px] active:shadow-[0_3px_0_#46A302]";
 
   return (
     <div className="relative">
       {current && (
-        <span className="absolute -inset-[8px] rounded-full ring-[6px] ring-[#58CC02]/25 animate-breathe" aria-hidden />
+        <span className="absolute -inset-[9px] rounded-full ring-[6px] ring-[#58CC02]/30 animate-breathe" aria-hidden />
       )}
       <button
         type="button"
         onClick={onClick}
         aria-label={locked ? "잠김" : kind === "exam" ? "시험" : "미션"}
-        className={`relative flex h-[72px] w-[72px] items-center justify-center rounded-full transition ${face}`}
+        className={`relative flex h-[76px] w-[76px] items-center justify-center rounded-full transition ${face}`}
       >
         <NodeGlyph state={state} kind={kind} />
       </button>
@@ -340,23 +341,29 @@ function NodeGlyph({ state, kind }: { state: NodeState; kind: PathNode["kind"] }
   );
 }
 
+/** 문서 흐름에 두어 아래 노드를 밀고, 노드를 가리지 않음 */
 function NodePopover({
   title,
   state,
-  offset,
   onStart,
+  onClose,
 }: {
   title: string;
   state: NodeState;
-  offset: number;
   onStart: () => void;
+  onClose: () => void;
 }) {
   return (
-    <div
-      style={{ marginLeft: offset }}
-      className="absolute top-[88px] z-20 w-[220px] animate-pop rounded-[20px] bg-white p-4 shadow-[0_12px_32px_rgba(0,0,0,0.14)] ring-1 ring-black/5"
-    >
-      <p className="truncate text-[16px] font-extrabold text-toss-ink">{title}</p>
+    <div className="relative z-20 mt-4 w-[240px] animate-pop rounded-[22px] bg-white p-4 shadow-[0_10px_28px_rgba(0,0,0,0.14)] ring-2 ring-black/[0.04]">
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute right-3 top-3 text-[18px] leading-none text-duo-hare"
+        aria-label="닫기"
+      >
+        ×
+      </button>
+      <p className="pr-6 text-[17px] font-extrabold text-duo-eel">{title}</p>
       <button
         type="button"
         onClick={onStart}
@@ -364,6 +371,8 @@ function NodePopover({
       >
         {state === "done" ? "다시" : "시작"}
       </button>
+      <span className="absolute -top-2 left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 bg-white ring-1 ring-black/[0.04]" aria-hidden />
+      <span className="absolute -top-1.5 left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 bg-white" aria-hidden />
     </div>
   );
 }
@@ -371,7 +380,7 @@ function NodePopover({
 function ChestNode({ x, open }: { x: number; open: boolean }) {
   return (
     <div
-      className={`flex h-[56px] w-[56px] items-center justify-center rounded-[18px] ${
+      className={`relative z-10 flex h-[56px] w-[56px] items-center justify-center rounded-[18px] ${
         open ? "bg-[#FFC800] shadow-[0_5px_0_#E29F03]" : "bg-[#E5E5E5] shadow-[0_5px_0_#C9CED4]"
       }`}
       style={{ transform: `translateX(${x}px)` }}
@@ -388,15 +397,15 @@ function ChestNode({ x, open }: { x: number; open: boolean }) {
 
 function PromoteNode({ x, active, onStart }: { x: number; active: boolean; onStart: () => void }) {
   return (
-    <div className="relative flex flex-col items-center" style={{ transform: `translateX(${x}px)` }}>
+    <div className="relative z-10 flex flex-col items-center" style={{ transform: `translateX(${x}px)` }}>
       {active && <StartTip />}
       <button
         type="button"
         onClick={onStart}
-        className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#FF9600] shadow-[0_6px_0_#E07E00] transition active:translate-y-[4px] active:shadow-[0_2px_0_#E07E00]"
+        className="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-[#FF9600] shadow-[0_7px_0_#E07E00] transition active:translate-y-[4px] active:shadow-[0_3px_0_#E07E00]"
         aria-label="30급 시작"
       >
-        <span className="text-[15px] font-extrabold text-white">30</span>
+        <span className="text-[16px] font-extrabold text-white">30</span>
       </button>
     </div>
   );

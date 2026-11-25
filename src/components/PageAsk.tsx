@@ -16,8 +16,10 @@ export function PageAsk() {
   const [sheetOpen, setSheetOpen] = useState(false);
 
   if (h.onBoard) return null;
+  /** 홈 패스는 듀오처럼 노드에 집중 — FAB 숨김 */
+  if (pathname === "/" || pathname === "/learn") return null;
 
-  const hasNav = pathname === "/" || pathname === "/learn" || pathname === "/practice" || pathname === "/path";
+  const hasNav = pathname === "/practice" || pathname === "/path";
 
   const open = () => {
     setSheetOpen(true);
