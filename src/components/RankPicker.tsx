@@ -44,7 +44,7 @@ export function RankOptions({
               <span className="min-w-0 flex-1">
                 <span className="flex flex-wrap items-center gap-1.5">
                   <span
-                    className="text-[16px] font-extrabold"
+                    className={`text-[16px] font-extrabold ${!dark && !on ? "text-toss-ink" : ""}`}
                     style={{
                       color: on ? "#1CB0F6" : dark ? "#FFFFFF" : undefined,
                     }}
@@ -52,7 +52,7 @@ export function RankOptions({
                     {r.label}
                   </span>
                   <span
-                    className="text-[12px] font-bold"
+                    className={`text-[12px] font-bold ${!dark && !on ? "text-toss-mute" : ""}`}
                     style={{
                       color: on ? "rgba(28, 176, 246, 0.85)" : dark ? "#C4CDD1" : undefined,
                     }}
@@ -61,7 +61,7 @@ export function RankOptions({
                   </span>
                 </span>
                 <span
-                  className="mt-1 block break-keep text-[13px] leading-snug"
+                  className={`mt-1 block break-keep text-[13px] leading-snug ${dark ? "" : "text-toss-mute"}`}
                   style={{ color: dark ? "#C4CDD1" : undefined }}
                 >
                   {r.meaning}
