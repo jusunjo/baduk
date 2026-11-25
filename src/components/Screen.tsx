@@ -43,9 +43,9 @@ export function Screen({
     <div className={`mx-auto flex w-full max-w-[520px] flex-col px-5 ${fit ? "h-[100dvh] overflow-hidden" : "min-h-[100dvh]"}`}>
       <div className={`fixed inset-0 -z-10 ${gray ? "duo-bg" : "bg-white"}`} aria-hidden />
       <header
-        className={`sticky top-0 z-20 -mx-5 px-5 pt-[env(safe-area-inset-top)] ${
-          gray ? "bg-[#F7F7F7]/92" : "bg-white/92"
-        } backdrop-blur`}
+        className={`sticky top-0 z-50 -mx-5 px-5 pt-[env(safe-area-inset-top)] ${
+          gray ? "bg-[#F7F7F7]" : "bg-white"
+        } border-b border-duo-swan`}
       >
         <div className="relative flex h-14 items-center justify-between">
           {leading}

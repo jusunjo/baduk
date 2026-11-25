@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { PathItem } from "@/data/path/types";
-import { isUnlocked, useProgress } from "@/lib/progress";
+import { useProgress } from "@/lib/progress";
 import { sfx } from "@/lib/sfx";
 import { actions } from "@/lib/store";
-
-/** Duolingo-style horizontal snake offsets (px) */
-const ZIGZAG = [0, 56, 88, 56, 0, -56, -88, -56];
 
 type NodeState = "done" | "current" | "locked";
 
@@ -28,15 +25,14 @@ type PathSection = {
 export function LearnPath() {
   const navigate = useNavigate();
   const p = useProgress();
-  /** 듀오처럼 처음엔 START 팁만 — 탭해야 팝오버 */
   const [open, setOpen] = useState<string | null>(null);
   const currentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!currentRef.current) return;
     const t = window.setTimeout(() => {
-      currentRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
-    }, 180);
+      currentRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }, 120);
     return () => window.clearTimeout(t);
   }, [p.nextId]);
 
@@ -45,51 +41,51 @@ export function LearnPath() {
   const stateOf = (key: string): NodeState => {
     if (p.completed[key]) return "done";
     if (key === p.nextId) return "current";
-    if (!isUnlocked(p.completed, p.queue, key)) return "locked";
     return "locked";
   };
 
   const sections = buildSections(p);
-  let zig = 0;
 
   return (
-    <div className="relative pb-16 pt-1">
-      {sections.map((sec, si) => {
+    <div className="relative z-0 space-y-6 pb-16 pt-1">
+      {sections.map((sec) => {
         const playable = sec.nodes.filter((n) => n.kind === "mission" || n.kind === "exam");
         const anyCurrent = playable.some((n) => stateOf(n.key) === "current");
         const allDone = playable.every((n) => stateOf(n.key) === "done");
         return (
-          <section key={sec.id} className="mb-3">
+          <section key={sec.id}>
             <UnitBanner title={sec.title} tone={sec.tone} active={anyCurrent} done={allDone} />
-            <div className="relative flex flex-col items-center gap-9 overflow-visible py-8">
+            <ul className="relative mt-4 flex flex-col items-center gap-6">
               <PathTrail />
-              {si % 2 === 1 ? <SideDecor side="left" /> : <SideDecor side="right" />}
               {sec.nodes.map((node) => {
-                const x = ZIGZAG[zig++ % ZIGZAG.length]!;
                 if (node.kind === "chest") {
-                  return <ChestNode key={node.key} x={x} open={!!node.unitDone} />;
+                  return (
+                    <li key={node.key} className="relative z-[1]">
+                      <ChestNode open={!!node.unitDone} />
+                    </li>
+                  );
                 }
                 if (node.kind === "promote") {
                   return (
-                    <PromoteNode
-                      key={node.key}
-                      x={x}
-                      active={!!node.unitDone}
-                      onStart={() => {
-                        sfx.play("start");
-                        actions.setCurrentRank("g30");
-                      }}
-                    />
+                    <li key={node.key} className="relative z-[1]">
+                      <PromoteNode
+                        active={!!node.unitDone}
+                        onStart={() => {
+                          sfx.play("start");
+                          actions.setCurrentRank("g30");
+                        }}
+                      />
+                    </li>
                   );
                 }
                 const st = stateOf(node.key);
                 const isOpen = open === node.key;
                 return (
-                  <div
+                  <li
                     key={node.key}
                     ref={st === "current" ? currentRef : undefined}
-                    className={`relative flex flex-col items-center ${isOpen ? "z-30 mb-2" : "z-10"}`}
-                    style={{ transform: `translateX(${x}px)`, scrollMarginTop: "160px" }}
+                    className="relative z-[1] flex w-full flex-col items-center"
+                    style={{ scrollMarginTop: "140px" }}
                   >
                     {st === "current" && !isOpen && <StartTip />}
                     <PathCircle
@@ -119,10 +115,10 @@ export function LearnPath() {
                         onClose={() => setOpen(null)}
                       />
                     )}
-                  </div>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           </section>
         );
       })}
@@ -133,28 +129,12 @@ export function LearnPath() {
 function PathTrail() {
   return (
     <div
-      className="pointer-events-none absolute inset-y-10 left-1/2 w-[10px] -translate-x-1/2 rounded-full opacity-50"
+      className="pointer-events-none absolute inset-y-2 left-1/2 z-0 w-2.5 -translate-x-1/2 rounded-full opacity-40"
       style={{
         backgroundImage: "repeating-linear-gradient(to bottom, #D4D4D4 0 8px, transparent 8px 16px)",
       }}
       aria-hidden
     />
-  );
-}
-
-function SideDecor({ side }: { side: "left" | "right" }) {
-  return (
-    <div
-      className={`pointer-events-none absolute top-20 ${side === "left" ? "left-1" : "right-1"}`}
-      aria-hidden
-    >
-      <svg width="52" height="60" viewBox="0 0 56 64" fill="none">
-        <ellipse cx="28" cy="48" rx="18" ry="8" fill="#89E219" opacity="0.45" />
-        <circle cx="20" cy="34" r="12" fill="#58CC02" />
-        <circle cx="34" cy="30" r="14" fill="#7AC70C" />
-        <circle cx="28" cy="22" r="10" fill="#58CC02" />
-      </svg>
-    </div>
   );
 }
 
@@ -245,7 +225,7 @@ function UnitBanner({
 
   return (
     <div
-      className="relative mx-0 overflow-hidden rounded-2xl px-4 py-4 text-white"
+      className="relative overflow-hidden rounded-2xl px-4 py-4 text-white"
       style={{
         background: palette.bg,
         boxShadow: `0 4px 0 ${palette.deep}`,
@@ -253,23 +233,21 @@ function UnitBanner({
       }}
     >
       <div className="relative z-10 flex items-center justify-between gap-2">
-        <p className="text-[16px] font-extrabold tracking-tight drop-shadow-sm">{title}</p>
+        <p className="text-[16px] font-extrabold tracking-tight">{title}</p>
         {done ? <span className="shrink-0 text-[12px] font-bold text-white/95">완료</span> : null}
         {active && !done ? (
           <span className="shrink-0 rounded-pill bg-white/25 px-2 py-0.5 text-[11px] font-extrabold">지금</span>
         ) : null}
       </div>
       <span className="pointer-events-none absolute -right-3 -top-5 h-24 w-24 rounded-full bg-white/20" aria-hidden />
-      <span className="pointer-events-none absolute -bottom-8 right-8 h-20 w-20 rounded-full bg-black/10" aria-hidden />
     </div>
   );
 }
 
 function StartTip() {
   return (
-    <span className="absolute -top-10 z-20 animate-pop whitespace-nowrap rounded-xl bg-[#58CC02] px-3.5 py-1.5 text-[13px] font-extrabold uppercase tracking-wide text-white shadow-[0_3px_0_#46A302]">
+    <span className="mb-2 rounded-xl bg-[#58CC02] px-3.5 py-1.5 text-[13px] font-extrabold uppercase tracking-wide text-white shadow-[0_3px_0_#46A302]">
       시작
-      <span className="absolute -bottom-[5px] left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 bg-[#58CC02]" />
     </span>
   );
 }
@@ -286,21 +264,21 @@ function PathCircle({
   const locked = state === "locked";
   const current = state === "current";
   const face = locked
-    ? "bg-[#E5E5E5] shadow-[0_7px_0_#C9CED4]"
+    ? "bg-[#E5E5E5] shadow-[0_6px_0_#C9CED4]"
     : kind === "exam"
-      ? "bg-[#FFC800] shadow-[0_7px_0_#E29F03] active:translate-y-[4px] active:shadow-[0_3px_0_#E29F03]"
-      : "bg-[#58CC02] shadow-[0_7px_0_#46A302] active:translate-y-[4px] active:shadow-[0_3px_0_#46A302]";
+      ? "bg-[#FFC800] shadow-[0_6px_0_#E29F03] active:translate-y-[3px] active:shadow-[0_3px_0_#E29F03]"
+      : "bg-[#58CC02] shadow-[0_6px_0_#46A302] active:translate-y-[3px] active:shadow-[0_3px_0_#46A302]";
 
   return (
     <div className="relative">
       {current && (
-        <span className="absolute -inset-[9px] rounded-full ring-[6px] ring-[#58CC02]/30 animate-breathe" aria-hidden />
+        <span className="absolute -inset-[8px] rounded-full ring-[6px] ring-[#58CC02]/30 animate-breathe" aria-hidden />
       )}
       <button
         type="button"
         onClick={onClick}
         aria-label={locked ? "잠김" : kind === "exam" ? "시험" : "미션"}
-        className={`relative flex h-[76px] w-[76px] items-center justify-center rounded-full transition ${face}`}
+        className={`relative flex h-[72px] w-[72px] items-center justify-center rounded-full transition ${face}`}
       >
         <NodeGlyph state={state} kind={kind} />
       </button>
@@ -341,7 +319,6 @@ function NodeGlyph({ state, kind }: { state: NodeState; kind: PathNode["kind"] }
   );
 }
 
-/** 문서 흐름에 두어 아래 노드를 밀고, 노드를 가리지 않음 */
 function NodePopover({
   title,
   state,
@@ -354,7 +331,7 @@ function NodePopover({
   onClose: () => void;
 }) {
   return (
-    <div className="relative z-20 mt-4 w-[240px] animate-pop rounded-[22px] bg-white p-4 shadow-[0_10px_28px_rgba(0,0,0,0.14)] ring-2 ring-black/[0.04]">
+    <div className="relative mt-3 w-[min(100%,260px)] rounded-[20px] bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,0.12)] ring-2 ring-black/[0.04]">
       <button
         type="button"
         onClick={onClose}
@@ -363,7 +340,7 @@ function NodePopover({
       >
         ×
       </button>
-      <p className="pr-6 text-[17px] font-extrabold text-duo-eel">{title}</p>
+      <p className="pr-6 text-[16px] font-extrabold text-duo-eel">{title}</p>
       <button
         type="button"
         onClick={onStart}
@@ -371,19 +348,16 @@ function NodePopover({
       >
         {state === "done" ? "다시" : "시작"}
       </button>
-      <span className="absolute -top-2 left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 bg-white ring-1 ring-black/[0.04]" aria-hidden />
-      <span className="absolute -top-1.5 left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 bg-white" aria-hidden />
     </div>
   );
 }
 
-function ChestNode({ x, open }: { x: number; open: boolean }) {
+function ChestNode({ open }: { open: boolean }) {
   return (
     <div
-      className={`relative z-10 flex h-[56px] w-[56px] items-center justify-center rounded-[18px] ${
+      className={`flex h-[52px] w-[52px] items-center justify-center rounded-[16px] ${
         open ? "bg-[#FFC800] shadow-[0_5px_0_#E29F03]" : "bg-[#E5E5E5] shadow-[0_5px_0_#C9CED4]"
       }`}
-      style={{ transform: `translateX(${x}px)` }}
       aria-label={open ? "유닛 완료" : "유닛을 마치면 열려요"}
     >
       <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden>
@@ -395,14 +369,14 @@ function ChestNode({ x, open }: { x: number; open: boolean }) {
   );
 }
 
-function PromoteNode({ x, active, onStart }: { x: number; active: boolean; onStart: () => void }) {
+function PromoteNode({ active, onStart }: { active: boolean; onStart: () => void }) {
   return (
-    <div className="relative z-10 flex flex-col items-center" style={{ transform: `translateX(${x}px)` }}>
+    <div className="flex flex-col items-center">
       {active && <StartTip />}
       <button
         type="button"
         onClick={onStart}
-        className="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-[#FF9600] shadow-[0_7px_0_#E07E00] transition active:translate-y-[4px] active:shadow-[0_3px_0_#E07E00]"
+        className="mt-1 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#FF9600] shadow-[0_6px_0_#E07E00] transition active:translate-y-[3px] active:shadow-[0_3px_0_#E07E00]"
         aria-label="30급 시작"
       >
         <span className="text-[16px] font-extrabold text-white">30</span>

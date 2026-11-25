@@ -1,14 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { companionMood } from "@/components/Companion";
 import { GoalSheet } from "@/components/GoalSheet";
-import { Logo } from "@/components/Logo";
-import { Headline, Reveal, Screen, SecondaryButton } from "@/components/Screen";
-import { Pill } from "@/components/ui";
-import { dDayLabel, formatDay } from "@/lib/date";
+import { Screen, SecondaryButton } from "@/components/Screen";
 import { RANKS } from "@/lib/ranks";
 import { useProgress } from "@/lib/progress";
 import { actions } from "@/lib/store";
+import { sfx } from "@/lib/sfx";
 
 export function PathPage() {
   const navigate = useNavigate();
@@ -16,124 +13,91 @@ export function PathPage() {
   const [goalOpen, setGoalOpen] = useState(false);
   if (!p.rank) return null;
 
-  const mood = companionMood({
-    intro: p.done === 0,
-    missionDone: p.missionDoneToday,
-    streak: p.streakDays,
-    trackClear: !p.next && p.done > 0,
-  });
   const myLevel = p.rank.level;
 
   return (
-    <Screen nav>
-      <Reveal className="px-1 pt-1">
-        <Headline>{"나의 급수"}</Headline>
-        <p className="mt-2 break-keep text-[15px] leading-relaxed text-toss-body">
-          급수는 실력 표시예요. 숫자가 작을수록 강해요. 천천히 따라가면 됩니다.
-        </p>
-      </Reveal>
+    <Screen nav gray>
+      <div className="px-1 pt-1">
+        <p className="text-[13px] font-extrabold text-duo-wolf">나의 급수</p>
+        <p className="mt-1 text-[24px] font-extrabold tracking-tight text-duo-eel">{p.rank.label}</p>
+        <p className="mt-1 break-keep text-[14px] text-duo-wolf">{p.rank.boardSize}줄 · 연속 {p.streakDays}일</p>
+      </div>
 
-      <Reveal order={1} className="mt-6 flex items-center gap-4 rounded-[28px] bg-gradient-to-br from-[#eef3f8] to-[#e8f1ff] p-5">
-        <Logo size={72} className={mood === "intro" || mood === "mission" ? "animate-companion-bob" : "animate-pop"} />
-        <div className="min-w-0">
-          <p className="text-[13px] font-semibold text-toss-mute">지금 급수</p>
-          <p className="mt-1 text-[22px] font-bold tracking-tight text-toss-ink">{p.rank.label}</p>
-          <p className="mt-2 break-keep text-[14px] leading-relaxed text-toss-body">{p.rank.meaning}</p>
-          <p className="mt-3 text-[13px] font-semibold text-[#8a6a3d]">
-            {p.rank.boardSize}줄 판 · 연속 {p.streakDays > 0 ? `${p.streakDays}일` : "대기 중"}
-          </p>
-        </div>
-      </Reveal>
+      {p.canTakeExam && p.module && (
+        <button
+          type="button"
+          onClick={() => {
+            sfx.play("start");
+            navigate(`/exam/${p.module!.rankId}`);
+          }}
+          className="mt-5 w-full rounded-2xl bg-[#58CC02] px-4 py-4 text-left text-white shadow-[0_4px_0_#46A302] active:translate-y-[3px] active:shadow-[0_1px_0_#46A302]"
+        >
+          <p className="text-[12px] font-bold text-white/85">승급 시험</p>
+          <p className="mt-0.5 text-[17px] font-extrabold">{p.module.title} · 10문제 중 8개</p>
+        </button>
+      )}
 
-      <Reveal order={2} className="mt-4 rounded-[28px] bg-white p-5 ring-1 ring-toss-line">
-        {p.goal && p.target ? (
-          <>
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-[13px] font-semibold text-toss-mute">목표 급수</p>
-              <Pill tone="bg-toss-blue text-white">{p.daysLeft == null ? "—" : dDayLabel(p.daysLeft)}</Pill>
-            </div>
-            <p className="mt-1 text-[22px] font-bold tracking-tight text-toss-ink">{p.target.label}</p>
-            <p className="mt-2 break-keep text-[14px] leading-relaxed text-toss-body">{p.target.meaning}</p>
-            <p className="mt-2 text-[13px] font-medium text-toss-mute">{formatDay(p.goal.date)}까지</p>
-            <button
-              type="button"
-              onClick={() => setGoalOpen(true)}
-              className="mt-4 text-[14px] font-semibold text-toss-blue"
-            >
-              목표 바꾸기
-            </button>
-          </>
-        ) : (
-          <>
-            <p className="text-[17px] font-bold text-toss-ink">목표 급수는 나중에 해도 돼요</p>
-            <p className="mt-1 break-keep text-[14px] text-toss-mute">
-              지금은 규칙만 익혀도 충분해요. 목표 급수·날짜는 편해지면 정하세요.
-            </p>
-            <button type="button" onClick={() => setGoalOpen(true)} className="mt-4 text-[14px] font-semibold text-toss-blue">
-              목표 급수 정하기
-            </button>
-          </>
-        )}
-      </Reveal>
-
-      <Reveal order={3} className="mt-8 px-1">
-        <h2 className="text-[15px] font-bold text-toss-ink">급수가 올라가는 길</h2>
-        <p className="mt-1 break-keep text-[13px] text-toss-mute">
-          지금 급수는 여기서 바꿀 수 없어요. 승급 시험으로만 올라가요.
-        </p>
-        <ul className="mt-4 space-y-2">
+      <div className="mt-6">
+        <p className="mb-3 px-1 text-[13px] font-extrabold text-duo-wolf">급수 목록</p>
+        <ul className="space-y-2">
           {RANKS.map((r) => {
             const state = r.level < myLevel ? "done" : r.level === myLevel ? "now" : "soon";
             return (
               <li
                 key={r.id}
-                className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 ${
-                  state === "now" ? "bg-toss-blue/10 ring-1 ring-toss-blue/25" : "bg-toss-soft2"
+                className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 ring-2 ${
+                  state === "now"
+                    ? "bg-[#E7F9D3] ring-[#58CC02]"
+                    : state === "done"
+                      ? "bg-white ring-duo-swan"
+                      : "bg-[#F0F0F0] ring-transparent"
                 }`}
               >
-                <Logo size={40} />
-                <span className="min-w-0 flex-1">
-                  <span className={`block text-[14px] font-bold ${state === "now" ? "text-toss-blue" : "text-toss-ink"}`}>
-                    {r.label}
-                    <span className="ml-1.5 text-[12px] font-semibold text-toss-mute">{r.boardSize}줄</span>
-                  </span>
-                  <span className="block text-[12px] text-toss-mute">{r.meaning}</span>
+                <span
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold ${
+                    state === "now"
+                      ? "bg-[#58CC02] text-white"
+                      : state === "done"
+                        ? "bg-[#1CB0F6] text-white"
+                        : "bg-[#E5E5E5] text-duo-hare"
+                  }`}
+                >
+                  {state === "done" ? "✓" : r.short.replace("급", "")}
                 </span>
-                <span className="shrink-0 text-[12px] font-semibold text-toss-mute">
-                  {state === "done" ? "지남" : state === "now" ? "지금" : "다음"}
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[15px] font-extrabold text-duo-eel">
+                    {r.label}
+                    <span className="ml-1.5 text-[12px] font-bold text-duo-hare">{r.boardSize}줄</span>
+                  </span>
+                </span>
+                <span className="shrink-0 text-[12px] font-extrabold text-duo-hare">
+                  {state === "done" ? "지남" : state === "now" ? "지금" : "잠김"}
                 </span>
               </li>
             );
           })}
         </ul>
-      </Reveal>
+      </div>
 
-      {p.canTakeExam && p.module && (
-        <Reveal order={4} className="mt-6 rounded-[24px] bg-toss-blue p-5 text-white">
-          <p className="text-[12px] font-semibold text-white/75">승급 시험 열림</p>
-          <p className="mt-1 text-[18px] font-bold">{p.module.title} · 10문제 중 8개</p>
-          <button
-            type="button"
-            onClick={() => navigate(`/exam/${p.module!.rankId}`)}
-            className="mt-4 h-11 w-full rounded-xl bg-white text-[15px] font-semibold text-toss-blue active:scale-[0.98]"
-          >
-            시험 보기
-          </button>
-        </Reveal>
-      )}
-
-      <Reveal order={5} className="mt-8 space-y-2 px-1">
+      <div className="mt-8 space-y-2 px-1 pb-4">
+        <button
+          type="button"
+          onClick={() => setGoalOpen(true)}
+          className="w-full rounded-2xl bg-white py-3.5 text-[15px] font-extrabold text-duo-eel ring-2 ring-duo-swan"
+        >
+          {p.goal ? "목표 바꾸기" : "목표 급수 정하기"}
+        </button>
         <SecondaryButton onClick={() => navigate("/")}>학습 패스 보기</SecondaryButton>
         <button
           type="button"
           onClick={() => {
             if (confirm("학습 기록을 모두 지우고 처음부터 할까요?")) actions.reset();
           }}
-          className="w-full py-3 text-center text-[13px] font-medium text-toss-mute"
+          className="w-full py-3 text-center text-[13px] font-medium text-duo-hare"
         >
           처음부터 다시 설정
         </button>
-      </Reveal>
+      </div>
 
       {goalOpen && <GoalSheet currentRank={p.rank.id} current={p.goal} onClose={() => setGoalOpen(false)} />}
     </Screen>
