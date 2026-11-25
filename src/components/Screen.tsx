@@ -194,15 +194,18 @@ export function PrimaryButton({
   loading?: boolean;
   night?: boolean;
 }) {
-  const idle = night
-    ? "disabled:bg-duo-night-line disabled:text-[#9AA6AC] disabled:shadow-[0_4px_0_#2A3A42]"
-    : "disabled:bg-[#AFE581] disabled:shadow-none";
+  const off = disabled || loading;
   return (
     <button
       type="button"
       onClick={onClick}
-      disabled={disabled || loading}
-      className={`mb-1 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-duo-green text-[17px] font-extrabold tracking-wide text-white shadow-[0_4px_0_#46A302] transition active:translate-y-[3px] active:shadow-[0_1px_0_#46A302] disabled:cursor-not-allowed disabled:active:translate-y-0 ${idle}`}
+      disabled={off}
+      style={{
+        backgroundColor: off ? (night ? "#37464F" : "#AFE581") : "#58CC02",
+        boxShadow: off ? (night ? "0 4px 0 #2A3A42" : "none") : "0 4px 0 #46A302",
+        color: off && night ? "#9AA6AC" : "#FFFFFF",
+      }}
+      className="mb-1 flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-[17px] font-extrabold tracking-wide transition enabled:active:translate-y-[3px] enabled:active:[box-shadow:0_1px_0_#46A302] disabled:cursor-not-allowed disabled:active:translate-y-0"
     >
       {loading && <Spinner className="h-5 w-5 text-white" />}
       {children}
@@ -223,10 +226,13 @@ export function SecondaryButton({
     <button
       type="button"
       onClick={onClick}
-      className={`mb-1 flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-[17px] font-extrabold transition active:scale-[0.98] ${
+      style={
         night
-          ? "bg-duo-night-3 text-white shadow-[0_4px_0_#0B1519] ring-2 ring-duo-night-line active:translate-y-[3px] active:shadow-[0_1px_0_#0B1519]"
-          : "bg-toss-soft text-toss-body hover:bg-toss-line"
+          ? { backgroundColor: "#202F36", boxShadow: "0 4px 0 #0B1519", color: "#FFFFFF" }
+          : undefined
+      }
+      className={`mb-1 flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-[17px] font-extrabold transition active:translate-y-[3px] active:[box-shadow:0_1px_0_#0B1519] ${
+        night ? "ring-2 ring-[#37464F]" : "bg-toss-soft text-toss-body hover:bg-toss-line active:scale-[0.98]"
       }`}
     >
       {children}

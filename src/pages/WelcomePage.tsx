@@ -209,7 +209,10 @@ function Shell({ children }: { children: ReactNode }) {
 
 function Footer({ children }: { children: ReactNode }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-duo-night-line bg-duo-night">
+    <div
+      className="fixed inset-x-0 bottom-0 z-40"
+      style={{ backgroundColor: "#131F24", borderTop: "2px solid #37464F" }}
+    >
       <div className="mx-auto w-full max-w-[520px] px-5 pb-[max(24px,calc(env(safe-area-inset-bottom)+12px))] pt-4">
         {children}
       </div>
