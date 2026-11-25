@@ -43,18 +43,14 @@ export function PracticePage() {
 
       {concepts.length === 0 ? (
         <Reveal order={1} className="mt-10 px-1 text-center">
-          <p className="text-[18px] font-extrabold text-[#3C3C3C]">아직 연습 문제가 없어요</p>
-          <p className="mt-2 break-keep text-[14px] font-semibold text-[#777777]">
-            개념 레슨이 추가되면 여기에 모여요.
-          </p>
+          <p className="duo-t1 text-[18px] font-extrabold">아직 연습 문제가 없어요</p>
+          <p className="duo-t2 mt-2 break-keep text-[14px] font-semibold">개념 레슨이 추가되면 여기에 모여요.</p>
         </Reveal>
       ) : (
         <div className="mt-5 space-y-6 pb-4">
           {byChapter.map(([chapter, list], ci) => (
             <Reveal key={chapter} order={Math.min(ci + 1, 5)} className="px-0.5">
-              <p className="mb-2.5 px-1 text-[13px] font-extrabold uppercase tracking-wide text-[#AFAFAF]">
-                {chapter}
-              </p>
+              <p className="duo-t3 mb-2.5 px-1 text-[13px] font-extrabold uppercase tracking-wide">{chapter}</p>
               <ul className="space-y-3">
                 {list.map((c) => {
                   const preview = c.problems.find((x) => (x.setup?.length ?? 0) > 0) ?? c.problems[0];
@@ -67,8 +63,12 @@ export function PracticePage() {
                           sfx.play("tap");
                           navigate(`/practice/${c.lessonId}/${c.problems[0].problemId}`);
                         }}
-                        className="flex w-full items-center gap-3 rounded-2xl bg-white p-3 text-left transition active:translate-y-[2px]"
-                        style={{ boxShadow: "0 4px 0 #E5E5E5", border: "2px solid #E5E5E5" }}
+                        className="flex w-full items-center gap-3 rounded-2xl p-3 text-left transition active:translate-y-[2px]"
+                        style={{
+                          backgroundColor: "#1A2C33",
+                          border: "2px solid #37464F",
+                          boxShadow: "0 4px 0 #0B1519",
+                        }}
                       >
                         {hasSetup && preview ? (
                           <div
@@ -87,29 +87,25 @@ export function PracticePage() {
                         ) : (
                           <span
                             className="flex h-[72px] w-[72px] shrink-0 flex-col items-center justify-center rounded-xl"
-                            style={{ backgroundColor: "#E7F9D3", color: "#58CC02" }}
+                            style={{ backgroundColor: "#243830", color: "#89E219" }}
                           >
                             <span className="text-[20px] font-extrabold tabular-nums">{c.problems.length}</span>
                             <span className="text-[11px] font-extrabold">문항</span>
                           </span>
                         )}
                         <span className="min-w-0 flex-1">
-                          <span className="block text-[16px] font-extrabold tracking-tight text-[#3C3C3C]">
-                            {c.title}
-                          </span>
-                          <span className="mt-0.5 block break-keep text-[13px] font-semibold text-[#777777]">
-                            {c.subtitle}
-                          </span>
+                          <span className="duo-t1 block text-[16px] font-extrabold tracking-tight">{c.title}</span>
+                          <span className="duo-t2 mt-0.5 block break-keep text-[13px] font-semibold">{c.subtitle}</span>
                           <span
                             className="mt-2 inline-flex items-center rounded-lg px-2 py-1 text-[12px] font-extrabold"
-                            style={{ backgroundColor: "#DDF4FF", color: "#1CB0F6" }}
+                            style={{ backgroundColor: "#163A4A", color: "#4CC3FF" }}
                           >
                             {c.problems.length}문항 · {c.boardSize}줄
                           </span>
                         </span>
                         <span
                           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
-                          style={{ backgroundColor: "#F0F0F0", color: "#777777" }}
+                          style={{ backgroundColor: "#37464F", color: "#D6DEE2" }}
                           aria-hidden
                         >
                           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none">

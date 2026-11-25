@@ -95,9 +95,9 @@ export function RankOptions({
 /** 표시만 — 현재 급수는 온보딩·승급 시험 외에는 바꾸지 않음 */
 export function RankBadge({ label, onClick }: { label: string; onClick?: () => void }) {
   const style = {
-    backgroundColor: "#DDF4FF",
-    color: "#1CB0F6",
-    boxShadow: "0 2px 0 #1899D6",
+    backgroundColor: "#163A4A",
+    color: "#4CC3FF",
+    boxShadow: "0 2px 0 #0F2A36",
   } as const;
   const className =
     "flex h-9 items-center rounded-2xl px-3.5 text-[14px] font-extrabold transition active:translate-y-[2px] active:[box-shadow:0_0_0_#1899D6]";

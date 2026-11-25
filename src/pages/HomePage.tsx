@@ -16,25 +16,25 @@ export function HomePage() {
   return (
     <Screen nav gray right={<RankBadge label={p.rank.short} onClick={() => navigate("/path")} />}>
       <div
-        className="sticky top-14 z-40 -mx-5 mb-4 border-b-2 border-[#E5E5E5] bg-white px-5 py-3"
+        className="sticky top-14 z-40 -mx-5 mb-4 px-5 py-3"
+        style={{ backgroundColor: "#131F24", borderBottom: "2px solid #37464F" }}
       >
         <div className="flex items-center gap-2.5">
-          <HudChip icon={<FlameIcon />} value={p.streakDays} color="#FF9600" bg="#FFF4E0" />
-          <HudChip icon={<XpIcon />} value={p.xp} color="#1CB0F6" bg="#DDF4FF" />
-          <div className="ml-auto min-w-[128px] flex-1 max-w-[160px]">
+          <HudChip icon={<FlameIcon />} value={p.streakDays} color="#FF9600" bg="#3A2A14" />
+          <HudChip icon={<XpIcon />} value={p.xp} color="#1CB0F6" bg="#163A4A" />
+          <div className="ml-auto min-w-[128px] max-w-[160px] flex-1">
             <div className="mb-1.5 flex items-center justify-between text-[12px] font-extrabold">
-              <span style={{ color: "#777777" }}>오늘 목표</span>
-              <span className="tabular-nums" style={{ color: "#3C3C3C" }}>
+              <span className="duo-t2">오늘 목표</span>
+              <span className="duo-t1 tabular-nums">
                 {p.xpToday}/{p.xpGoal}
               </span>
             </div>
-            <div className="h-4 overflow-hidden rounded-full bg-[#E5E5E5]">
+            <div className="h-4 overflow-hidden rounded-full" style={{ backgroundColor: "#37464F" }}>
               <div
                 className="h-full rounded-full transition-[width] duration-500"
                 style={{
                   width: `${Math.max(goalPct === 0 ? 0 : 10, goalPct)}%`,
                   background: "linear-gradient(90deg, #1CB0F6, #58CC02)",
-                  boxShadow: "inset 0 -2px 0 rgba(0,0,0,0.12)",
                 }}
               />
             </div>
@@ -60,7 +60,7 @@ function HudChip({
   return (
     <span
       className="inline-flex items-center gap-1.5 rounded-2xl px-2.5 py-2 text-[15px] font-extrabold tabular-nums"
-      style={{ color, backgroundColor: bg, boxShadow: "0 2px 0 rgba(0,0,0,0.06)" }}
+      style={{ color, backgroundColor: bg }}
     >
       {icon}
       {value}

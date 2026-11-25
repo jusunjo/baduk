@@ -56,8 +56,8 @@ export function BottomNav() {
     <>
       <div className="h-[calc(70px+env(safe-area-inset-bottom))]" aria-hidden />
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 bg-white pb-[env(safe-area-inset-bottom)]"
-        style={{ borderTop: "2px solid #E5E5E5", boxShadow: "0 -6px 0 rgba(229,229,229,0.55)" }}
+        className="fixed inset-x-0 bottom-0 z-40 pb-[env(safe-area-inset-bottom)]"
+        style={{ backgroundColor: "#131F24", borderTop: "2px solid #37464F" }}
       >
         <ul className="mx-auto flex h-[70px] max-w-[520px] px-2">
           {TABS.map((t) => {
@@ -71,11 +71,11 @@ export function BottomNav() {
                   end={t.to === "/"}
                   onClick={() => sfx.play("tap")}
                   className="flex h-full flex-col items-center justify-center gap-1 transition active:scale-95"
-                  style={{ color: active ? "#58CC02" : "#AFAFAF" }}
+                  style={{ color: active ? "#58CC02" : "#7A8A92" }}
                 >
                   <span
                     className="flex h-9 w-12 items-center justify-center rounded-xl"
-                    style={active ? { backgroundColor: "rgba(88,204,2,0.12)" } : undefined}
+                    style={active ? { backgroundColor: "rgba(88,204,2,0.16)" } : undefined}
                   >
                     <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden>
                       {t.icon(active)}

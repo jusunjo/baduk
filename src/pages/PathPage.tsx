@@ -44,47 +44,43 @@ export function PathPage() {
       )}
 
       <div className="mt-6">
-        <p className="mb-3 px-1 text-[13px] font-extrabold uppercase tracking-wide text-[#AFAFAF]">급수 사다리</p>
+        <p className="duo-t3 mb-3 px-1 text-[13px] font-extrabold uppercase tracking-wide">급수 사다리</p>
         <ul className="space-y-2.5">
           {RANKS.map((r) => {
             const state = r.level < myLevel ? "done" : r.level === myLevel ? "now" : "soon";
             return (
               <li
                 key={r.id}
-                className="flex items-center gap-3 rounded-2xl bg-white px-3.5 py-3.5"
+                className="flex items-center gap-3 rounded-2xl px-3.5 py-3.5"
                 style={{
-                  border: state === "now" ? "2px solid #58CC02" : "2px solid #E5E5E5",
-                  boxShadow: state === "now" ? "0 4px 0 #46A302" : "0 3px 0 #E5E5E5",
-                  backgroundColor: state === "now" ? "#E7F9D3" : state === "soon" ? "#F7F7F7" : "#FFFFFF",
-                  opacity: state === "soon" ? 0.72 : 1,
+                  backgroundColor: state === "now" ? "#243830" : "#1A2C33",
+                  border: state === "now" ? "2px solid #58CC02" : "2px solid #37464F",
+                  boxShadow: state === "now" ? "0 4px 0 #46A302" : "0 3px 0 #0B1519",
+                  opacity: state === "soon" ? 0.65 : 1,
                 }}
               >
                 <span
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[14px] font-extrabold text-white"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[14px] font-extrabold"
                   style={{
-                    backgroundColor: state === "now" ? "#58CC02" : state === "done" ? "#1CB0F6" : "#E5E5E5",
-                    color: state === "soon" ? "#AFAFAF" : "#FFFFFF",
+                    backgroundColor: state === "now" ? "#58CC02" : state === "done" ? "#1CB0F6" : "#37464F",
+                    color: state === "soon" ? "#7A8A92" : "#FFFFFF",
                     boxShadow: state === "soon" ? "none" : `0 3px 0 ${state === "now" ? "#46A302" : "#1899D6"}`,
                   }}
                 >
-                  {state === "done" ? "✓" : state === "soon" ? (
-                    <LockIcon />
-                  ) : (
-                    r.short.replace("급", "")
-                  )}
+                  {state === "done" ? "✓" : state === "soon" ? <LockIcon /> : r.short.replace("급", "")}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[16px] font-extrabold text-[#3C3C3C]">
+                  <span className="duo-t1 block text-[16px] font-extrabold">
                     {r.label}
-                    <span className="ml-1.5 text-[12px] font-bold text-[#777777]">{r.boardSize}줄</span>
+                    <span className="duo-t3 ml-1.5 text-[12px] font-bold">{r.boardSize}줄</span>
                   </span>
-                  <span className="mt-0.5 block break-keep text-[12px] font-semibold text-[#777777]">{r.meaning}</span>
+                  <span className="duo-t2 mt-0.5 block break-keep text-[12px] font-semibold">{r.meaning}</span>
                 </span>
                 <span
                   className="shrink-0 rounded-lg px-2 py-1 text-[11px] font-extrabold"
                   style={{
-                    backgroundColor: state === "now" ? "#58CC02" : state === "done" ? "#DDF4FF" : "#E5E5E5",
-                    color: state === "now" ? "#FFFFFF" : state === "done" ? "#1CB0F6" : "#AFAFAF",
+                    backgroundColor: state === "now" ? "#58CC02" : state === "done" ? "#163A4A" : "#37464F",
+                    color: state === "now" ? "#FFFFFF" : state === "done" ? "#4CC3FF" : "#7A8A92",
                   }}
                 >
                   {state === "done" ? "완료" : state === "now" ? "지금" : "잠김"}
@@ -97,6 +93,7 @@ export function PathPage() {
 
       <div className="mt-8 space-y-3 px-0.5 pb-[max(2rem,calc(var(--nav-h,72px)+1rem))]">
         <PrimaryButton
+          night
           onClick={() => {
             sfx.play("tap");
             setGoalOpen(true);
@@ -110,8 +107,13 @@ export function PathPage() {
             sfx.play("tap");
             navigate("/");
           }}
-          className="flex h-14 w-full items-center justify-center rounded-2xl text-[16px] font-extrabold text-[#3C3C3C] transition active:translate-y-[2px]"
-          style={{ backgroundColor: "#FFFFFF", border: "2px solid #E5E5E5", boxShadow: "0 4px 0 #E5E5E5" }}
+          className="flex h-14 w-full items-center justify-center rounded-2xl text-[16px] font-extrabold transition active:translate-y-[2px]"
+          style={{
+            backgroundColor: "#1A2C33",
+            color: "#FFFFFF",
+            border: "2px solid #37464F",
+            boxShadow: "0 4px 0 #0B1519",
+          }}
         >
           학습 패스 보기
         </button>
@@ -120,7 +122,7 @@ export function PathPage() {
           onClick={() => {
             if (confirm("학습 기록을 모두 지우고 처음부터 할까요?")) actions.reset();
           }}
-          className="w-full py-3 text-center text-[13px] font-bold text-[#AFAFAF]"
+          className="w-full py-3 text-center text-[13px] font-bold text-[#7A8A92]"
         >
           처음부터 다시 설정
         </button>
@@ -134,8 +136,8 @@ export function PathPage() {
 function LockIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
-      <rect x="6" y="10" width="12" height="9" rx="2" fill="#AFAFAF" />
-      <path d="M8.5 10V8a3.5 3.5 0 0 1 7 0v2" stroke="#AFAFAF" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <rect x="6" y="10" width="12" height="9" rx="2" fill="#7A8A92" />
+      <path d="M8.5 10V8a3.5 3.5 0 0 1 7 0v2" stroke="#7A8A92" strokeWidth="2" fill="none" strokeLinecap="round" />
     </svg>
   );
 }

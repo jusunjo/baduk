@@ -103,7 +103,7 @@ export function Screen({
       <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </IconButton>
   ) : (
-    <span className="flex items-center gap-2 font-display text-[18px] font-extrabold tracking-tight text-[#3C3C3C]">
+    <span className="flex items-center gap-2 font-display text-[18px] font-extrabold tracking-tight text-white">
       <Logo size={24} />
       한수
     </span>
@@ -115,12 +115,19 @@ export function Screen({
     <div className={`mx-auto flex w-full max-w-[520px] flex-col px-5 ${fit ? "h-[100dvh] overflow-hidden" : "min-h-[100dvh]"}`}>
       <div className={`fixed inset-0 -z-10 ${home ? "duo-bg" : "bg-white"}`} aria-hidden />
       <header
-        className="sticky top-0 z-50 -mx-5 border-b-2 border-[#E5E5E5] bg-white px-5 pt-[max(8px,env(safe-area-inset-top))]"
+        className="sticky top-0 z-50 -mx-5 px-5 pt-[max(8px,env(safe-area-inset-top))]"
+        style={{
+          backgroundColor: home ? "#131F24" : "#FFFFFF",
+          borderBottom: home ? "2px solid #37464F" : "2px solid #E5E5E5",
+        }}
       >
         <div className="relative flex h-14 items-center justify-between">
           {leading}
           {title && (
-            <span className="pointer-events-none absolute inset-x-16 truncate text-center text-[17px] font-extrabold tracking-tight text-[#3C3C3C]">
+            <span
+              className="pointer-events-none absolute inset-x-16 truncate text-center text-[17px] font-extrabold tracking-tight"
+              style={{ color: home ? "#FFFFFF" : "#3C3C3C" }}
+            >
               {title}
             </span>
           )}
@@ -172,7 +179,7 @@ function IconButton({ label, onClick, children }: { label: string; onClick: () =
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="-ml-2 flex h-10 w-10 items-center justify-center rounded-full text-duo-eel transition hover:bg-duo-swan/60 active:scale-95"
+      className="-ml-2 flex h-10 w-10 items-center justify-center rounded-full text-white transition hover:bg-white/10 active:scale-95"
     >
       <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden>
         {children}

@@ -47,13 +47,12 @@ export function App() {
       pathname.startsWith("/exam") ||
       (pathname.startsWith("/practice/") && pathname !== "/practice") ||
       pathname.startsWith("/board3d");
-    const color = night ? "#131F24" : "#FFFFFF";
+    const color = "#131F24";
     const meta = document.querySelector('meta[name="theme-color"]');
     meta?.setAttribute("content", color);
-    if (!night) {
-      document.documentElement.style.backgroundColor = color;
-      document.body.style.backgroundColor = color;
-    }
+    document.documentElement.style.backgroundColor = color;
+    document.body.style.backgroundColor = color;
+    void night;
   }, [pathname]);
 
   if (!currentRank && pathname !== "/welcome" && pathname !== "/board3d") {

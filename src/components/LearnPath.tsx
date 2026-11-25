@@ -130,9 +130,9 @@ export function LearnPath() {
 function PathTrail() {
   return (
     <div
-      className="pointer-events-none absolute inset-y-2 left-1/2 z-0 w-2.5 -translate-x-1/2 rounded-full opacity-40"
+      className="pointer-events-none absolute inset-y-2 left-1/2 z-0 w-2.5 -translate-x-1/2 rounded-full opacity-50"
       style={{
-        backgroundImage: "repeating-linear-gradient(to bottom, #D4D4D4 0 8px, transparent 8px 16px)",
+        backgroundImage: "repeating-linear-gradient(to bottom, #37464F 0 8px, transparent 8px 16px)",
       }}
       aria-hidden
     />
@@ -365,18 +365,18 @@ function NodePopover({
 }) {
   return (
     <div
-      className="relative mt-3 w-[min(100%,280px)] rounded-[20px] bg-white p-4"
-      style={{ border: "2px solid #E5E5E5", boxShadow: "0 6px 0 #E5E5E5" }}
+      className="relative mt-3 w-[min(100%,280px)] rounded-[20px] p-4"
+      style={{ backgroundColor: "#1A2C33", border: "2px solid #37464F", boxShadow: "0 6px 0 #0B1519" }}
     >
       <button
         type="button"
         onClick={onClose}
-        className="absolute right-3 top-3 text-[20px] leading-none font-bold text-[#AFAFAF]"
+        className="absolute right-3 top-3 text-[20px] font-bold leading-none text-[#AEB8BE]"
         aria-label="닫기"
       >
         ×
       </button>
-      <p className="pr-6 text-[17px] font-extrabold text-[#3C3C3C]">{title}</p>
+      <p className="duo-t1 pr-6 text-[17px] font-extrabold">{title}</p>
       <button
         type="button"
         onClick={onStart}

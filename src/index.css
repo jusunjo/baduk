@@ -6,8 +6,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #3c3c3c;
+  --background: #131f24;
+  --foreground: #d6dee2;
   --board-wood: #e8c48a;
   --board-line: #5c3d1e;
   --duo-green: #58cc02;
@@ -41,12 +41,13 @@ body {
   background: rgba(88, 204, 2, 0.22);
 }
 
-/* 듀오 홈 — 흰 바탕 + 점무늬 */
+/* 듀오 홈 — 다크 + 점무늬 */
 .duo-bg {
-  background-color: #ffffff;
-  background-image: radial-gradient(#e5e5e5 1.5px, transparent 1.5px);
-  background-size: 22px 22px;
-  background-position: 0 0;
+  background-color: #131f24;
+  background-image: radial-gradient(ellipse 80% 45% at 50% -8%, rgba(88, 204, 2, 0.12), transparent 55%),
+    radial-gradient(circle at 100% 30%, rgba(28, 176, 246, 0.08), transparent 40%),
+    radial-gradient(#2a3a42 1.35px, transparent 1.35px);
+  background-size: auto, auto, 20px 20px;
 }
 
 /* 듀오 레슨/온보딩 다크 */
