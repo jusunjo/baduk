@@ -134,26 +134,14 @@ export function Board({
             }),
           )}
 
-          {/* highlights — 초록 점/링 (미션 안내와 맞춤) */}
+          {/* highlights — 안내 점 (채도·크기 최소화) */}
           {allHighlights.map((p) => {
             const { cx, cy } = xy(p);
-            const r = stoneR * 0.92;
+            const r = stoneR * 0.55;
             return (
               <g key={`hi-${keyOf(p)}`} transform={`translate(${cx} ${cy})`} pointerEvents="none">
-                <circle r={r * 0.42} fill="#22C55E" opacity="0.95">
-                  <animate attributeName="opacity" values="0.7;1;0.7" dur="1.6s" repeatCount="indefinite" />
-                </circle>
-                <circle
-                  r={r}
-                  fill="rgba(34,197,94,0.16)"
-                  stroke="#16A34A"
-                  strokeWidth="0.75"
-                  strokeDasharray="1.6 1.2"
-                  opacity="0.95"
-                >
-                  <animate attributeName="r" values={`${r};${r * 1.08};${r}`} dur="1.6s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.95;0.55;0.95" dur="1.6s" repeatCount="indefinite" />
-                </circle>
+                <circle r={r * 0.38} fill="#58CC02" opacity="0.55" />
+                <circle r={r} fill="none" stroke="#58CC02" strokeWidth="0.55" opacity="0.4" />
               </g>
             );
           })}
@@ -252,7 +240,15 @@ export function Board({
           {lastMove && !libertiesFor && (() => {
             const { cx, cy } = xy(lastMove);
             const color = board[lastMove.y]?.[lastMove.x];
-            return <circle cx={cx} cy={cy} r={1.15} fill={color === "B" ? "#fff" : "#191F28"} />;
+            return (
+              <circle
+                cx={cx}
+                cy={cy}
+                r={0.55}
+                fill={color === "B" ? "#FFFFFF" : "#191F28"}
+                opacity="0.45"
+              />
+            );
           })()}
 
           {wrongFlash && (() => {

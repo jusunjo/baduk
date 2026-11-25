@@ -9,6 +9,7 @@ import { applySetup, isAnswer, playMove, resolveAnswer, type Grid } from "@/lib/
 import { haptic } from "@/lib/native";
 import { findPractice, listPractice, type PracticeItem } from "@/lib/practice";
 import { useProgress } from "@/lib/progress";
+import { sfx } from "@/lib/sfx";
 
 export function PracticePlayPage() {
   const { lessonId = "", problemId = "" } = useParams();
@@ -19,7 +20,6 @@ function PracticePlay({ lessonId, problemId }: { lessonId: string; problemId: st
   const navigate = useNavigate();
   const p = useProgress();
   const item = p.rank ? findPractice(p.rank.track, lessonId, problemId) : null;
-  // 같은 개념(레슨) 안에서만 이어서 풀기
   const queue = p.rank ? listPractice(p.rank.track).filter((x) => x.lessonId === lessonId) : [];
   const idx = queue.findIndex((x) => x.problemId === problemId);
   const next = idx >= 0 ? queue[idx + 1] ?? null : null;
@@ -27,7 +27,7 @@ function PracticePlay({ lessonId, problemId }: { lessonId: string; problemId: st
   if (!p.rank || !item) {
     return (
       <Screen onBack={() => navigate("/practice")} title="문제">
-        <p className="mt-8 text-center text-toss-mute">문제를 찾을 수 없어요.</p>
+        <p className="mt-8 text-center text-[#777777]">문제를 찾을 수 없어요.</p>
       </Screen>
     );
   }
@@ -122,6 +122,7 @@ function Play({
     const after = isAnswer(point, resolved, board) ? playMove(board, point, playAs) : null;
     if (after) {
       haptic.correct();
+      sfx.play("correct");
       aiBoard.clearFeedback();
       const opponent = playAs === "W" ? "B" : "W";
       const captured =
@@ -136,93 +137,102 @@ function Play({
       return;
     }
     haptic.wrong();
+    sfx.play("wrong");
     setWrong(point);
     setHint(item.wrongHint ?? "다른 자리를 눌러 볼까요?");
     window.clearTimeout(hintTimer.current);
     hintTimer.current = window.setTimeout(() => setWrong(null), 400);
   };
 
-  /** 연습은 정답을 미리 밝히지 않음. highlight가 있을 때만 힌트 표시 */
-  const baseHighlights = needsPlay
-    ? (item.highlight ?? []).filter((h) => !board[h.y]?.[h.x])
-    : [];
+  const baseHighlights = needsPlay ? (item.highlight ?? []).filter((h) => !board[h.y]?.[h.x]) : [];
   const highlights = [...baseHighlights, ...(aiFeedback?.highlights ?? [])].filter(
     (p, i, arr) => arr.findIndex((q) => q.x === p.x && q.y === p.y) === i,
   );
 
   return (
     <Screen
+      lesson
       fit
+      progress={(index + 1) / Math.max(1, total)}
       onClose={() => navigate("/practice")}
-      right={
-        <span className="text-[13px] font-semibold tabular-nums text-toss-mute">
-          {index + 1} / {total}
-        </span>
-      }
-      cta={
-        solved ? (
-          next ? (
-            <PrimaryButton onClick={() => navigate(`/practice/${next.lessonId}/${next.problemId}`, { replace: true })}>
-              다음 문제
-            </PrimaryButton>
-          ) : (
-            <PrimaryButton onClick={() => navigate("/practice")}>목록으로</PrimaryButton>
-          )
-        ) : (
-          <div className="flex h-14 items-center justify-center gap-2 rounded-2xl bg-toss-soft2 text-[15px] font-semibold text-toss-body">
-            <span className={`h-4 w-4 rounded-full ${playAs === "W" ? "bg-white ring-1 ring-toss-line" : "bg-toss-ink"}`} />
-            {playAs === "W" ? "백" : "흑"} 차례 · 판을 눌러 두어 보세요
-          </div>
-        )
-      }
     >
-      <div className="min-h-[120px] shrink-0 px-1">
-        <p className="text-[13px] font-semibold text-toss-mute">
-          {item.chapterTitle} · {item.lessonTitle}
-          {total > 1 ? ` · ${index + 1}/${total}` : ""}
-        </p>
-        <p className="mt-2 break-keep text-[22px] font-bold leading-[1.4] tracking-tight text-toss-ink">
-          {solved && item.feedback ? item.feedback : item.prompt}
-        </p>
-        {!solved && item.tip && (
-          <p className="mt-2 break-keep text-[14px] leading-relaxed text-toss-mute">{item.tip}</p>
-        )}
-        {solved && item.explanation && (
-          <p className="mt-2 break-keep text-[14px] leading-relaxed text-toss-mute">해설 · {item.explanation}</p>
-        )}
-      </div>
-
-      {burst && <Confetti key={burst.id} big={burst.big} />}
-      <div ref={stageRef} className="relative mt-3 flex min-h-0 flex-1 items-center justify-center">
-        {praise && <PraiseBadge key={praise.id} text={praise.text} tone={praise.tone} />}
-        <div
-          className="rounded-[28px] bg-gradient-to-b from-[#f7efe2] to-white p-3 ring-1 ring-black/[0.04]"
-          style={{ width: side || undefined }}
-        >
-          <Board
-            size={board.length}
-            board={board}
-            highlights={highlights}
-            ghosts={aiFeedback?.ghosts}
-            libertiesFor={item.libertiesFor}
-            onPlay={onPlay}
-            interactive={needsPlay}
-            lastMove={lastMove}
-            wrongFlash={wrong}
-            showSize={false}
-            className="max-w-none"
-          />
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="min-h-[100px] shrink-0 px-1">
+          <div className="mb-3 inline-flex items-center gap-1.5 rounded-lg bg-[#CE82FF]/20 px-2.5 py-1">
+            <span className="duo-t-berry text-[12px] font-extrabold">
+              {item.chapterTitle}
+              {total > 1 ? ` · ${index + 1}/${total}` : ""}
+            </span>
+          </div>
+          <p className="duo-t1 break-keep text-[22px] font-extrabold leading-snug">
+            {solved && item.feedback ? item.feedback : item.prompt}
+          </p>
+          {!solved && item.tip ? (
+            <p className="duo-t2 mt-2 break-keep text-[14px] font-semibold leading-relaxed">{item.tip}</p>
+          ) : null}
+          {solved && item.explanation ? (
+            <p className="duo-t2 mt-2 break-keep text-[14px] font-semibold leading-relaxed">
+              해설 · {item.explanation}
+            </p>
+          ) : null}
         </div>
-      </div>
 
-      <div className="mt-3 flex min-h-[52px] shrink-0 flex-col items-stretch justify-center gap-2">
-        {hint && needsPlay ? (
-          <Reveal key={hint}>
-            <p className="break-keep px-1 text-center text-[14px] font-medium text-toss-orange">{hint}</p>
-          </Reveal>
-        ) : null}
+        {burst && <Confetti key={burst.id} big={burst.big} />}
+        <div ref={stageRef} className="relative mt-3 flex min-h-0 flex-1 items-center justify-center">
+          {praise && <PraiseBadge key={praise.id} text={praise.text} tone={praise.tone} />}
+          <div
+            className="rounded-[24px] p-2.5"
+            style={{ width: side || undefined, backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F" }}
+          >
+            <Board
+              size={board.length}
+              board={board}
+              highlights={highlights}
+              ghosts={aiFeedback?.ghosts}
+              libertiesFor={item.libertiesFor}
+              onPlay={onPlay}
+              interactive={needsPlay}
+              lastMove={lastMove}
+              wrongFlash={wrong}
+              showSize={false}
+              className="max-w-none"
+            />
+          </div>
+        </div>
+
+        <div className="mt-2 flex min-h-[28px] shrink-0 items-center justify-center">
+          {hint && needsPlay ? (
+            <Reveal key={hint}>
+              <p className="duo-t-red break-keep px-1 text-center text-[14px] font-extrabold">{hint}</p>
+            </Reveal>
+          ) : null}
+        </div>
+
+        <div
+          className="shrink-0 pt-3 pb-[max(12px,env(safe-area-inset-bottom))]"
+          style={{ borderTop: "2px solid #37464F" }}
+        >
+          {solved ? (
+            next ? (
+              <PrimaryButton
+                night
+                onClick={() => navigate(`/practice/${next.lessonId}/${next.problemId}`, { replace: true })}
+              >
+                계속하기
+              </PrimaryButton>
+            ) : (
+              <PrimaryButton night onClick={() => navigate("/practice")}>
+                목록으로
+              </PrimaryButton>
+            )
+          ) : (
+            <PrimaryButton night disabled>
+              {playAs === "W" ? "백" : "흑"} 차례 · 판을 눌러 보세요
+            </PrimaryButton>
+          )}
+        </div>
+        <BoardBuddy />
       </div>
-      <BoardBuddy />
     </Screen>
   );
 }

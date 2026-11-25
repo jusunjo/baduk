@@ -45,6 +45,7 @@ export function App() {
       pathname === "/welcome" ||
       pathname.startsWith("/mission") ||
       pathname.startsWith("/exam") ||
+      (pathname.startsWith("/practice/") && pathname !== "/practice") ||
       pathname.startsWith("/board3d");
     const color = night ? "#131F24" : "#FFFFFF";
     const meta = document.querySelector('meta[name="theme-color"]');

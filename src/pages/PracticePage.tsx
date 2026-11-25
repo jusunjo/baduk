@@ -108,15 +108,15 @@ export function PracticePage() {
                           </span>
                         </span>
                         <span
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white"
-                          style={{ backgroundColor: "#58CC02", boxShadow: "0 3px 0 #46A302" }}
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+                          style={{ backgroundColor: "#F0F0F0", color: "#777777" }}
                           aria-hidden
                         >
-                          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
+                          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none">
                             <path
                               d="M9 6l6 6-6 6"
                               stroke="currentColor"
-                              strokeWidth="3"
+                              strokeWidth="2.6"
                               strokeLinecap="round"
                               strokeLinejoin="round"
                             />
