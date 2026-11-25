@@ -48,7 +48,11 @@ export function PathPage() {
         <ul className="space-y-2.5">
           {RANKS.filter((r) => r.id !== "beginner").map((r) => {
             const state =
-              r.level < myLevel ? "done" : r.level === myLevel || (p.rank.id === "beginner" && r.id === "g30") ? "now" : "soon";
+              r.level < myLevel
+                ? "done"
+                : r.level === myLevel || (p.rank?.id === "beginner" && r.id === "g30")
+                  ? "now"
+                  : "soon";
             return (
               <li
                 key={r.id}
