@@ -16,8 +16,17 @@ export function PageAsk() {
   const [sheetOpen, setSheetOpen] = useState(false);
 
   if (h.onBoard) return null;
-  /** 홈 패스는 듀오처럼 노드에 집중 — FAB 숨김 */
-  if (pathname === "/" || pathname === "/learn") return null;
+  /** 홈·온보딩·미션은 FAB 숨김 */
+  if (
+    pathname === "/" ||
+    pathname === "/learn" ||
+    pathname === "/welcome" ||
+    pathname.startsWith("/mission") ||
+    pathname.startsWith("/exam") ||
+    pathname.startsWith("/board3d")
+  ) {
+    return null;
+  }
 
   const hasNav = pathname === "/practice" || pathname === "/path";
 

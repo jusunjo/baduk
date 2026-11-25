@@ -11,6 +11,7 @@ import { MissionPlayPage } from "./pages/MissionPlayPage";
 import { PathPage } from "./pages/PathPage";
 import { PracticePage } from "./pages/PracticePage";
 import { PracticePlayPage } from "./pages/PracticePlayPage";
+import { Board3DPage } from "./pages/Board3DPage";
 import { WelcomePage } from "./pages/WelcomePage";
 
 const TABS = ["/", "/learn", "/practice", "/path"]; // /learn redirects to /
@@ -39,7 +40,24 @@ export function App() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  if (!currentRank && pathname !== "/welcome") return <Navigate to="/welcome" replace />;
+  useEffect(() => {
+    const night =
+      pathname === "/welcome" ||
+      pathname.startsWith("/mission") ||
+      pathname.startsWith("/exam") ||
+      pathname.startsWith("/board3d");
+    const color = night ? "#131F24" : "#F7F7F7";
+    const meta = document.querySelector('meta[name="theme-color"]');
+    meta?.setAttribute("content", color);
+    if (!night) {
+      document.documentElement.style.backgroundColor = color;
+      document.body.style.backgroundColor = color;
+    }
+  }, [pathname]);
+
+  if (!currentRank && pathname !== "/welcome" && pathname !== "/board3d") {
+    return <Navigate to="/welcome" replace />;
+  }
 
   return (
     <>
@@ -53,6 +71,7 @@ export function App() {
         <Route path="/practice" element={<PracticePage />} />
         <Route path="/practice/:lessonId/:problemId" element={<PracticePlayPage />} />
         <Route path="/path" element={<PathPage />} />
+        <Route path="/board3d" element={<Board3DPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <PageAsk />

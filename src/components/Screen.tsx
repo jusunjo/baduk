@@ -1,6 +1,23 @@
-import type { CSSProperties, ReactNode } from "react";
+import { useEffect, type CSSProperties, type ReactNode } from "react";
 import { BottomNav } from "./AppNav";
 import { Logo } from "./Logo";
+
+function LessonChromeSync() {
+  useEffect(() => {
+    const root = document.documentElement;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    const prevTheme = meta?.getAttribute("content") ?? "";
+    root.style.backgroundColor = "#131F24";
+    document.body.style.backgroundColor = "#131F24";
+    meta?.setAttribute("content", "#131F24");
+    return () => {
+      root.style.backgroundColor = "";
+      document.body.style.backgroundColor = "";
+      if (meta) meta.setAttribute("content", prevTheme || "#F7F7F7");
+    };
+  }, []);
+  return null;
+}
 
 export function Screen({
   onBack,
@@ -33,16 +50,21 @@ export function Screen({
 }) {
   if (lesson) {
     return (
-      <div className={`mx-auto flex w-full max-w-[520px] flex-col px-4 ${fit ? "h-[100dvh] overflow-hidden" : "min-h-[100dvh]"}`}>
+      <div
+        className={`relative mx-auto flex w-full max-w-[520px] flex-col px-4 ${
+          fit ? "h-[100dvh] overflow-x-hidden overflow-y-hidden" : "min-h-[100dvh]"
+        }`}
+      >
         <div className="duo-night fixed inset-0 -z-10" aria-hidden />
-        <header className="sticky top-0 z-50 -mx-4 bg-duo-night/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-sm">
+        <LessonChromeSync />
+        <header className="sticky top-0 z-50 -mx-4 bg-duo-night px-4 pt-[max(8px,env(safe-area-inset-top))]">
           <div className="flex h-12 items-center gap-3">
             {(onClose || onBack) && (
               <button
                 type="button"
                 onClick={onClose ?? onBack}
                 aria-label="닫기"
-                className="-ml-1 flex h-10 w-10 items-center justify-center text-duo-night-mute transition active:scale-90"
+                className="-ml-1 flex h-10 w-10 items-center justify-center text-[#9AA6AC] transition active:scale-90"
               >
                 <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" aria-hidden>
                   <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
@@ -55,7 +77,7 @@ export function Screen({
                 style={{ width: `${Math.max(0, Math.min(100, (progress ?? 0) * 100))}%` }}
               />
             </div>
-            <div className="flex items-center gap-0.5 pl-1" aria-label={`하트 ${hearts}`}>
+            <div className="flex shrink-0 items-center gap-0.5 pl-1" aria-label={`하트 ${hearts}`}>
               {Array.from({ length: 5 }).map((_, i) => (
                 <HeartIcon key={i} on={i < hearts} />
               ))}
@@ -64,7 +86,7 @@ export function Screen({
         </header>
         <main className={`flex flex-1 flex-col pt-3 ${fit ? "min-h-0" : "pb-12"}`}>{children}</main>
         {cta && fit && (
-          <div className="shrink-0 border-t border-duo-night-line/60 pb-[max(16px,env(safe-area-inset-bottom))] pt-3">
+          <div className="shrink-0 border-t-2 border-duo-night-line pb-[max(20px,calc(env(safe-area-inset-bottom)+8px))] pt-3">
             {cta}
           </div>
         )}
@@ -173,14 +195,14 @@ export function PrimaryButton({
   night?: boolean;
 }) {
   const idle = night
-    ? "disabled:bg-duo-night-line disabled:text-duo-night-mute disabled:shadow-none"
+    ? "disabled:bg-duo-night-line disabled:text-[#9AA6AC] disabled:shadow-[0_4px_0_#2A3A42]"
     : "disabled:bg-[#AFE581] disabled:shadow-none";
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled || loading}
-      className={`flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-duo-green text-[17px] font-extrabold uppercase tracking-wide text-white shadow-[0_4px_0_#46A302] transition active:translate-y-[3px] active:shadow-[0_1px_0_#46A302] disabled:cursor-not-allowed disabled:active:translate-y-0 ${idle}`}
+      className={`mb-1 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-duo-green text-[17px] font-extrabold tracking-wide text-white shadow-[0_4px_0_#46A302] transition active:translate-y-[3px] active:shadow-[0_1px_0_#46A302] disabled:cursor-not-allowed disabled:active:translate-y-0 ${idle}`}
     >
       {loading && <Spinner className="h-5 w-5 text-white" />}
       {children}
@@ -201,9 +223,9 @@ export function SecondaryButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-[17px] font-extrabold transition active:scale-[0.98] ${
+      className={`mb-1 flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-[17px] font-extrabold transition active:scale-[0.98] ${
         night
-          ? "bg-duo-night-3 text-white ring-2 ring-duo-night-line"
+          ? "bg-duo-night-3 text-white shadow-[0_4px_0_#0B1519] ring-2 ring-duo-night-line active:translate-y-[3px] active:shadow-[0_1px_0_#0B1519]"
           : "bg-toss-soft text-toss-body hover:bg-toss-line"
       }`}
     >

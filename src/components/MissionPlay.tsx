@@ -203,7 +203,7 @@ export function MissionPlay({
         </div>
       ) : null}
 
-      <div className="shrink-0 pt-3 pb-[max(12px,env(safe-area-inset-bottom))]">
+      <div className="shrink-0 border-t-2 border-duo-night-line pt-3 pb-[max(16px,calc(env(safe-area-inset-bottom)+4px))]">
         {ex.type === "read" && !ok ? (
           <PrimaryButton night onClick={() => succeed(ex.correctText ?? `알겠어요 · +${XP_PER_CORRECT} XP`)}>
             확인
