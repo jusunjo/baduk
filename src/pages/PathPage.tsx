@@ -79,7 +79,7 @@ export function PathPage() {
         </ul>
       </div>
 
-      <div className="mt-8 space-y-2 px-1 pb-4">
+      <div className="mt-8 space-y-2 px-1 pb-[max(2rem,calc(var(--nav-h,72px)+1rem))]">
         <button
           type="button"
           onClick={() => setGoalOpen(true)}

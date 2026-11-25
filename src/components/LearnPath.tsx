@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { PathItem } from "@/data/path/types";
+import { getRankModule, type PathItem } from "@/data/path";
+import { RANKS } from "@/lib/ranks";
 import { useProgress } from "@/lib/progress";
 import { sfx } from "@/lib/sfx";
 import { actions } from "@/lib/store";
@@ -47,7 +48,7 @@ export function LearnPath() {
   const sections = buildSections(p);
 
   return (
-    <div className="relative z-0 space-y-6 pb-16 pt-1">
+    <div className="relative z-0 space-y-8 pb-[max(7rem,calc(var(--nav-h,72px)+3rem))] pt-1">
       {sections.map((sec) => {
         const playable = sec.nodes.filter((n) => n.kind === "mission" || n.kind === "exam");
         const anyCurrent = playable.some((n) => stateOf(n.key) === "current");
@@ -169,38 +170,68 @@ function buildSections(p: ReturnType<typeof useProgress>): PathSection[] {
   }
 
   if (p.module) {
-    const mod = p.module;
-    const nodes: PathNode[] = [
-      {
-        key: mod.intro.id,
-        title: mod.intro.title,
-        kind: "mission",
-        item: { kind: "rank-intro", module: mod },
-      },
-      ...mod.parts.map((part) => ({
-        key: part.id,
-        title: part.title.replace(/^Part\s*\d+\s*·\s*/, ""),
-        kind: "mission" as const,
-        item: { kind: "rank-part" as const, module: mod, part },
-      })),
-    ];
-    if (mod.exam) {
-      nodes.push({
-        key: `exam:${mod.rankId}`,
-        title: "승급 시험",
-        kind: "exam",
-        item: { kind: "rank-exam", module: mod },
-      });
-    }
-    sections.push({
-      id: `rank-${mod.rankId}`,
-      title: mod.title,
-      tone: "green",
-      nodes,
-    });
+    sections.push(rankModuleSection(p.module, "green"));
   }
 
+  // 현재 급수 이후는 잠긴 채로 세로로 이어서 보여 준다
+  const myLevel = p.rank?.level ?? 0;
+  const upcoming = RANKS.filter((r) => r.level > myLevel);
+  upcoming.forEach((rank, i) => {
+    const tone = tones[(sections.length + i) % tones.length]!;
+    const mod = getRankModule(rank.id);
+    if (mod) {
+      const sec = rankModuleSection(mod, tone);
+      sections.push({
+        ...sec,
+        id: `soon-${rank.id}`,
+        nodes: sec.nodes.map((n) => ({ ...n, key: `soon:${rank.id}:${n.key}` })),
+      });
+      return;
+    }
+    sections.push({
+      id: `soon-${rank.id}`,
+      title: rank.label,
+      tone,
+      nodes: [
+        { key: `soon:${rank.id}:a`, title: rank.label, kind: "mission" },
+        { key: `soon:${rank.id}:b`, title: rank.label, kind: "mission" },
+        { key: `soon:${rank.id}:chest`, title: "상자", kind: "chest", unitDone: false },
+      ],
+    });
+  });
+
   return sections;
+}
+
+function rankModuleSection(mod: NonNullable<ReturnType<typeof getRankModule>>, tone: PathSection["tone"]): PathSection {
+  const nodes: PathNode[] = [
+    {
+      key: mod.intro.id,
+      title: mod.intro.title,
+      kind: "mission",
+      item: { kind: "rank-intro", module: mod },
+    },
+    ...mod.parts.map((part) => ({
+      key: part.id,
+      title: part.title.replace(/^Part\s*\d+\s*·\s*/, ""),
+      kind: "mission" as const,
+      item: { kind: "rank-part" as const, module: mod, part },
+    })),
+  ];
+  if (mod.exam) {
+    nodes.push({
+      key: `exam:${mod.rankId}`,
+      title: "승급 시험",
+      kind: "exam",
+      item: { kind: "rank-exam", module: mod },
+    });
+  }
+  return {
+    id: `rank-${mod.rankId}`,
+    title: mod.title,
+    tone,
+    nodes,
+  };
 }
 
 function UnitBanner({

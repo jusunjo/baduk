@@ -58,7 +58,13 @@ export function Screen({
         </div>
       </header>
 
-      <main className={`flex flex-1 flex-col pt-2 ${fit ? "min-h-0" : cta ? "pb-36" : "pb-12"}`}>{children}</main>
+      <main
+        className={`flex flex-1 flex-col pt-2 ${
+          fit ? "min-h-0" : cta ? "pb-36" : nav ? "pb-4" : "pb-12"
+        }`}
+      >
+        {children}
+      </main>
 
       {nav && <BottomNav />}
 
