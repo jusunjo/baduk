@@ -101,7 +101,6 @@ export function LearnPath() {
                     style={{ scrollMarginTop: "140px" }}
                   >
                     <div className="relative flex flex-col items-center" style={{ marginLeft: x }}>
-                      {st === "current" && !isOpen && <StartTip />}
                       <PathCircle
                         state={st}
                         kind={node.kind}
