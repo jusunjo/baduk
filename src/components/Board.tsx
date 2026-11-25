@@ -108,25 +108,25 @@ export function Board({
             }),
           )}
 
-          {/* highlights — SVG-native pulse (CSS scale breaks intersection sync) */}
+          {/* highlights — 초록 점/링 (미션 안내와 맞춤) */}
           {highlights.map((p) => {
             const { cx, cy } = xy(p);
             const r = stoneR * 0.92;
             return (
               <g key={`hi-${keyOf(p)}`} transform={`translate(${cx} ${cy})`} pointerEvents="none">
-                <circle r={r} fill="rgba(49,130,246,0.14)">
-                  <animate attributeName="opacity" values="0.55;1;0.55" dur="1.8s" repeatCount="indefinite" />
+                <circle r={r * 0.42} fill="#22C55E" opacity="0.95">
+                  <animate attributeName="opacity" values="0.7;1;0.7" dur="1.6s" repeatCount="indefinite" />
                 </circle>
                 <circle
                   r={r}
-                  fill="none"
-                  stroke="#3182F6"
+                  fill="rgba(34,197,94,0.16)"
+                  stroke="#16A34A"
                   strokeWidth="0.75"
                   strokeDasharray="1.6 1.2"
-                  opacity="0.9"
+                  opacity="0.95"
                 >
-                  <animate attributeName="r" values={`${r};${r * 1.1};${r}`} dur="1.8s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.95;0.55;0.95" dur="1.8s" repeatCount="indefinite" />
+                  <animate attributeName="r" values={`${r};${r * 1.08};${r}`} dur="1.6s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.95;0.55;0.95" dur="1.6s" repeatCount="indefinite" />
                 </circle>
               </g>
             );

@@ -9,7 +9,7 @@ import { applySetup, keyOf, playMove, pointsMatch, type Grid } from "@/lib/board
 
 function marksToHighlights(ex: Exercise): Point[] {
   return (ex.marks ?? [])
-    .filter((m) => m.type === "target" || m.type === "glow" || m.type === "triangle")
+    .filter((m) => m.type === "target" || m.type === "glow" || m.type === "triangle" || m.type === "liberty")
     .map((m) => m.at);
 }
 

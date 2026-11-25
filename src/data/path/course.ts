@@ -60,7 +60,7 @@ export const COURSE: Course = {
               id: "c-lib-1",
               type: "read",
               size: 9,
-              prompt: "흰 돌의 상하좌우 빈칸이 숨구멍(활로)이에요. 초록이 숨구멍입니다.",
+              prompt: "흰 돌의 상하좌우 빈칸이 숨구멍(활로)이에요. 초록 점이 숨구멍이에요.",
               setup: [W(4, 4)],
               marks: [
                 { at: P(4, 3), type: "liberty", label: "1" },
