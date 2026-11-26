@@ -55,17 +55,19 @@ export function WelcomePage() {
 
   return (
     <Shell>
-      <Reveal>
-        <Headline night>{"바둑을 얼마나\n알고 있나요?"}</Headline>
-      </Reveal>
-      <Reveal order={1}>
-        <p className="duo-t2 mt-3 break-keep text-[15px] font-semibold leading-relaxed">
-          잘 모르겠으면 ‘처음이에요’를 고르세요. 나중에 바꿀 수 있어요.
-        </p>
-      </Reveal>
-      <Reveal order={2} className="mt-6">
-        <RankOptions ranks={RANKS} value={current} onChange={setCurrent} dark />
-      </Reveal>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <Reveal>
+          <Headline night>{"바둑을 얼마나\n알고 있나요?"}</Headline>
+        </Reveal>
+        <Reveal order={1}>
+          <p className="duo-t2 mt-3 shrink-0 break-keep text-[15px] font-semibold leading-relaxed">
+            잘 모르겠으면 ‘처음이에요’를 고르세요. 나중에 바꿀 수 있어요.
+          </p>
+        </Reveal>
+        <Reveal order={2} className="mt-4 flex min-h-0 flex-1 flex-col">
+          <RankOptions ranks={RANKS} value={current} onChange={setCurrent} dark fill />
+        </Reveal>
+      </div>
       <Footer>
         <div className="flex gap-2">
           <div className="w-[38%]">
@@ -200,8 +202,8 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <>
       <div className="duo-night fixed inset-0 -z-10" aria-hidden />
-      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-[520px] flex-col px-5 pt-[max(12px,env(safe-area-inset-top))]">
-        <main className="relative z-10 flex flex-1 flex-col pb-[calc(7.25rem+env(safe-area-inset-bottom))] pt-4">
+      <div className="relative mx-auto flex h-[100dvh] max-h-[100dvh] w-full max-w-[520px] flex-col overflow-hidden px-5 pt-[max(12px,env(safe-area-inset-top))]">
+        <main className="relative z-10 flex min-h-0 flex-1 flex-col pb-[calc(7.25rem+env(safe-area-inset-bottom))] pt-4">
           {children}
         </main>
       </div>

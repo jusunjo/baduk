@@ -6,14 +6,26 @@ export function RankOptions({
   value,
   onChange,
   dark,
+  fill,
 }: {
   ranks?: Rank[];
   value: RankId | null;
   onChange: (id: RankId) => void;
   dark?: boolean;
+  /** 부모 flex 높이를 채워 스크롤 (웰컴 급수 선택) */
+  fill?: boolean;
 }) {
   return (
-    <ul className="space-y-2.5">
+    <ul
+      className={`space-y-2.5 overflow-y-auto overscroll-contain pr-1 ${
+        fill ? "h-full min-h-0 pb-4" : "max-h-[min(52dvh,420px)]"
+      }`}
+      style={
+        dark
+          ? { scrollbarWidth: "thin", scrollbarColor: "#37464F transparent" }
+          : undefined
+      }
+    >
       {ranks.map((r, i) => {
         const on = r.id === value;
         return (

@@ -88,6 +88,20 @@ export function MissionPlay({
     setFeedback(msg ?? ex.correctText ?? `좋아요! +${XP_PER_CORRECT} XP`);
   };
 
+  /** 읽기(개념) 카드 — 정답 판정 없이 바로 다음으로 */
+  const acknowledgeRead = () => {
+    sfx.play("tap");
+    sfx.play("xp");
+    haptic.tap();
+    actions.addXp(XP_PER_CORRECT);
+    if (idx + 1 >= exercises.length) {
+      sfx.play("complete");
+      onComplete();
+      return;
+    }
+    load(idx + 1);
+  };
+
   const fail = (at?: Point) => {
     sfx.play("wrong");
     haptic.wrong();
@@ -215,9 +229,9 @@ export function MissionPlay({
         </div>
       ) : null}
 
-      {/* 피드백 자리 — 모웹에선 더 얇게 */}
+      {/* 피드백 자리 — 모웹에선 더 얇게 (읽기 카드는 정답 UI 없음) */}
       <div className="mt-2 shrink-0 sm:mt-3" style={{ minHeight: feedback ? undefined : 8 }}>
-        {feedback ? (
+        {feedback && ex.type !== "read" ? (
           <div
             className="rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3"
             style={
@@ -238,9 +252,9 @@ export function MissionPlay({
         className="shrink-0 pt-2 pb-[max(12px,calc(env(safe-area-inset-bottom)+4px))] sm:pt-3"
         style={{ borderTop: "2px solid #37464F" }}
       >
-        {ex.type === "read" && !ok ? (
-          <PrimaryButton night onClick={() => succeed(ex.correctText ?? `알겠어요 · +${XP_PER_CORRECT} XP`)}>
-            확인
+        {ex.type === "read" ? (
+          <PrimaryButton night onClick={acknowledgeRead}>
+            {idx + 1 >= exercises.length ? "완료" : "다음"}
           </PrimaryButton>
         ) : ok ? (
           <PrimaryButton night onClick={advance}>
