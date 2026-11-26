@@ -134,14 +134,25 @@ export function Board({
             }),
           )}
 
-          {/* highlights — 안내 점 (채도·크기 최소화) */}
+          {/* highlights — 나무판 위에서도 잘 보이는 초록 점 */}
           {allHighlights.map((p) => {
             const { cx, cy } = xy(p);
-            const r = stoneR * 0.55;
+            const r = stoneR * 0.78;
             return (
               <g key={`hi-${keyOf(p)}`} transform={`translate(${cx} ${cy})`} pointerEvents="none">
-                <circle r={r * 0.38} fill="#58CC02" opacity="0.55" />
-                <circle r={r} fill="none" stroke="#58CC02" strokeWidth="0.55" opacity="0.4" />
+                <circle r={r * 1.05} fill="rgba(255,255,255,0.55)" />
+                <circle r={r * 0.72} fill="#58CC02" opacity="0.95">
+                  <animate attributeName="opacity" values="0.75;1;0.75" dur="1.4s" repeatCount="indefinite" />
+                </circle>
+                <circle
+                  r={r}
+                  fill="none"
+                  stroke="#2E7D00"
+                  strokeWidth="1.1"
+                  opacity="0.95"
+                >
+                  <animate attributeName="r" values={`${r};${r * 1.12};${r}`} dur="1.4s" repeatCount="indefinite" />
+                </circle>
               </g>
             );
           })}
