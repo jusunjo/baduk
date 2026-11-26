@@ -229,24 +229,29 @@ export function MissionPlay({
         </div>
       ) : null}
 
-      {/* 피드백 자리 — 모웹에선 더 얇게 (읽기 카드는 정답 UI 없음) */}
-      <div className="mt-2 shrink-0 sm:mt-3" style={{ minHeight: feedback ? undefined : 8 }}>
-        {feedback && ex.type !== "read" ? (
-          <div
-            className="rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3"
-            style={
-              ok
-                ? { backgroundColor: "rgba(88,204,2,0.16)", color: "#89E219" }
-                : { backgroundColor: "rgba(255,75,75,0.14)", color: "#FF6B6B" }
-            }
-          >
-            <p className="text-[14px] font-extrabold sm:text-[15px]">{ok ? "정답!" : "아쉬워요"}</p>
-            <p className="mt-0.5 line-clamp-2 break-keep text-[13px] font-semibold sm:text-[14px]" style={{ color: ok ? "#D6F5A8" : "#FFC2C2" }}>
-              {feedback}
-            </p>
-          </div>
-        ) : null}
-      </div>
+      {/* 하단 스택: 피드백 슬롯 높이 고정 → CTA — 정답 배너가 나와도 레이아웃 고정 */}
+      {ex.type !== "read" ? (
+        <div className="mt-2 flex shrink-0 items-stretch sm:mt-3" style={{ height: 72 }}>
+          {feedback ? (
+            <div
+              className="flex w-full flex-col justify-center rounded-2xl px-3 py-2 sm:px-4"
+              style={
+                ok
+                  ? { backgroundColor: "rgba(88,204,2,0.16)", color: "#89E219" }
+                  : { backgroundColor: "rgba(255,75,75,0.14)", color: "#FF6B6B" }
+              }
+            >
+              <p className="text-[14px] font-extrabold sm:text-[15px]">{ok ? "정답!" : "아쉬워요"}</p>
+              <p
+                className="mt-0.5 line-clamp-2 break-keep text-[13px] font-semibold leading-snug sm:text-[14px]"
+                style={{ color: ok ? "#D6F5A8" : "#FFC2C2" }}
+              >
+                {feedback}
+              </p>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       <div
         className="shrink-0 pt-2 pb-[max(12px,calc(env(safe-area-inset-bottom)+4px))] sm:pt-3"
