@@ -57,8 +57,8 @@ export function Screen({
       >
         <div className="duo-night fixed inset-0 -z-10" aria-hidden />
         <LessonChromeSync />
-        <header className="sticky top-0 z-50 -mx-4 bg-duo-night px-4 pt-[max(8px,env(safe-area-inset-top))]">
-          <div className="flex h-12 items-center gap-3">
+        <header className="sticky top-0 z-50 -mx-4 bg-duo-night px-4 pt-[max(6px,env(safe-area-inset-top))]">
+          <div className="flex h-11 items-center gap-3 sm:h-12">
             {(onClose || onBack) && (
               <button
                 type="button"
@@ -164,10 +164,10 @@ export function Screen({
 
 function HeartIcon({ on }: { on: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" className={`h-5 w-5 ${on ? "text-[#FF4B4B]" : "text-duo-night-line"}`} aria-hidden>
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
       <path
-        fill="currentColor"
-        d="M12 20.4c-.4 0-.8-.15-1.1-.45C7.2 16.3 4.5 13.9 3.3 11.7 2.3 9.9 2.4 7.6 3.7 6 5 4.3 7.3 3.8 9 4.7c.7.4 1.3.9 1.7 1.6.4-.7 1-.1.2 1.7 1.6 1.7-.9 4-.5 5.3-1.7C18.7 3.8 21 4.3 22.3 6c1.3 1.6 1.4 3.9.4 5.7-1.2 2.2-3.9 4.6-7.6 8.25-.3.3-.7.45-1.1.45Z"
+        fill={on ? "#FF4B4B" : "#37464F"}
+        d="M12 21.35 10.55 20.03C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35Z"
       />
     </svg>
   );

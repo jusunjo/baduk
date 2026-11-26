@@ -82,7 +82,7 @@ export function Board({
   return (
     <div className={`relative mx-auto w-full max-w-[360px] select-none ${className}`}>
       <div
-        className="aspect-square w-full overflow-hidden rounded-[20px] shadow-[0_8px_24px_rgba(92,61,30,0.12)] ring-1 ring-black/5"
+        className="aspect-square h-full max-h-full w-full overflow-hidden rounded-[16px] shadow-[0_8px_24px_rgba(92,61,30,0.12)] ring-1 ring-black/5 sm:rounded-[20px]"
         style={{
           background: "linear-gradient(160deg, #f0d4a0 0%, #e2b87a 55%, #d4a66a 100%)",
         }}

@@ -5,6 +5,7 @@ import { PrimaryButton } from "@/components/Screen";
 import type { Point } from "@/data/curriculum";
 import type { Exercise } from "@/data/path/types";
 import { aiBoard, gridToStones } from "@/lib/aiBoard";
+import { aiChat } from "@/lib/aiChat";
 import { applySetup, keyOf, playMove, pointsMatch, type Grid } from "@/lib/board";
 import { haptic } from "@/lib/native";
 import { sfx, XP_PER_CORRECT } from "@/lib/sfx";
@@ -47,6 +48,7 @@ export function MissionPlay({
   }, [ex, board]);
 
   useEffect(() => {
+    aiChat.clear();
     aiBoard.clearFeedback();
     return () => aiBoard.clearSession();
   }, [ex?.id]);
@@ -98,6 +100,8 @@ export function MissionPlay({
   const onTap = (p: Point) => {
     if (ok || !ex) return;
     if (ex.type === "read") return;
+    // 이미 틀린 피드백 중이면 같은 칸 연타는 무시 (하트 연속 소모 방지)
+    if (wrong && picked && pointsMatch(picked, p)) return;
 
     if (ex.type === "choice") {
       const hit = (ex.choices ?? []).some((c) => pointsMatch(c.at, p));
@@ -135,23 +139,32 @@ export function MissionPlay({
 
   if (!ex) return null;
 
+  const choices = ex.choices ?? [];
+  const compactChoices = choices.length > 0 && choices.every((c) => c.label.length <= 4);
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="shrink-0 px-1">
-        <div className="mb-3 inline-flex items-center gap-1.5 rounded-lg bg-[#CE82FF]/20 px-2.5 py-1">
+        <div className="mb-1.5 inline-flex items-center gap-1.5 rounded-lg bg-[#CE82FF]/20 px-2.5 py-1">
           <span className="flex h-4 w-4 items-center justify-center rounded-md bg-[#CE82FF] text-[10px] font-black text-white">
             ◆
           </span>
           <span className="duo-t-berry text-[12px] font-extrabold">{title}</span>
         </div>
-        <p className="duo-t1 break-keep text-[22px] font-extrabold leading-snug">{ex.prompt}</p>
-        {ex.hint && !feedback ? <p className="duo-t2 mt-2 text-[13px] font-bold">힌트: {ex.hint}</p> : null}
+        <p className="duo-t1 break-keep text-[18px] font-extrabold leading-snug sm:text-[22px]">{ex.prompt}</p>
+        {ex.hint && !feedback ? <p className="duo-t2 mt-1 text-[12px] font-bold sm:text-[13px]">힌트: {ex.hint}</p> : null}
       </div>
 
-      <div className="relative mt-3 flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden">
+      {/* 판만 남는 높이에 맞춤 — overflow로 잘리지 않게 */}
+      <div className="relative my-2 flex min-h-0 flex-1 items-center justify-center px-1">
         <div
-          className="w-full max-w-[min(100%,340px)] rounded-[24px] p-2.5"
-          style={{ backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F" }}
+          className="aspect-square max-h-full w-full max-w-[min(100%,320px)] rounded-[20px] p-1.5 sm:rounded-[24px] sm:p-2.5"
+          style={{
+            backgroundColor: "#1A2C33",
+            boxShadow: "inset 0 0 0 2px #37464F",
+            width: "min(100%, 320px)",
+            maxHeight: "100%",
+          }}
         >
           <Board
             size={ex.size}
@@ -160,54 +173,61 @@ export function MissionPlay({
             onPlay={ex.type === "read" ? undefined : onTap}
             interactive={ex.type !== "read" && !ok}
             wrongFlash={wrong}
-            libertiesFor={ex.showLibs ? "both" : undefined}
             showSize={false}
-            className="max-h-full max-w-none"
+            className="h-full max-h-full w-full max-w-none"
           />
         </div>
-
-        {ex.type === "choice" ? (
-          <div className="mt-4 flex w-full shrink-0 flex-col gap-2.5 px-1">
-            {(ex.choices ?? []).map((c) => {
-              const tone = choiceTone(c.at);
-              const style =
-                tone === "correct"
-                  ? { backgroundColor: "rgba(88,204,2,0.18)", boxShadow: "inset 0 0 0 2px #58CC02", color: "#89E219" }
-                  : tone === "wrong"
-                    ? { backgroundColor: "rgba(255,75,75,0.16)", boxShadow: "inset 0 0 0 2px #FF4B4B", color: "#FF6B6B" }
-                    : tone === "dim"
-                      ? { backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F", color: "#AEB8BE", opacity: 0.55 }
-                      : { backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F", color: "#FFFFFF" };
-              return (
-                <button
-                  key={keyOf(c.at)}
-                  type="button"
-                  disabled={ok}
-                  onClick={() => onTap(c.at)}
-                  style={style}
-                  className="flex min-h-[56px] w-full items-center justify-center rounded-2xl px-4 py-3 text-[17px] font-extrabold transition active:translate-y-[2px] disabled:active:translate-y-0"
-                >
-                  {c.label}
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
       </div>
 
-      {/* 피드백 자리를 항상 확보해 정답 시 레이아웃 덜컹임 방지 */}
-      <div className="mt-3 shrink-0" style={{ minHeight: 76 }}>
+      {ex.type === "choice" ? (
+        <div
+          className={`shrink-0 px-1 ${
+            compactChoices
+              ? `grid gap-2 ${choices.length <= 3 ? "grid-cols-3" : "grid-cols-2"}`
+              : "flex flex-col gap-2"
+          }`}
+        >
+          {choices.map((c) => {
+            const tone = choiceTone(c.at);
+            const style =
+              tone === "correct"
+                ? { backgroundColor: "rgba(88,204,2,0.18)", boxShadow: "inset 0 0 0 2px #58CC02", color: "#89E219" }
+                : tone === "wrong"
+                  ? { backgroundColor: "rgba(255,75,75,0.16)", boxShadow: "inset 0 0 0 2px #FF4B4B", color: "#FF6B6B" }
+                  : tone === "dim"
+                    ? { backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F", color: "#AEB8BE", opacity: 0.55 }
+                    : { backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F", color: "#FFFFFF" };
+            return (
+              <button
+                key={keyOf(c.at)}
+                type="button"
+                disabled={ok}
+                onClick={() => onTap(c.at)}
+                style={style}
+                className={`flex w-full items-center justify-center rounded-2xl px-3 font-extrabold transition active:translate-y-[2px] disabled:active:translate-y-0 ${
+                  compactChoices ? "min-h-[48px] text-[18px]" : "min-h-[48px] px-4 py-2.5 text-[16px] sm:min-h-[56px] sm:text-[17px]"
+                }`}
+              >
+                {c.label}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {/* 피드백 자리 — 모웹에선 더 얇게 */}
+      <div className="mt-2 shrink-0 sm:mt-3" style={{ minHeight: feedback ? undefined : 8 }}>
         {feedback ? (
           <div
-            className="rounded-2xl px-4 py-3"
+            className="rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3"
             style={
               ok
                 ? { backgroundColor: "rgba(88,204,2,0.16)", color: "#89E219" }
                 : { backgroundColor: "rgba(255,75,75,0.14)", color: "#FF6B6B" }
             }
           >
-            <p className="text-[15px] font-extrabold">{ok ? "정답!" : "아쉬워요"}</p>
-            <p className="mt-0.5 line-clamp-2 break-keep text-[14px] font-semibold" style={{ color: ok ? "#D6F5A8" : "#FFC2C2" }}>
+            <p className="text-[14px] font-extrabold sm:text-[15px]">{ok ? "정답!" : "아쉬워요"}</p>
+            <p className="mt-0.5 line-clamp-2 break-keep text-[13px] font-semibold sm:text-[14px]" style={{ color: ok ? "#D6F5A8" : "#FFC2C2" }}>
               {feedback}
             </p>
           </div>
@@ -215,7 +235,7 @@ export function MissionPlay({
       </div>
 
       <div
-        className="shrink-0 pt-3 pb-[max(16px,calc(env(safe-area-inset-bottom)+4px))]"
+        className="shrink-0 pt-2 pb-[max(12px,calc(env(safe-area-inset-bottom)+4px))] sm:pt-3"
         style={{ borderTop: "2px solid #37464F" }}
       >
         {ex.type === "read" && !ok ? (
