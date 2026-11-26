@@ -1,0 +1,9 @@
+# Railway Vite SPA — 빌드 후 Caddy로 dist 서빙 (start 커맨드 필요)
+[phases.setup]
+nixPkgs = ["caddy"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "caddy run --config Caddyfile --adapter caddyfile --environ"

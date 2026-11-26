@@ -16,5 +16,6 @@
     "types": ["vite/client"],
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/components/Board3D.tsx", "src/pages/Board3DPage.tsx"]
 }

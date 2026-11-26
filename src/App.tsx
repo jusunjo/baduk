@@ -11,7 +11,6 @@ import { MissionPlayPage } from "./pages/MissionPlayPage";
 import { PathPage } from "./pages/PathPage";
 import { PracticePage } from "./pages/PracticePage";
 import { PracticePlayPage } from "./pages/PracticePlayPage";
-import { Board3DPage } from "./pages/Board3DPage";
 import { WelcomePage } from "./pages/WelcomePage";
 
 const TABS = ["/", "/learn", "/practice", "/path"]; // /learn redirects to /
@@ -53,7 +52,7 @@ export function App() {
     if (currentRank === "beginner") actions.setCurrentRank("g30");
   }, [currentRank]);
 
-  if (!currentRank && pathname !== "/welcome" && pathname !== "/board3d") {
+  if (!currentRank && pathname !== "/welcome") {
     return <Navigate to="/welcome" replace />;
   }
 
@@ -69,7 +68,6 @@ export function App() {
         <Route path="/practice" element={<PracticePage />} />
         <Route path="/practice/:lessonId/:problemId" element={<PracticePlayPage />} />
         <Route path="/path" element={<PathPage />} />
-        <Route path="/board3d" element={<Board3DPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <PageAsk />
