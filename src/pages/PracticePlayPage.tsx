@@ -5,6 +5,7 @@ import { BoardBuddy } from "@/components/BoardBuddy";
 import { Confetti, PraiseBadge, pickPraise } from "@/components/Celebrate";
 import { PrimaryButton, Reveal, Screen } from "@/components/Screen";
 import { aiBoard, gridToStones, useAiBoard } from "@/lib/aiBoard";
+import { aiChat } from "@/lib/aiChat";
 import { applySetup, isAnswer, playMove, resolveAnswer, type Grid } from "@/lib/board";
 import { haptic } from "@/lib/native";
 import { findPractice, listPractice, type PracticeItem } from "@/lib/practice";
@@ -82,6 +83,7 @@ function Play({
   }, [item.lessonId, item.prompt, item.playAs, board]);
 
   useEffect(() => {
+    aiChat.clear();
     aiBoard.clearFeedback();
     return () => aiBoard.clearSession();
   }, [item.id]);

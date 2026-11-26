@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Board } from "@/components/Board";
 import { BoardBuddy } from "@/components/BoardBuddy";
+import { Confetti, PraiseBadge, pickPraise, useCelebrate } from "@/components/Celebrate";
 import { PrimaryButton } from "@/components/Screen";
 import type { Point } from "@/data/curriculum";
 import type { Exercise } from "@/data/path/types";
@@ -10,6 +11,21 @@ import { applySetup, keyOf, playMove, pointsMatch, type Grid } from "@/lib/board
 import { haptic } from "@/lib/native";
 import { sfx, XP_PER_CORRECT } from "@/lib/sfx";
 import { actions } from "@/lib/store";
+
+export type MissionCompleteStats = { xp: number };
+
+function choiceSlotHeight(exercises: Exercise[]): number {
+  let maxRows = 0;
+  for (const e of exercises) {
+    const cs = e.choices ?? [];
+    if (!cs.length) continue;
+    const compact = cs.every((c) => c.label.length <= 4);
+    const cols = compact ? (cs.length <= 3 ? 3 : 2) : 1;
+    maxRows = Math.max(maxRows, Math.ceil(cs.length / cols));
+  }
+  if (maxRows <= 0) return 0;
+  return maxRows * 52 + (maxRows - 1) * 8;
+}
 
 export function MissionPlay({
   title,
@@ -25,7 +41,7 @@ export function MissionPlay({
   hearts: number;
   onHeartLost: () => void;
   onStep?: (index: number, total: number) => void;
-  onComplete: () => void;
+  onComplete: (stats: MissionCompleteStats) => void;
 }) {
   const [idx, setIdx] = useState(0);
   const [board, setBoard] = useState<Grid>(() => applySetup(exercises[0]?.size ?? 9, exercises[0]?.setup));
@@ -33,8 +49,12 @@ export function MissionPlay({
   const [ok, setOk] = useState(false);
   const [wrong, setWrong] = useState<Point | null>(null);
   const [picked, setPicked] = useState<Point | null>(null);
+  const [lastMove, setLastMove] = useState<Point | null>(null);
+  const [earnedXp, setEarnedXp] = useState(0);
+  const { burst, praise, celebrate } = useCelebrate();
 
   const ex = exercises[idx];
+  const choiceH = useMemo(() => choiceSlotHeight(exercises), [exercises]);
 
   useEffect(() => {
     if (!ex) return;
@@ -67,25 +87,36 @@ export function MissionPlay({
     setOk(false);
     setWrong(null);
     setPicked(null);
+    setLastMove(null);
+  };
+
+  const finish = (xp: number) => {
+    sfx.play("complete");
+    onComplete({ xp });
   };
 
   const advance = () => {
     sfx.play("tap");
     if (idx + 1 >= exercises.length) {
-      sfx.play("complete");
-      onComplete();
+      finish(earnedXp);
       return;
     }
     load(idx + 1);
   };
 
-  const succeed = (msg?: string) => {
+  const succeed = (msg?: string, opts?: { praise?: string; tone?: "blue" | "orange" }) => {
     sfx.play("correct");
     sfx.play("xp");
     haptic.correct();
     actions.addXp(XP_PER_CORRECT);
+    setEarnedXp((v) => v + XP_PER_CORRECT);
     setOk(true);
     setFeedback(msg ?? ex.correctText ?? `좋아요! +${XP_PER_CORRECT} XP`);
+    celebrate({
+      praise: opts?.praise ?? pickPraise(),
+      tone: opts?.tone ?? "blue",
+      confetti: "small",
+    });
   };
 
   /** 읽기(개념) 카드 — 정답 판정 없이 바로 다음으로 */
@@ -94,9 +125,11 @@ export function MissionPlay({
     sfx.play("xp");
     haptic.tap();
     actions.addXp(XP_PER_CORRECT);
+    const nextXp = earnedXp + XP_PER_CORRECT;
+    setEarnedXp(nextXp);
+    celebrate({ praise: pickPraise(), confetti: "small" });
     if (idx + 1 >= exercises.length) {
-      sfx.play("complete");
-      onComplete();
+      finish(nextXp);
       return;
     }
     load(idx + 1);
@@ -137,8 +170,14 @@ export function MissionPlay({
     const good = (ex.correct ?? []).some((c) => pointsMatch(c, p));
     setBoard(next);
     setPicked(p);
-    if (good) succeed();
-    else fail(p);
+    setLastMove(p);
+    if (good) {
+      const opponent = playAs === "W" ? "B" : "W";
+      const captured =
+        board.flat().filter((c) => c === opponent).length - next.flat().filter((c) => c === opponent).length;
+      if (captured > 0) succeed(undefined, { praise: `따냈어요! +${captured}`, tone: "orange" });
+      else succeed();
+    } else fail(p);
   };
 
   const choiceTone = (at: Point) => {
@@ -158,19 +197,25 @@ export function MissionPlay({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="shrink-0 px-1">
+      {/* 프롬프트 높이 고정 — 힌트/문장 길이 바뀌어도 보드가 덜컹이지 않게 */}
+      <div className="shrink-0 px-1" style={{ minHeight: 88 }}>
         <div className="mb-1.5 inline-flex items-center gap-1.5 rounded-lg bg-[#CE82FF]/20 px-2.5 py-1">
           <span className="flex h-4 w-4 items-center justify-center rounded-md bg-[#CE82FF] text-[10px] font-black text-white">
             ◆
           </span>
           <span className="duo-t-berry text-[12px] font-extrabold">{title}</span>
         </div>
-        <p className="duo-t1 break-keep text-[18px] font-extrabold leading-snug sm:text-[22px]">{ex.prompt}</p>
-        {ex.hint && !feedback ? <p className="duo-t2 mt-1 text-[12px] font-bold sm:text-[13px]">힌트: {ex.hint}</p> : null}
+        <p className="duo-t1 line-clamp-2 break-keep text-[18px] font-extrabold leading-snug sm:text-[22px]">{ex.prompt}</p>
+        <p className="duo-t2 mt-1 min-h-[18px] text-[12px] font-bold sm:text-[13px]">
+          {ex.hint && !feedback ? `힌트: ${ex.hint}` : "\u00a0"}
+        </p>
       </div>
+
+      {burst && <Confetti key={burst.id} big={burst.big} />}
 
       {/* 판만 남는 높이에 맞춤 — overflow로 잘리지 않게 */}
       <div className="relative my-2 flex min-h-0 flex-1 items-center justify-center px-1">
+        {praise && <PraiseBadge key={praise.id} text={praise.text} tone={praise.tone} />}
         <div
           className="aspect-square max-h-full w-full max-w-[min(100%,320px)] rounded-[20px] p-1.5 sm:rounded-[24px] sm:p-2.5"
           style={{
@@ -186,6 +231,7 @@ export function MissionPlay({
             marks={ex.marks}
             onPlay={ex.type === "read" ? undefined : onTap}
             interactive={ex.type !== "read" && !ok}
+            lastMove={lastMove}
             wrongFlash={wrong}
             showSize={false}
             className="h-full max-h-full w-full max-w-none"
@@ -193,65 +239,66 @@ export function MissionPlay({
         </div>
       </div>
 
-      {ex.type === "choice" ? (
-        <div
-          className={`shrink-0 px-1 ${
-            compactChoices
-              ? `grid gap-2 ${choices.length <= 3 ? "grid-cols-3" : "grid-cols-2"}`
-              : "flex flex-col gap-2"
-          }`}
-        >
-          {choices.map((c) => {
-            const tone = choiceTone(c.at);
-            const style =
-              tone === "correct"
-                ? { backgroundColor: "rgba(88,204,2,0.18)", boxShadow: "inset 0 0 0 2px #58CC02", color: "#89E219" }
-                : tone === "wrong"
-                  ? { backgroundColor: "rgba(255,75,75,0.16)", boxShadow: "inset 0 0 0 2px #FF4B4B", color: "#FF6B6B" }
-                  : tone === "dim"
-                    ? { backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F", color: "#AEB8BE", opacity: 0.55 }
-                    : { backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F", color: "#FFFFFF" };
-            return (
-              <button
-                key={keyOf(c.at)}
-                type="button"
-                disabled={ok}
-                onClick={() => onTap(c.at)}
-                style={style}
-                className={`flex w-full items-center justify-center rounded-2xl px-3 font-extrabold transition active:translate-y-[2px] disabled:active:translate-y-0 ${
-                  compactChoices ? "min-h-[48px] text-[18px]" : "min-h-[48px] px-4 py-2.5 text-[16px] sm:min-h-[56px] sm:text-[17px]"
-                }`}
-              >
-                {c.label}
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
+      {/* 보기 슬롯 높이 고정 — choice ↔ move 전환 시 보드 점프 방지 */}
+      <div className="shrink-0 px-1" style={{ minHeight: choiceH || undefined }}>
+        {ex.type === "choice" ? (
+          <div
+            className={
+              compactChoices
+                ? `grid gap-2 ${choices.length <= 3 ? "grid-cols-3" : "grid-cols-2"}`
+                : "flex flex-col gap-2"
+            }
+          >
+            {choices.map((c) => {
+              const tone = choiceTone(c.at);
+              const style =
+                tone === "correct"
+                  ? { backgroundColor: "rgba(88,204,2,0.18)", boxShadow: "inset 0 0 0 2px #58CC02", color: "#89E219" }
+                  : tone === "wrong"
+                    ? { backgroundColor: "rgba(255,75,75,0.16)", boxShadow: "inset 0 0 0 2px #FF4B4B", color: "#FF6B6B" }
+                    : tone === "dim"
+                      ? { backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F", color: "#AEB8BE", opacity: 0.55 }
+                      : { backgroundColor: "#1A2C33", boxShadow: "inset 0 0 0 2px #37464F", color: "#FFFFFF" };
+              return (
+                <button
+                  key={keyOf(c.at)}
+                  type="button"
+                  disabled={ok}
+                  onClick={() => onTap(c.at)}
+                  style={style}
+                  className={`flex w-full items-center justify-center rounded-2xl px-3 font-extrabold transition active:translate-y-[2px] disabled:active:translate-y-0 ${
+                    compactChoices ? "min-h-[48px] text-[18px]" : "min-h-[48px] px-4 py-2.5 text-[16px] sm:min-h-[56px] sm:text-[17px]"
+                  }`}
+                >
+                  {c.label}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
 
-      {/* 하단 스택: 피드백 슬롯 높이 고정 → CTA — 정답 배너가 나와도 레이아웃 고정 */}
-      {ex.type !== "read" ? (
-        <div className="mt-2 flex shrink-0 items-stretch sm:mt-3" style={{ height: 72 }}>
-          {feedback ? (
-            <div
-              className="flex w-full flex-col justify-center rounded-2xl px-3 py-2 sm:px-4"
-              style={
-                ok
-                  ? { backgroundColor: "rgba(88,204,2,0.16)", color: "#89E219" }
-                  : { backgroundColor: "rgba(255,75,75,0.14)", color: "#FF6B6B" }
-              }
+      {/* 하단 스택: 피드백 슬롯 높이 고정 → CTA */}
+      <div className="mt-2 flex shrink-0 items-stretch sm:mt-3" style={{ height: 72 }}>
+        {feedback ? (
+          <div
+            className="flex w-full flex-col justify-center rounded-2xl px-3 py-2 sm:px-4"
+            style={
+              ok
+                ? { backgroundColor: "rgba(88,204,2,0.16)", color: "#89E219" }
+                : { backgroundColor: "rgba(255,75,75,0.14)", color: "#FF6B6B" }
+            }
+          >
+            <p className="text-[14px] font-extrabold sm:text-[15px]">{ok ? "정답!" : "아쉬워요"}</p>
+            <p
+              className="mt-0.5 line-clamp-2 break-keep text-[13px] font-semibold leading-snug sm:text-[14px]"
+              style={{ color: ok ? "#D6F5A8" : "#FFC2C2" }}
             >
-              <p className="text-[14px] font-extrabold sm:text-[15px]">{ok ? "정답!" : "아쉬워요"}</p>
-              <p
-                className="mt-0.5 line-clamp-2 break-keep text-[13px] font-semibold leading-snug sm:text-[14px]"
-                style={{ color: ok ? "#D6F5A8" : "#FFC2C2" }}
-              >
-                {feedback}
-              </p>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
+              {feedback}
+            </p>
+          </div>
+        ) : null}
+      </div>
 
       <div
         className="shrink-0 pt-2 pb-[max(12px,calc(env(safe-area-inset-bottom)+4px))] sm:pt-3"

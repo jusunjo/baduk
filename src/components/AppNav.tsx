@@ -28,6 +28,17 @@ const TABS: { to: string; label: string; icon: (active: boolean) => ReactNode; m
     ),
   },
   {
+    to: "/play",
+    label: "AI",
+    match: ["/play"],
+    icon: (active) => (
+      <>
+        <circle cx="12" cy="12" r="7.5" {...stroke} fill={active ? "currentColor" : "none"} fillOpacity={active ? 0.12 : 0} />
+        <circle cx="12" cy="12" r="2.2" fill="currentColor" />
+      </>
+    ),
+  },
+  {
     to: "/path",
     label: "급수",
     icon: (active) => (

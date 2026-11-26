@@ -1,13 +1,27 @@
-import type { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, type ReactNode } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Confetti, useCelebrate } from "@/components/Celebrate";
 import { LearnPath } from "@/components/LearnPath";
 import { RankBadge } from "@/components/RankPicker";
 import { Screen } from "@/components/Screen";
 import { useProgress } from "@/lib/progress";
+import { sfx } from "@/lib/sfx";
 
 export function HomePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const p = useProgress();
+  const { burst, celebrate } = useCelebrate();
+  const celebrated = useRef(false);
+
+  useEffect(() => {
+    const st = location.state as { celebrateHome?: boolean } | null;
+    if (!st?.celebrateHome || celebrated.current) return;
+    celebrated.current = true;
+    celebrate({ confetti: "big" });
+    sfx.play("xp");
+    navigate("/", { replace: true, state: null });
+  }, [location.state, celebrate, navigate]);
 
   if (!p.rank) return null;
 
@@ -15,6 +29,7 @@ export function HomePage() {
 
   return (
     <Screen nav gray right={<RankBadge label={p.rank.short} onClick={() => navigate("/path")} />}>
+      {burst && <Confetti key={burst.id} big={burst.big} originY={22} />}
       <div
         className="sticky top-14 z-40 -mx-5 mb-4 px-5 py-3"
         style={{ backgroundColor: "#131F24", borderBottom: "2px solid #37464F" }}

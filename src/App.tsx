@@ -11,9 +11,11 @@ import { MissionPlayPage } from "./pages/MissionPlayPage";
 import { PathPage } from "./pages/PathPage";
 import { PracticePage } from "./pages/PracticePage";
 import { PracticePlayPage } from "./pages/PracticePlayPage";
+import { AiHubPage } from "./pages/AiHubPage";
+import { AiPlayPage } from "./pages/AiPlayPage";
 import { WelcomePage } from "./pages/WelcomePage";
 
-const TABS = ["/", "/learn", "/practice", "/path"]; // /learn redirects to /
+const TABS = ["/", "/learn", "/practice", "/play", "/path"]; // /learn redirects to /
 
 function useNativeBack() {
   const navigate = useNavigate();
@@ -67,6 +69,8 @@ export function App() {
         <Route path="/exam/:rankId" element={<ExamPlayPage />} />
         <Route path="/practice" element={<PracticePage />} />
         <Route path="/practice/:lessonId/:problemId" element={<PracticePlayPage />} />
+        <Route path="/play" element={<AiHubPage />} />
+        <Route path="/play/ai" element={<AiPlayPage />} />
         <Route path="/path" element={<PathPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

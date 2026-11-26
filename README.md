@@ -12,6 +12,28 @@ npm run dev          # http://localhost:43212
 npm run build
 ```
 
+### AI 대국 (Read19 KataGo)
+
+클라우드 KataGo로 9×9 대국. API 키는 브라우저에 넣지 않고 로컬 프록시만 사용합니다.
+
+1. [Read19](https://read19.com/register) 가입 → [콘솔](https://read19.com/app)에서 `kg_live_...` analysis key 발급  
+2. `.env`에 추가 (깃에 올리지 마세요):
+
+```bash
+READ19_API_KEY=kg_live_...
+```
+
+3. 터미널 두 개:
+
+```bash
+npm run katago       # http://localhost:8787 프록시
+npm run dev          # 앱
+```
+
+4. 앱 하단 **AI** 탭 → 판 크기·레벨 선택 → 대국 (`/play`)
+
+초급 설정: 수당 `maxVisits=50`. 9×9 한 판(AI ~40수)이면 대략 **2,000 visits** — Free 월 10만 unit이면 수십 판 가능.
+
 ### 모바일 (Play Store)
 
 ```bash

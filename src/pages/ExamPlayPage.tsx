@@ -9,19 +9,20 @@ import {
   EXAM_TOTAL,
   examPassed,
   examProblems,
-  type ExamRankId,
+  nearestExamRank,
 } from "@/data/exams/banks";
 import type { ExamProblem } from "@/data/exams/types";
 import { aiBoard, gridToStones } from "@/lib/aiBoard";
+import { aiChat } from "@/lib/aiChat";
 import { applySetup, isAnswer, playMove, resolveAnswer, type Grid } from "@/lib/board";
 import { haptic } from "@/lib/native";
 import { useProgress } from "@/lib/progress";
-import { nextRank, type RankId } from "@/lib/ranks";
+import { RANKS, nextRank, type RankId } from "@/lib/ranks";
 import { sfx } from "@/lib/sfx";
 import { actions } from "@/lib/store";
 
-function isExamRank(id: string): id is ExamRankId {
-  return ["g30", "g25", "g20", "g15", "g10", "g7", "g5", "g3", "g1"].includes(id);
+function isPlayRank(id: string): id is Exclude<RankId, "beginner"> {
+  return RANKS.some((r) => r.id === id && r.id !== "beginner");
 }
 
 export function ExamPlayPage() {
@@ -32,8 +33,11 @@ export function ExamPlayPage() {
 function Exam({ rankId }: { rankId: string }) {
   const navigate = useNavigate();
   const p = useProgress();
-  const valid = isExamRank(rankId) && p.rank?.id === rankId;
-  const bank = useMemo(() => (isExamRank(rankId) ? examProblems(rankId).slice(0, EXAM_TOTAL) : []), [rankId]);
+  const valid = isPlayRank(rankId) && p.rank?.id === rankId;
+  const bank = useMemo(() => {
+    if (!isPlayRank(rankId)) return [];
+    return examProblems(nearestExamRank(rankId)).slice(0, EXAM_TOTAL);
+  }, [rankId]);
 
   if (!valid) {
     return (
@@ -54,7 +58,7 @@ function Exam({ rankId }: { rankId: string }) {
   return <ExamRun rankId={rankId} problems={bank} />;
 }
 
-function ExamRun({ rankId, problems }: { rankId: ExamRankId; problems: ExamProblem[] }) {
+function ExamRun({ rankId, problems }: { rankId: Exclude<RankId, "beginner">; problems: ExamProblem[] }) {
   const navigate = useNavigate();
   const [idx, setIdx] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
@@ -170,6 +174,7 @@ function ExamProblemView({
   }, [problem, board]);
 
   useEffect(() => {
+    aiChat.clear();
     aiBoard.clearFeedback();
     return () => aiBoard.clearSession();
   }, [problem.id]);

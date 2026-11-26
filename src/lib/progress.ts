@@ -7,6 +7,7 @@ import {
   itemTitle,
   type PathItem,
 } from "@/data/path";
+import { buildPartStages } from "@/data/path/stages";
 import { addDays, dayKey, daysUntil, startOfToday } from "./date";
 import { getRank, type Rank } from "./ranks";
 import { XP_DAILY_GOAL } from "./sfx";
@@ -31,7 +32,10 @@ export function useProgress() {
   const moduleItems: PathItem[] = module
     ? [
         { kind: "rank-intro", module },
-        ...module.parts.map((part) => ({ kind: "rank-part" as const, module, part })),
+        ...module.parts.flatMap((part) => {
+          const stages = part.stages?.length ? part.stages : buildPartStages(part);
+          return stages.map((stage) => ({ kind: "rank-stage" as const, module, part, stage }));
+        }),
       ]
     : [];
   const moduleDone = moduleItems.filter((item) => state.completed[itemKey(item)]).length;

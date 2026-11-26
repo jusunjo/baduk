@@ -120,3 +120,112 @@ body {
   width: 0;
   height: 0;
 }
+
+/* 일상 비유 — 따내기(출구 막기) */
+@keyframes cap-door-hide {
+  0%,
+  12% {
+    opacity: 1;
+  }
+  18%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes cap-block-show {
+  0%,
+  12% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  18%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes cap-friend-out {
+  0%,
+  72% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  82% {
+    opacity: 1;
+    transform: scale(1.12) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.15) translateY(-55%);
+  }
+}
+@keyframes cap-poof {
+  0%,
+  78% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  86% {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+.cap-door {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cap-door-hide 6.2s ease-out both;
+}
+.cap-door-1 {
+  animation-delay: 0.4s;
+}
+.cap-door-2 {
+  animation-delay: 1.3s;
+}
+.cap-door-3 {
+  animation-delay: 2.2s;
+}
+.cap-door-4 {
+  animation-delay: 3.1s;
+}
+.cap-door-done {
+  opacity: 0;
+}
+
+.cap-block {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cap-block-show 6.2s ease-out both;
+}
+.cap-block-1 {
+  animation-delay: 0.4s;
+}
+.cap-block-2 {
+  animation-delay: 1.3s;
+}
+.cap-block-3 {
+  animation-delay: 2.2s;
+}
+.cap-block-4 {
+  animation-delay: 3.1s;
+}
+
+.cap-friend {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cap-friend-out 6.2s ease-in both;
+}
+.cap-friend-gone {
+  opacity: 0;
+}
+
+.cap-poof {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cap-poof 6.2s ease-out both;
+}

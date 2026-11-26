@@ -16,6 +16,8 @@ export interface AppState {
   goal: Goal | null;
   /** lessonId -> completedAt */
   completed: Record<string, number>;
+  /** conceptIntro.id -> 본 시각 */
+  introSeen: Record<string, number>;
   /** 마지막으로 본 레슨 */
   lastLessonId: string | null;
   /** 연속 학습 일수 */
@@ -39,6 +41,7 @@ const EMPTY: AppState = {
   currentRank: null,
   goal: null,
   completed: {},
+  introSeen: {},
   lastLessonId: null,
   streakDays: 0,
   lastActiveDay: null,
@@ -49,10 +52,15 @@ const EMPTY: AppState = {
 };
 
 function migrate(raw: Record<string, unknown>): AppState {
+  const introSeen =
+    raw.introSeen && typeof raw.introSeen === "object" && !Array.isArray(raw.introSeen)
+      ? (raw.introSeen as Record<string, number>)
+      : {};
   return {
     ...EMPTY,
     ...raw,
     version: 2,
+    introSeen,
     xp: typeof raw.xp === "number" ? raw.xp : 0,
     xpToday: typeof raw.xpToday === "number" ? raw.xpToday : 0,
     xpDay: typeof raw.xpDay === "string" ? raw.xpDay : null,
@@ -149,6 +157,14 @@ export const actions = {
       lastLessonId: lessonId,
       ...bumpActivity(state),
       ...withXp(state, bonus),
+    });
+  },
+
+  markIntroSeen(introId: string) {
+    if (state.introSeen[introId]) return;
+    set({
+      ...state,
+      introSeen: { ...state.introSeen, [introId]: Date.now() },
     });
   },
 

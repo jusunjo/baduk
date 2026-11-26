@@ -182,47 +182,36 @@
       "sourceId": "handmade-g30-05",
       "apiRank": "30k",
       "rankDisplay": "30급",
-      "prompt": "흑부터 두세요. 빛나는 곳이면 어디든 괜찮아요.",
-      "explanation": "첫 수는 부담 없이 두어도 돼요.",
-      "setup": [],
-      "size": 7,
-      "answer": "any",
-      "playAs": "B"
-    },
-    {
-      "id": "g30-06",
-      "sourceId": "handmade-g30-06",
-      "apiRank": "30k",
-      "rankDisplay": "30급",
-      "prompt": "가운데 쪽 흰 돌을 따내세요.",
-      "explanation": "단수인 돌을 따내면 돼요.",
+      "prompt": "흑이 단수예요. 살리세요.",
+      "tip": "흑의 남은 빈칸을 열어 주세요.",
+      "explanation": "내 돌이 단수면 살리는 게 먼저예요.",
       "setup": [
         {
+          "color": "B",
+          "at": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
           "color": "W",
-          "at": {
-            "x": 2,
-            "y": 4
-          }
-        },
-        {
-          "color": "B",
-          "at": {
-            "x": 1,
-            "y": 4
-          }
-        },
-        {
-          "color": "B",
           "at": {
             "x": 2,
             "y": 3
           }
         },
         {
-          "color": "B",
+          "color": "W",
           "at": {
-            "x": 2,
-            "y": 5
+            "x": 4,
+            "y": 3
+          }
+        },
+        {
+          "color": "W",
+          "at": {
+            "x": 3,
+            "y": 2
           }
         }
       ],
@@ -234,46 +223,78 @@
       "playAs": "B"
     },
     {
-      "id": "g30-07",
-      "sourceId": "handmade-g30-07",
+      "id": "g30-06",
+      "sourceId": "handmade-g30-06",
       "apiRank": "30k",
       "rankDisplay": "30급",
-      "prompt": "가운데 흰 돌을 따내세요.",
-      "explanation": "단수인 돌을 따내면 돼요.",
+      "prompt": "흑 두 점이 끊기기 직전이에요. 가운데를 이으세요.",
+      "tip": "두 흑 사이예요.",
+      "explanation": "이으면 숨구멍을 같이 써요.",
       "setup": [
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 2,
+            "y": 4
+          }
+        },
         {
           "color": "W",
           "at": {
-            "x": 4,
-            "y": 4
-          }
-        },
-        {
-          "color": "B",
-          "at": {
-            "x": 3,
-            "y": 4
-          }
-        },
-        {
-          "color": "B",
-          "at": {
-            "x": 4,
+            "x": 1,
             "y": 3
           }
         },
         {
-          "color": "B",
+          "color": "W",
           "at": {
-            "x": 5,
-            "y": 4
+            "x": 3,
+            "y": 3
           }
         }
       ],
       "size": 7,
       "answer": {
-        "x": 4,
-        "y": 5
+        "x": 2,
+        "y": 3
+      },
+      "playAs": "B"
+    },
+    {
+      "id": "g30-07",
+      "sourceId": "handmade-g30-07",
+      "apiRank": "30k",
+      "rankDisplay": "30급",
+      "prompt": "따내면 예외예요. 귀의 흰 돌을 따내세요.",
+      "tip": "숨구멍이 없어도 따내는 수는 둘 수 있어요.",
+      "explanation": "따내는 수는 불법수가 아니에요.",
+      "setup": [
+        {
+          "color": "W",
+          "at": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "color": "B",
+          "at": {
+            "x": 1,
+            "y": 0
+          }
+        }
+      ],
+      "size": 7,
+      "answer": {
+        "x": 0,
+        "y": 1
       },
       "playAs": "B"
     },

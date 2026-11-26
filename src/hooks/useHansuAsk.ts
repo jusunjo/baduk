@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { aiBoard, useAiBoard } from "@/lib/aiBoard";
 import { aiChat, useAiChat } from "@/lib/aiChat";
@@ -12,6 +12,8 @@ export function useHansuAsk() {
   const { session, feedback } = useAiBoard();
   const chat = useAiChat();
   const meta = pageMeta(pathname);
+  const pathRef = useRef(pathname);
+  pathRef.current = pathname;
   const onBoard =
     pathname.startsWith("/learn/") ||
     pathname.startsWith("/practice/") ||
@@ -19,10 +21,17 @@ export function useHansuAsk() {
     pathname.startsWith("/exam/");
   const canBoardFeedback = onBoard && !!session;
 
+  // 페이지가 바뀌면 이전 질문·답변·판 표시 전부 초기화
+  useEffect(() => {
+    aiChat.clear();
+    aiBoard.clearFeedback();
+  }, [pathname]);
+
   const ask = useCallback(
     async (question: string) => {
       const trimmed = question.trim();
       if (!trimmed || chat.loading) return;
+      const askedOn = pathname;
       aiChat.set({ loading: true, error: null, answer: null, showedBoard: false, expanded: true });
       aiBoard.clearFeedback();
       try {
@@ -40,6 +49,7 @@ export function useHansuAsk() {
           pageTitle: meta.title,
           boardSession: canBoardFeedback ? session : null,
         });
+        if (pathRef.current !== askedOn) return;
         if (reply.board) aiBoard.setFeedback(reply.board);
         aiChat.set({
           answer: reply.text,
@@ -48,6 +58,7 @@ export function useHansuAsk() {
           expanded: false,
         });
       } catch (e) {
+        if (pathRef.current !== askedOn) return;
         aiChat.set({
           loading: false,
           error: e instanceof Error ? e.message : "잠시 후 다시 두어 볼까요?",

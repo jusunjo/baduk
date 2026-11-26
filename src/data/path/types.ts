@@ -26,8 +26,6 @@ export type Exercise = {
   wrongText?: string;
   /** move일 때 흑/백 */
   playAs?: StoneColor;
-  /** 활로 숫자 표시 */
-  showLibs?: boolean;
 };
 
 export type PathLesson = {
@@ -39,11 +37,27 @@ export type PathLesson = {
   exercises: Exercise[];
 };
 
+/** 일상 비유 마이크로 애니 클립 id */
+export type ConceptAnimationId = "capture-doors";
+
+/** 대단원 진입 시 일상 비유 인트로 */
+export type ConceptIntro = {
+  id: string;
+  metaphorTitle: string;
+  metaphorBody: string;
+  bridgeText: string;
+  animation: ConceptAnimationId;
+  /** Course: 이 레슨에 들어갈 때만 표시 */
+  forLessonId?: string;
+};
+
 export type PathUnit = {
   id: string;
   title: string;
   blurb: string;
   lessons: PathLesson[];
+  /** 일상 비유 개념 인트로 (선택) */
+  conceptIntro?: ConceptIntro;
 };
 
 /** 규칙 입문 Course */
@@ -54,6 +68,17 @@ export type Course = {
   units: PathUnit[];
 };
 
+/** 대단원 안 학습 단계 */
+export type RankStageKind = "learn" | "drill" | "situation" | "test";
+
+export type RankStage = {
+  id: string;
+  kind: RankStageKind;
+  title: string;
+  subtitle?: string;
+  exercises: Exercise[];
+};
+
 /** 급수 단원 안의 Part */
 export type RankPart = {
   id: string;
@@ -61,6 +86,10 @@ export type RankPart = {
   subtitle: string;
   tag: string;
   exercises: Exercise[];
+  /** 학습·반복·실전·테스트 (없으면 런타임에 생성) */
+  stages?: RankStage[];
+  /** 일상 비유 개념 인트로 (선택) — 학습 단계 첫 진입 시 */
+  conceptIntro?: ConceptIntro;
 };
 
 /** 급수 사다리 한 칸 (30급, 25급…) */
@@ -79,4 +108,5 @@ export type PathItem =
   | { kind: "course-lesson"; unitId: string; lesson: PathLesson }
   | { kind: "rank-intro"; module: RankModule }
   | { kind: "rank-part"; module: RankModule; part: RankPart }
+  | { kind: "rank-stage"; module: RankModule; part: RankPart; stage: RankStage }
   | { kind: "rank-exam"; module: RankModule };

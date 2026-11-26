@@ -1,6 +1,38 @@
-import { useMemo, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { PrimaryButton } from "@/components/Screen";
+import { sfx } from "@/lib/sfx";
 
-const COLORS = ["#3182F6", "#FFB331", "#F04452", "#00C471", "#A234C7", "#191F28", "#ffffff"];
+const COLORS = ["#3182F6", "#FFB331", "#F04452", "#00C471", "#A234C7", "#58CC02", "#ffffff"];
+
+/** Shared confetti + floating praise helper (레슨·미션·연습 공용) */
+export function useCelebrate() {
+  const timers = useRef<number[]>([]);
+  const later = useCallback((fn: () => void, ms: number) => {
+    timers.current.push(window.setTimeout(fn, ms));
+  }, []);
+  const clearTimers = useCallback(() => {
+    timers.current.forEach(window.clearTimeout);
+    timers.current = [];
+  }, []);
+  const [burst, setBurst] = useState<{ id: number; big: boolean } | null>(null);
+  const [praise, setPraise] = useState<{ id: number; text: string; tone: "blue" | "orange" } | null>(null);
+  const celebrate = useCallback(
+    (opts: { praise?: string; tone?: "blue" | "orange"; confetti?: "small" | "big" }) => {
+      const id = Date.now();
+      if (opts.praise) {
+        setPraise({ id, text: opts.praise, tone: opts.tone ?? "blue" });
+        later(() => setPraise((cur) => (cur?.id === id ? null : cur)), 1100);
+      }
+      if (opts.confetti) {
+        setBurst({ id, big: opts.confetti === "big" });
+        later(() => setBurst((cur) => (cur?.id === id ? null : cur)), opts.confetti === "big" ? 3200 : 2400);
+      }
+    },
+    [later],
+  );
+  useEffect(() => () => clearTimers(), [clearTimers]);
+  return { burst, praise, celebrate, later, clearTimers };
+}
 
 /** One-shot confetti burst. Remount (change `key`) to fire again. */
 export function Confetti({ big = false, originY = 45 }: { big?: boolean; originY?: number }) {
@@ -65,6 +97,100 @@ export function PraiseBadge({ text, tone = "blue" }: { text: string; tone?: "blu
       >
         {text}
       </span>
+    </div>
+  );
+}
+
+/** 듀오식 미션/레슨 클리어 화면 */
+export function MissionClearScreen({
+  title,
+  xp,
+  streakDays,
+  onContinue,
+}: {
+  title: string;
+  xp: number;
+  streakDays?: number;
+  onContinue: () => void;
+}) {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex flex-1 flex-col items-center justify-center px-2 text-center">
+        <div
+          className="flex h-[104px] w-[104px] animate-pop items-center justify-center rounded-[32px]"
+          style={{ backgroundColor: "#58CC02", boxShadow: "0 8px 0 #46A302" }}
+        >
+          <svg viewBox="0 0 24 24" className="h-14 w-14" fill="none" aria-hidden>
+            <path d="m5.5 12.5 4.2 4.2L18.5 8" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+        <p className="duo-t-green-hi mt-7 animate-rise-in text-[15px] font-extrabold" style={{ animationDelay: "80ms" }}>
+          레슨 완료!
+        </p>
+        <p
+          className="duo-t1 mt-2 animate-rise-in break-keep text-[26px] font-extrabold leading-snug"
+          style={{ animationDelay: "140ms" }}
+        >
+          {title}
+        </p>
+        <div className="mt-8 flex w-full max-w-[320px] animate-rise-in gap-3" style={{ animationDelay: "220ms" }}>
+          <StatChip
+            label="획득 XP"
+            value={`+${xp}`}
+            color="#1CB0F6"
+            icon={
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden>
+                <path d="M12 2.5 14.2 8l5.8.5-4.4 3.7 1.4 5.6L12 14.8 6.9 17.8l1.4-5.6L4 8.5 9.8 8 12 2.5Z" />
+              </svg>
+            }
+          />
+          {streakDays != null && streakDays > 0 ? (
+            <StatChip
+              label="연속 학습"
+              value={`${streakDays}일`}
+              color="#FF9600"
+              icon={
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden>
+                  <path d="M12 3c1.2 2.4-.2 4.2-1.4 5.5C9.2 10 8 11.4 8 14a4 4 0 0 0 8 0c0-2.2-1-3.8-2-5.2-.8-1.2-1.4-2.2-1.2-3.8.6 1 .8 1.8 1.6 2.8C16.2 9.8 18 11.6 18 14.2A6 6 0 0 1 6 14c0-3.2 2.2-5.2 3.8-6.8C11 5.8 11.4 4.6 12 3Z" />
+                </svg>
+              }
+            />
+          ) : null}
+        </div>
+      </div>
+      <div className="shrink-0 border-t-2 border-duo-night-line pb-[max(12px,env(safe-area-inset-bottom))] pt-3">
+        <PrimaryButton
+          night
+          onClick={() => {
+            sfx.play("tap");
+            onContinue();
+          }}
+        >
+          계속하기
+        </PrimaryButton>
+      </div>
+    </div>
+  );
+}
+
+function StatChip({
+  label,
+  value,
+  color,
+  icon,
+}: {
+  label: string;
+  value: string;
+  color: string;
+  icon: ReactNode;
+}) {
+  return (
+    <div className="flex flex-1 flex-col items-center rounded-2xl px-3 py-3.5" style={{ backgroundColor: "#202F36", boxShadow: "inset 0 0 0 2px #37464F" }}>
+      <span className="flex items-center gap-1 text-[12px] font-extrabold" style={{ color }}>
+        {icon}
+        {label}
+      </span>
+      <span className="duo-t1 mt-1 text-[22px] font-extrabold tabular-nums">{value}</span>
     </div>
   );
 }

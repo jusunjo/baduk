@@ -212,7 +212,8 @@ export function Board({
             row.map((cell, x) => {
               if (!cell) return null;
               const { cx, cy } = xy({ x, y });
-              return <Stone key={`${x}-${y}-${cell}`} cx={cx} cy={cy} r={stoneR} color={cell} />;
+              const pop = !!lastMove && lastMove.x === x && lastMove.y === y;
+              return <Stone key={`${x}-${y}-${cell}`} cx={cx} cy={cy} r={stoneR} color={cell} animate={pop} />;
             }),
           )}
 
@@ -299,12 +300,27 @@ export function Board({
   );
 }
 
-function Stone({ cx, cy, r, color }: { cx: number; cy: number; r: number; color: StoneColor }) {
+function Stone({
+  cx,
+  cy,
+  r,
+  color,
+  animate = false,
+}: {
+  cx: number;
+  cy: number;
+  r: number;
+  color: StoneColor;
+  /** 방금 둔 수만 팝 — 문제 전환 시 세팅 돌 전부가 덜컹이지 않게 */
+  animate?: boolean;
+}) {
   if (color === "B") {
     return (
       <g filter="url(#stone-shadow)" transform={`translate(${cx} ${cy})`}>
         <circle r={r} fill="#1a1f27">
-          <animate attributeName="r" values={`${r * 0.7};${r * 1.04};${r}`} dur="0.42s" fill="freeze" />
+          {animate ? (
+            <animate attributeName="r" values={`${r * 0.7};${r * 1.04};${r}`} dur="0.42s" fill="freeze" />
+          ) : null}
         </circle>
         <circle cx={-r * 0.28} cy={-r * 0.3} r={r * 0.28} fill="#fff" opacity="0.18" />
       </g>
@@ -313,7 +329,9 @@ function Stone({ cx, cy, r, color }: { cx: number; cy: number; r: number; color:
   return (
     <g filter="url(#stone-shadow)" transform={`translate(${cx} ${cy})`}>
       <circle r={r} fill="#f7f8fa" stroke="#d1d5db" strokeWidth="0.35">
-        <animate attributeName="r" values={`${r * 0.7};${r * 1.04};${r}`} dur="0.42s" fill="freeze" />
+        {animate ? (
+          <animate attributeName="r" values={`${r * 0.7};${r * 1.04};${r}`} dur="0.42s" fill="freeze" />
+        ) : null}
       </circle>
       <circle cx={-r * 0.25} cy={-r * 0.28} r={r * 0.22} fill="#fff" opacity="0.7" />
     </g>

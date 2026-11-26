@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getRankModule, type PathItem } from "@/data/path";
+import { getRankModule, type PathItem, type RankModule, type RankStageKind } from "@/data/path";
+import { RANK_CATALOG } from "@/data/path/rankUnits";
+import { buildPartStages } from "@/data/path/stages";
 import { RANKS } from "@/lib/ranks";
 import { useProgress } from "@/lib/progress";
 import { sfx } from "@/lib/sfx";
@@ -11,10 +13,15 @@ type NodeState = "done" | "current" | "locked";
 type PathNode = {
   key: string;
   title: string;
-  kind: "mission" | "exam" | "chest" | "promote";
+  kind: "mission" | "drill" | "situation" | "test" | "exam" | "chest" | "promote";
   item?: PathItem;
   unitDone?: boolean;
 };
+
+function stageNodeKind(kind: RankStageKind): PathNode["kind"] {
+  if (kind === "learn") return "mission";
+  return kind;
+}
 
 type PathSection = {
   id: string;
@@ -205,30 +212,26 @@ function buildSections(p: ReturnType<typeof useProgress>): PathSection[] {
     });
   });
 
-  // 30급 본편(잡기·연결 등) — 입문 코스 뒤에 이어 붙임
-  const g30Mod = onG30Track ? getRankModule("g30") : p.module;
-  if (g30Mod && onG30Track) {
-    sections.push({
-      ...rankModuleSection(g30Mod, "green"),
-      title: "30급 · 잡기 · 살리기 · 연결",
-    });
-  } else if (p.module) {
-    sections.push(rankModuleSection(p.module, "green"));
+  // 현재 급수 본편 — 같은 급 대단원은 한 섹션에 묶고, 급수끼리만 분리
+  const currentMod = onG30Track ? getRankModule("g30") : p.module;
+  if (currentMod) {
+    sections.push(...rankModuleSections(currentMod, "green", p.completed));
   }
 
-  // 현재보다 높은 급수만 잠긴 미리보기 (30급은 위 세션에 포함되므로 제외)
+  // 현재보다 높은 급수 미리보기 (급수 단위로 묶음)
   const myLevel = p.rank?.id === "beginner" ? 1 : (p.rank?.level ?? 0);
   const upcoming = RANKS.filter((r) => r.level > myLevel && r.id !== "beginner");
   upcoming.forEach((rank, i) => {
     const tone = tones[(sections.length + i) % tones.length]!;
     const mod = getRankModule(rank.id);
     if (mod) {
-      const sec = rankModuleSection(mod, tone);
-      sections.push({
-        ...sec,
-        id: `soon-${rank.id}`,
-        nodes: sec.nodes.map((n) => ({ ...n, key: `soon:${rank.id}:${n.key}` })),
-      });
+      for (const sec of rankModuleSections(mod, tone, p.completed)) {
+        sections.push({
+          ...sec,
+          id: `soon-${rank.id}-${sec.id}`,
+          nodes: sec.nodes.map((n) => ({ ...n, key: `soon:${rank.id}:${n.key}` })),
+        });
+      }
       return;
     }
     sections.push({
@@ -246,35 +249,78 @@ function buildSections(p: ReturnType<typeof useProgress>): PathSection[] {
   return sections;
 }
 
-function rankModuleSection(mod: NonNullable<ReturnType<typeof getRankModule>>, tone: PathSection["tone"]): PathSection {
-  const nodes: PathNode[] = [
-    {
-      key: mod.intro.id,
-      title: mod.intro.title,
-      kind: "mission",
-      item: { kind: "rank-intro", module: mod },
-    },
-    ...mod.parts.map((part) => ({
-      key: part.id,
-      title: part.title.replace(/^Part\s*\d+\s*·\s*/, ""),
-      kind: "mission" as const,
-      item: { kind: "rank-part" as const, module: mod, part },
-    })),
-  ];
-  if (mod.exam) {
-    nodes.push({
-      key: `exam:${mod.rankId}`,
-      title: "승급 시험",
-      kind: "exam",
-      item: { kind: "rank-exam", module: mod },
-    });
+/**
+ * 급수 모듈 → 대단원별 섹션.
+ * 각 섹션: (첫 파트에 intro) + 학습·반복·실전·테스트 + (마지막에 승급 시험)
+ */
+function rankModuleSections(
+  mod: RankModule,
+  tone: PathSection["tone"],
+  completed: Record<string, number>,
+): PathSection[] {
+  const cat = RANK_CATALOG[mod.rankId];
+  const parts = mod.parts;
+  if (!parts.length) {
+    return [
+      {
+        id: `rank-${mod.rankId}`,
+        title: mod.title,
+        tone,
+        nodes: [
+          {
+            key: mod.intro.id,
+            title: mod.intro.title,
+            kind: "mission",
+            item: { kind: "rank-intro", module: mod },
+          },
+        ],
+      },
+    ];
   }
-  return {
-    id: `rank-${mod.rankId}`,
-    title: mod.title,
-    tone,
-    nodes,
-  };
+
+  return parts.map((part, i) => {
+    const label = cat?.units[i]?.tag ?? part.tag;
+    const stages = part.stages?.length ? part.stages : buildPartStages(part);
+    const nodes: PathNode[] = [];
+
+    if (i === 0) {
+      nodes.push({
+        key: mod.intro.id,
+        title: "소개",
+        kind: "mission",
+        item: { kind: "rank-intro", module: mod },
+      });
+    }
+
+    for (const stage of stages) {
+      nodes.push({
+        key: stage.id,
+        title: stage.title,
+        kind: stageNodeKind(stage.kind),
+        item: { kind: "rank-stage", module: mod, part, stage },
+      });
+    }
+
+    if (i === parts.length - 1 && mod.exam) {
+      nodes.push({
+        key: `exam:${mod.rankId}`,
+        title: "승급 시험",
+        kind: "exam",
+        item: { kind: "rank-exam", module: mod },
+      });
+    }
+
+    const playable = nodes.filter((n) => n.kind !== "chest" && n.kind !== "promote");
+    const unitDone = playable.every((n) => completed[n.key]);
+    nodes.push({ key: `chest:${mod.rankId}:${part.id}`, title: "상자", kind: "chest", unitDone });
+
+    return {
+      id: `rank-${mod.rankId}-${part.id}`,
+      title: `${mod.title} · ${label}`,
+      tone,
+      nodes,
+    };
+  });
 }
 
 function UnitBanner({
@@ -341,9 +387,13 @@ function PathCircle({
   const current = state === "current";
   const face = locked
     ? "bg-[#E5E5E5] shadow-[0_6px_0_#C9CED4]"
-    : kind === "exam"
+    : kind === "exam" || kind === "test"
       ? "bg-[#FFC800] shadow-[0_6px_0_#E29F03] active:translate-y-[3px] active:shadow-[0_3px_0_#E29F03]"
-      : "bg-[#58CC02] shadow-[0_6px_0_#46A302] active:translate-y-[3px] active:shadow-[0_3px_0_#46A302]";
+      : kind === "situation"
+        ? "bg-[#1CB0F6] shadow-[0_6px_0_#1899D6] active:translate-y-[3px] active:shadow-[0_3px_0_#1899D6]"
+        : kind === "drill"
+          ? "bg-[#CE82FF] shadow-[0_6px_0_#A568D0] active:translate-y-[3px] active:shadow-[0_3px_0_#A568D0]"
+          : "bg-[#58CC02] shadow-[0_6px_0_#46A302] active:translate-y-[3px] active:shadow-[0_3px_0_#46A302]";
 
   return (
     <div className="relative">
@@ -378,12 +428,29 @@ function NodeGlyph({ state, kind }: { state: NodeState; kind: PathNode["kind"] }
       </svg>
     );
   }
-  if (kind === "exam") {
+  if (kind === "exam" || kind === "test") {
     return (
       <svg viewBox="0 0 24 24" className="h-8 w-8" aria-hidden>
         <path d="M7 3.5h10v5.5a5 5 0 0 1-10 0V3.5Z" fill="#fff" />
         <rect x="10.5" y="13" width="3" height="4" fill="#fff" />
         <rect x="7" y="17" width="10" height="3.5" rx="1.5" fill="#fff" />
+      </svg>
+    );
+  }
+  if (kind === "drill") {
+    return (
+      <svg viewBox="0 0 24 24" className="h-8 w-8" aria-hidden>
+        <path d="M7 7h10v10H7z" fill="none" stroke="#fff" strokeWidth="2.2" />
+        <path d="M9 7V5.5a3 3 0 0 1 6 0V7M9 17v1.5a3 3 0 0 0 6 0V17" stroke="#fff" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (kind === "situation") {
+    return (
+      <svg viewBox="0 0 24 24" className="h-8 w-8" aria-hidden>
+        <circle cx="8" cy="9" r="3.2" fill="#191F28" />
+        <circle cx="16" cy="11" r="3.2" fill="#fff" />
+        <circle cx="11" cy="16.5" r="2.6" fill="#191F28" />
       </svg>
     );
   }

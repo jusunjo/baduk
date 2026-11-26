@@ -1,12 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { MissionPlay } from "@/components/MissionPlay";
+import { Confetti, MissionClearScreen, useCelebrate } from "@/components/Celebrate";
+import { ConceptIntroOverlay } from "@/components/concept/ConceptIntroOverlay";
+import { MissionPlay, type MissionCompleteStats } from "@/components/MissionPlay";
 import { PrimaryButton, Screen } from "@/components/Screen";
-import { findCourseLesson, findRankPart, getRankModule } from "@/data/path";
+import {
+  findCourseLesson,
+  findRankPart,
+  findRankStage,
+  getConceptIntroForMission,
+  getRankModule,
+} from "@/data/path";
 import type { Exercise } from "@/data/path/types";
 import { useProgress } from "@/lib/progress";
-import { sfx } from "@/lib/sfx";
-import { actions } from "@/lib/store";
+import { sfx, XP_MISSION_BONUS } from "@/lib/sfx";
+import { actions, getState } from "@/lib/store";
 
 export function MissionPlayPage() {
   const { missionId = "" } = useParams();
@@ -19,6 +27,14 @@ function Mission({ missionId }: { missionId: string }) {
   const [hearts, setHearts] = useState(5);
   const [step, setStep] = useState(0);
   const [total, setTotal] = useState(1);
+  const [clear, setClear] = useState<{ title: string; xp: number } | null>(null);
+  const { burst, celebrate } = useCelebrate();
+
+  const conceptIntro = getConceptIntroForMission(missionId, p.rank?.id ?? null);
+  const [showIntro, setShowIntro] = useState(() => {
+    if (!conceptIntro) return false;
+    return !getState().introSeen[conceptIntro.id];
+  });
 
   let title = "";
   let subtitle: string | undefined;
@@ -36,19 +52,63 @@ function Mission({ missionId }: { missionId: string }) {
       subtitle = mod.intro.subtitle;
       exercises = mod.intro.exercises;
     } else {
-      const partHit = findRankPart(p.rank.id, missionId);
-      if (partHit) {
-        title = partHit.part.title;
-        subtitle = partHit.part.subtitle;
-        exercises = partHit.part.exercises;
+      const stageHit = findRankStage(p.rank.id, missionId);
+      if (stageHit) {
+        title = `${stageHit.part.tag} · ${stageHit.stage.title}`;
+        subtitle = stageHit.stage.subtitle ?? stageHit.part.subtitle;
+        exercises = stageHit.stage.exercises;
+      } else {
+        const partHit = findRankPart(p.rank.id, missionId);
+        if (partHit) {
+          title = partHit.part.title;
+          subtitle = partHit.part.subtitle;
+          exercises = partHit.part.exercises;
+        }
       }
     }
   }
+
+  useEffect(() => {
+    if (!clear) return;
+    celebrate({ confetti: "big" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clear]);
 
   if (!exercises) {
     return (
       <Screen onBack={() => navigate("/learn")} title="미션">
         <p className="mt-8 text-center text-toss-mute">미션을 찾을 수 없어요.</p>
+      </Screen>
+    );
+  }
+
+  const dismissIntro = () => {
+    if (conceptIntro) actions.markIntroSeen(conceptIntro.id);
+    setShowIntro(false);
+  };
+
+  const goHomeCelebrating = () => {
+    navigate("/", { replace: true, state: { celebrateHome: true } });
+  };
+
+  if (showIntro && conceptIntro) {
+    return (
+      <Screen lesson fit onClose={() => navigate("/", { replace: true })}>
+        <ConceptIntroOverlay intro={conceptIntro} onContinue={dismissIntro} onSkip={dismissIntro} />
+      </Screen>
+    );
+  }
+
+  if (clear) {
+    return (
+      <Screen lesson fit progress={1} onClose={goHomeCelebrating}>
+        {burst && <Confetti key={burst.id} big={burst.big} originY={38} />}
+        <MissionClearScreen
+          title={clear.title}
+          xp={clear.xp}
+          streakDays={p.streakDays}
+          onContinue={goHomeCelebrating}
+        />
       </Screen>
     );
   }
@@ -94,10 +154,11 @@ function Mission({ missionId }: { missionId: string }) {
           setStep(i);
           setTotal(t);
         }}
-        onComplete={() => {
+        onComplete={(stats: MissionCompleteStats) => {
+          const first = !getState().completed[missionId];
           actions.completeLesson(missionId);
-          sfx.play("xp");
-          navigate("/", { replace: true });
+          const bonus = first ? XP_MISSION_BONUS : 0;
+          setClear({ title, xp: stats.xp + bonus });
         }}
       />
     </Screen>
