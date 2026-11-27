@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Board } from "@/components/Board";
 import { BoardBuddy } from "@/components/BoardBuddy";
 import { Confetti, PraiseBadge, pickPraise, useCelebrate } from "@/components/Celebrate";
@@ -13,6 +13,17 @@ import { sfx, XP_PER_CORRECT } from "@/lib/sfx";
 import { actions } from "@/lib/store";
 
 export type MissionCompleteStats = { xp: number };
+
+const RETRY_SUFFIX = "-retry";
+
+/** 틀린 문제를 미션 끝에 한 번 더 내기 위한 복사본 */
+function retryCopy(ex: Exercise): Exercise {
+  return {
+    ...ex,
+    id: `${ex.id}${RETRY_SUFFIX}`,
+    prompt: `한 번 더: ${ex.prompt.replace(/^다시: /u, "")}`,
+  };
+}
 
 function choiceSlotHeight(exercises: Exercise[]): number {
   let maxRows = 0;
@@ -34,6 +45,8 @@ export function MissionPlay({
   onHeartLost,
   onStep,
   onComplete,
+  onFirstAttempt,
+  retryWrong = true,
 }: {
   title: string;
   subtitle?: string;
@@ -42,8 +55,15 @@ export function MissionPlay({
   onHeartLost: () => void;
   onStep?: (index: number, total: number) => void;
   onComplete: (stats: MissionCompleteStats) => void;
+  /** 문제마다 첫 시도 결과 (다시 내는 복사본은 제외) */
+  onFirstAttempt?: (ex: Exercise, correct: boolean) => void;
+  /** 틀린 문제를 미션 끝에 한 번 더 내요 */
+  retryWrong?: boolean;
 }) {
+  const [queue, setQueue] = useState<Exercise[]>(exercises);
   const [idx, setIdx] = useState(0);
+  /** 지금 문제에서 이미 틀렸는지 */
+  const missedCur = useRef(false);
   const [board, setBoard] = useState<Grid>(() => applySetup(exercises[0]?.size ?? 9, exercises[0]?.setup));
   const [feedback, setFeedback] = useState<string | null>(null);
   const [ok, setOk] = useState(false);
@@ -53,7 +73,7 @@ export function MissionPlay({
   const [earnedXp, setEarnedXp] = useState(0);
   const { burst, praise, celebrate } = useCelebrate();
 
-  const ex = exercises[idx];
+  const ex = queue[idx];
   const choiceH = useMemo(() => choiceSlotHeight(exercises), [exercises]);
 
   useEffect(() => {
@@ -74,14 +94,15 @@ export function MissionPlay({
   }, [ex?.id]);
 
   useEffect(() => {
-    onStep?.(0, exercises.length);
+    onStep?.(idx, queue.length);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exercises.length]);
+  }, [queue.length]);
 
   const load = (i: number) => {
-    const next = exercises[i];
+    const next = queue[i];
+    if (i !== idx) missedCur.current = false;
     setIdx(i);
-    onStep?.(i, exercises.length);
+    onStep?.(i, queue.length);
     setBoard(applySetup(next.size, next.setup));
     setFeedback(null);
     setOk(false);
@@ -97,7 +118,7 @@ export function MissionPlay({
 
   const advance = () => {
     sfx.play("tap");
-    if (idx + 1 >= exercises.length) {
+    if (idx + 1 >= queue.length) {
       finish(earnedXp);
       return;
     }
@@ -105,6 +126,7 @@ export function MissionPlay({
   };
 
   const succeed = (msg?: string, opts?: { praise?: string; tone?: "blue" | "orange" }) => {
+    if (!missedCur.current && !ex.id.endsWith(RETRY_SUFFIX)) onFirstAttempt?.(ex, true);
     sfx.play("correct");
     sfx.play("xp");
     haptic.correct();
@@ -128,7 +150,7 @@ export function MissionPlay({
     const nextXp = earnedXp + XP_PER_CORRECT;
     setEarnedXp(nextXp);
     celebrate({ praise: pickPraise(), confetti: "small" });
-    if (idx + 1 >= exercises.length) {
+    if (idx + 1 >= queue.length) {
       finish(nextXp);
       return;
     }
@@ -136,6 +158,13 @@ export function MissionPlay({
   };
 
   const fail = (at?: Point) => {
+    if (!missedCur.current) {
+      missedCur.current = true;
+      if (!ex.id.endsWith(RETRY_SUFFIX)) {
+        onFirstAttempt?.(ex, false);
+        if (retryWrong) setQueue((q) => [...q, retryCopy(ex)]);
+      }
+    }
     sfx.play("wrong");
     haptic.wrong();
     onHeartLost();
@@ -306,11 +335,11 @@ export function MissionPlay({
       >
         {ex.type === "read" ? (
           <PrimaryButton night onClick={acknowledgeRead}>
-            {idx + 1 >= exercises.length ? "완료" : "다음"}
+            {idx + 1 >= queue.length ? "완료" : "다음"}
           </PrimaryButton>
         ) : ok ? (
           <PrimaryButton night onClick={advance}>
-            {idx + 1 >= exercises.length ? "완료" : "계속하기"}
+            {idx + 1 >= queue.length ? "완료" : "계속하기"}
           </PrimaryButton>
         ) : wrong ? (
           <PrimaryButton

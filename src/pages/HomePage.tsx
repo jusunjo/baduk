@@ -4,7 +4,10 @@ import { Confetti, useCelebrate } from "@/components/Celebrate";
 import { LearnPath } from "@/components/LearnPath";
 import { RankBadge } from "@/components/RankPicker";
 import { Screen } from "@/components/Screen";
+import { dayKey, startOfToday } from "@/lib/date";
 import { useProgress } from "@/lib/progress";
+import { DAILY_REVIEW_ID, DAILY_REVIEW_SIZE, daysToNextReview, dueCount, wrongCount } from "@/lib/review";
+import { useStore } from "@/lib/store";
 import { sfx } from "@/lib/sfx";
 
 export function HomePage() {
@@ -56,8 +59,60 @@ export function HomePage() {
           </div>
         </div>
       </div>
+      <DailyReviewCard showEmpty={p.rank.id === "g30"} />
       <LearnPath />
     </Screen>
+  );
+}
+
+/** 오늘의 복습 — 1·3·7일 간격으로 돌아오는 30급 문제 */
+function DailyReviewCard({ showEmpty }: { showEmpty: boolean }) {
+  const navigate = useNavigate();
+  const st = useStore();
+  const total = Object.keys(st.reviews).length;
+  if (!total && !showEmpty) return null;
+
+  const due = dueCount(st.reviews);
+  const today = Math.min(due, DAILY_REVIEW_SIZE);
+  const wrong = wrongCount(st.reviews);
+  const doneToday = st.reviewDoneDay === dayKey(startOfToday());
+  const nextIn = daysToNextReview(st.reviews);
+
+  let line: string;
+  if (today > 0) line = wrong > 0 ? `틀렸던 문제 ${wrong}개가 기다려요` : "잊기 전에 한 번 더 풀어요";
+  else if (doneToday) line = "오늘 복습 끝! 내일 또 만나요";
+  else if (nextIn !== null) line = `다음 복습은 ${nextIn}일 뒤예요`;
+  else line = "30급 문제를 풀면 복습이 쌓여요";
+
+  return (
+    <button
+      type="button"
+      disabled={today === 0}
+      onClick={() => {
+        sfx.play("tap");
+        navigate(`/mission/${DAILY_REVIEW_ID}`);
+      }}
+      className="mb-4 flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left transition active:translate-y-[2px] disabled:active:translate-y-0"
+      style={{
+        backgroundColor: today > 0 ? "#2A1F3D" : "#1A2C33",
+        boxShadow: `inset 0 0 0 2px ${today > 0 ? "#CE82FF" : "#37464F"}`,
+      }}
+    >
+      <span
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[18px] font-black text-white"
+        style={{ backgroundColor: today > 0 ? "#CE82FF" : "#37464F" }}
+        aria-hidden
+      >
+        ↻
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="duo-t1 block text-[16px] font-extrabold">
+          {today > 0 ? `오늘의 복습 ${today}문제` : "오늘의 복습"}
+        </span>
+        <span className="duo-t2 block break-keep text-[13px] font-semibold">{line}</span>
+      </span>
+      {today > 0 ? <span className="text-[14px] font-extrabold text-[#CE82FF]">시작</span> : null}
+    </button>
   );
 }
 
