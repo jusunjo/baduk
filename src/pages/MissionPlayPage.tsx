@@ -14,6 +14,7 @@ import {
 import type { Exercise } from "@/data/path/types";
 import { useProgress } from "@/lib/progress";
 import { sfx, XP_MISSION_BONUS } from "@/lib/sfx";
+import { DAILY_REVIEW_ID, dueCards, isReviewTracked } from "@/lib/review";
 import { actions, getState } from "@/lib/store";
 
 export function MissionPlayPage() {
@@ -36,12 +37,23 @@ function Mission({ missionId }: { missionId: string }) {
     return !getState().introSeen[conceptIntro.id];
   });
 
+  const isReview = missionId === DAILY_REVIEW_ID;
+  const tracked = isReview || isReviewTracked(missionId);
+  // 복습 세션은 들어올 때 한 번만 고정 (풀면서 카드가 바뀌어도 흔들리지 않게)
+  const [reviewSet] = useState<Exercise[] | null>(() =>
+    isReview ? dueCards(getState().reviews).map((c) => c.ex) : null,
+  );
+
   let title = "";
   let subtitle: string | undefined;
   let exercises: Exercise[] | null = null;
 
-  const courseHit = findCourseLesson(missionId);
-  if (courseHit) {
+  const courseHit = isReview ? null : findCourseLesson(missionId);
+  if (isReview) {
+    title = "오늘의 복습";
+    subtitle = "잊기 전에 다시 풀어요";
+    exercises = reviewSet && reviewSet.length ? reviewSet : null;
+  } else if (courseHit) {
     title = courseHit.lesson.title;
     subtitle = courseHit.lesson.subtitle;
     exercises = courseHit.lesson.exercises;
@@ -77,7 +89,9 @@ function Mission({ missionId }: { missionId: string }) {
   if (!exercises) {
     return (
       <Screen onBack={() => navigate("/learn")} title="미션">
-        <p className="mt-8 text-center text-toss-mute">미션을 찾을 수 없어요.</p>
+        <p className="mt-8 text-center text-toss-mute">
+          {isReview ? "오늘 복습할 문제가 없어요. 내일 다시 와요!" : "미션을 찾을 수 없어요."}
+        </p>
       </Screen>
     );
   }
@@ -154,7 +168,15 @@ function Mission({ missionId }: { missionId: string }) {
           setStep(i);
           setTotal(t);
         }}
+        onFirstAttempt={
+          tracked ? (ex, correct) => actions.recordAttempt(ex, correct, isReview) : undefined
+        }
         onComplete={(stats: MissionCompleteStats) => {
+          if (isReview) {
+            actions.completeReview();
+            setClear({ title, xp: stats.xp });
+            return;
+          }
           const first = !getState().completed[missionId];
           actions.completeLesson(missionId);
           const bonus = first ? XP_MISSION_BONUS : 0;

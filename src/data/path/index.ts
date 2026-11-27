@@ -3,6 +3,7 @@ import { RANKS } from "@/lib/ranks";
 import { COURSE } from "./course";
 import { MODULE_G30 } from "./modules/g30";
 import { buildRankModule } from "./modules/buildRank";
+import { withG30Practice } from "./modules/g30Practice";
 import { attachStages, buildPartStages } from "./stages";
 import type { ConceptIntro, Course, PathItem, PathLesson, RankModule, RankPart, RankStage } from "./types";
 
@@ -21,7 +22,7 @@ function withPartStages(mod: RankModule): RankModule {
 }
 
 const MODULES: Record<PlayRankId, RankModule> = Object.fromEntries(
-  allPlayRanks().map((id) => [id, withPartStages(id === "g30" ? MODULE_G30 : buildRankModule(id))]),
+  allPlayRanks().map((id) => [id, id === "g30" ? withG30Practice(withPartStages(MODULE_G30)) : withPartStages(buildRankModule(id))]),
 ) as Record<PlayRankId, RankModule>;
 
 export function getCourse(): Course {

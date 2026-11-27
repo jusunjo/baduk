@@ -1,6 +1,8 @@
 import { useSyncExternalStore } from "react";
 import { addDays, dayKey, startOfToday } from "./date";
+import type { Exercise } from "@/data/path/types";
 import type { RankId } from "./ranks";
+import { nextCards, type ReviewCard } from "./review";
 import { XP_MISSION_BONUS } from "./sfx";
 
 export interface Goal {
@@ -32,6 +34,10 @@ export interface AppState {
   xpToday: number;
   /** xpToday가 속한 날 */
   xpDay: string | null;
+  /** 반복 학습 카드 (reviewKey → 카드) */
+  reviews: Record<string, ReviewCard>;
+  /** 오늘의 복습을 마친 날 YYYY-MM-DD */
+  reviewDoneDay: string | null;
 }
 
 const KEY = "hansu/state";
@@ -49,6 +55,8 @@ const EMPTY: AppState = {
   xp: 0,
   xpToday: 0,
   xpDay: null,
+  reviews: {},
+  reviewDoneDay: null,
 };
 
 function migrate(raw: Record<string, unknown>): AppState {
@@ -64,6 +72,11 @@ function migrate(raw: Record<string, unknown>): AppState {
     xp: typeof raw.xp === "number" ? raw.xp : 0,
     xpToday: typeof raw.xpToday === "number" ? raw.xpToday : 0,
     xpDay: typeof raw.xpDay === "string" ? raw.xpDay : null,
+    reviews:
+      raw.reviews && typeof raw.reviews === "object" && !Array.isArray(raw.reviews)
+        ? (raw.reviews as Record<string, ReviewCard>)
+        : {},
+    reviewDoneDay: typeof raw.reviewDoneDay === "string" ? raw.reviewDoneDay : null,
   };
 }
 
@@ -166,6 +179,18 @@ export const actions = {
       ...state,
       introSeen: { ...state.introSeen, [introId]: Date.now() },
     });
+  },
+
+  /** 문제 첫 시도 결과를 반복 학습 카드에 기록 */
+  recordAttempt(ex: Exercise, correct: boolean, inReview = false) {
+    const reviews = nextCards(state.reviews, ex, correct, inReview);
+    if (reviews === state.reviews) return;
+    set({ ...state, reviews });
+  },
+
+  /** 오늘의 복습 완료 */
+  completeReview() {
+    set({ ...state, reviewDoneDay: dayKey(startOfToday()), ...bumpActivity(state) });
   },
 
   setLastLesson(lessonId: string) {
