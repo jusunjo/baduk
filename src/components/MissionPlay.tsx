@@ -73,7 +73,7 @@ export function MissionPlay({
   const [lastMove, setLastMove] = useState<Point | null>(null);
   const [earnedXp, setEarnedXp] = useState(0);
   const { burst, praise, celebrate } = useCelebrate();
-  const fit = useSquareFit<HTMLDivElement>();
+  const fit = useSquareFit<HTMLDivElement>(400);
 
   const ex = queue[idx];
   const choiceH = useMemo(() => choiceSlotHeight(exercises), [exercises]);
@@ -313,32 +313,31 @@ export function MissionPlay({
         ) : null}
       </div>
 
-      {/* 하단 스택: 피드백 슬롯 높이 고정 → CTA */}
-      <div className="mt-2 flex shrink-0 items-stretch sm:mt-3" style={{ height: 72 }}>
-        {feedback ? (
-          <div
-            className="flex w-full flex-col justify-center rounded-2xl px-3 py-2 sm:px-4"
-            style={
-              ok
-                ? { backgroundColor: "rgba(88,204,2,0.16)", color: "#89E219" }
-                : { backgroundColor: "rgba(255,75,75,0.14)", color: "#FF6B6B" }
-            }
-          >
-            <p className="text-[14px] font-extrabold sm:text-[15px]">{ok ? "정답!" : "아쉬워요"}</p>
-            <p
-              className="mt-0.5 line-clamp-2 break-keep text-[13px] font-semibold leading-snug sm:text-[14px]"
-              style={{ color: ok ? "#D6F5A8" : "#FFC2C2" }}
-            >
-              {feedback}
-            </p>
-          </div>
-        ) : null}
-      </div>
-
       <div
-        className="shrink-0 pt-2 pb-[max(12px,calc(env(safe-area-inset-bottom)+4px))] sm:pt-3"
+        className="relative mt-2 shrink-0 pt-2 pb-[max(12px,calc(env(safe-area-inset-bottom)+4px))] sm:mt-3 sm:pt-3"
         style={{ borderTop: "2px solid #37464F" }}
       >
+        {/* 정답·오답 배너 — 자리를 차지하지 않고 하단 버튼 위에 겹쳐 떠요 */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-full z-30 mb-2">
+          {feedback ? (
+            <div
+              className="flex w-full animate-rise-in flex-col justify-center rounded-2xl px-3 py-2 sm:px-4"
+              style={
+                ok
+                  ? { backgroundColor: "#1F3A16", color: "#89E219", boxShadow: "inset 0 0 0 2px #58CC02, 0 -6px 18px rgba(0,0,0,0.35)" }
+                  : { backgroundColor: "#3A1C1F", color: "#FF6B6B", boxShadow: "inset 0 0 0 2px #FF4B4B, 0 -6px 18px rgba(0,0,0,0.35)" }
+              }
+            >
+              <p className="text-[14px] font-extrabold sm:text-[15px]">{ok ? "정답!" : "아쉬워요"}</p>
+              <p
+                className="mt-0.5 line-clamp-2 break-keep text-[13px] font-semibold leading-snug sm:text-[14px]"
+                style={{ color: ok ? "#D6F5A8" : "#FFC2C2" }}
+              >
+                {feedback}
+              </p>
+            </div>
+          ) : null}
+        </div>
         {ex.type === "read" ? (
           <PrimaryButton night onClick={acknowledgeRead}>
             {idx + 1 >= queue.length ? "완료" : "다음"}
