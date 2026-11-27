@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Board } from "@/components/Board";
 import { BoardBuddy } from "@/components/BoardBuddy";
+import { useSquareFit } from "@/hooks/useSquareFit";
 import { Confetti, PraiseBadge, pickPraise, useCelebrate } from "@/components/Celebrate";
 import { PrimaryButton } from "@/components/Screen";
 import type { Point } from "@/data/curriculum";
@@ -72,6 +73,7 @@ export function MissionPlay({
   const [lastMove, setLastMove] = useState<Point | null>(null);
   const [earnedXp, setEarnedXp] = useState(0);
   const { burst, praise, celebrate } = useCelebrate();
+  const fit = useSquareFit<HTMLDivElement>();
 
   const ex = queue[idx];
   const choiceH = useMemo(() => choiceSlotHeight(exercises), [exercises]);
@@ -228,11 +230,14 @@ export function MissionPlay({
     <div className="flex min-h-0 flex-1 flex-col">
       {/* 프롬프트 높이 고정 — 힌트/문장 길이 바뀌어도 보드가 덜컹이지 않게 */}
       <div className="shrink-0 px-1" style={{ minHeight: 88 }}>
-        <div className="mb-1.5 inline-flex items-center gap-1.5 rounded-lg bg-[#CE82FF]/20 px-2.5 py-1">
-          <span className="flex h-4 w-4 items-center justify-center rounded-md bg-[#CE82FF] text-[10px] font-black text-white">
-            ◆
-          </span>
-          <span className="duo-t-berry text-[12px] font-extrabold">{title}</span>
+        <div className="mb-1.5 flex items-center justify-between gap-2">
+          <div className="inline-flex items-center gap-1.5 rounded-lg bg-[#CE82FF]/20 px-2.5 py-1">
+            <span className="flex h-4 w-4 items-center justify-center rounded-md bg-[#CE82FF] text-[10px] font-black text-white">
+              ◆
+            </span>
+            <span className="duo-t-berry text-[12px] font-extrabold">{title}</span>
+          </div>
+          {hearts <= 0 ? null : <BoardBuddy docked />}
         </div>
         <p className="duo-t1 line-clamp-2 break-keep text-[18px] font-extrabold leading-snug sm:text-[22px]">{ex.prompt}</p>
         <p className="duo-t2 mt-1 min-h-[18px] text-[12px] font-bold sm:text-[13px]">
@@ -243,15 +248,16 @@ export function MissionPlay({
       {burst && <Confetti key={burst.id} big={burst.big} />}
 
       {/* 판만 남는 높이에 맞춤 — overflow로 잘리지 않게 */}
-      <div className="relative my-2 flex min-h-0 flex-1 items-center justify-center px-1">
+      <div ref={fit.ref} className="relative my-2 flex min-h-0 flex-1 items-center justify-center px-1">
         {praise && <PraiseBadge key={praise.id} text={praise.text} tone={praise.tone} />}
         <div
-          className="aspect-square max-h-full w-full max-w-[min(100%,320px)] rounded-[20px] p-1.5 sm:rounded-[24px] sm:p-2.5"
+          className="shrink-0 rounded-[20px] p-1.5 sm:rounded-[24px] sm:p-2.5"
           style={{
             backgroundColor: "#1A2C33",
             boxShadow: "inset 0 0 0 2px #37464F",
-            width: "min(100%, 320px)",
-            maxHeight: "100%",
+            width: fit.side ?? 0,
+            height: fit.side ?? 0,
+            visibility: fit.side ? "visible" : "hidden",
           }}
         >
           <Board
@@ -263,7 +269,7 @@ export function MissionPlay({
             lastMove={lastMove}
             wrongFlash={wrong}
             showSize={false}
-            className="h-full max-h-full w-full max-w-none"
+            className="h-full w-full max-w-none"
           />
         </div>
       </div>
@@ -357,7 +363,6 @@ export function MissionPlay({
           </PrimaryButton>
         )}
       </div>
-      {hearts <= 0 ? null : <BoardBuddy />}
     </div>
   );
 }

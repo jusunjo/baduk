@@ -40,8 +40,13 @@ function clamp(p: Pos): Pos {
   };
 }
 
-/** 우하단 플로팅 한수 — 드래그로 위치 이동, 5초 무터치면 넛지 */
-export function BoardBuddy() {
+const DOCKED_SIZE = 40;
+
+/**
+ * 우하단 플로팅 한수 — 드래그로 위치 이동, 5초 무터치면 넛지.
+ * docked: 문제 머리줄 오른쪽에 붙여 판·보기를 가리지 않아요 (말풍선은 아래로 열려요).
+ */
+export function BoardBuddy({ docked = false }: { docked?: boolean } = {}) {
   const h = useHansuAsk();
   const [draft, setDraft] = useState("");
   const [nudge, setNudge] = useState(false);
@@ -96,9 +101,11 @@ export function BoardBuddy() {
   const bubbleLabel = content ?? NUDGE;
   const idle = !h.loading && !h.error && !h.answer && !h.expanded;
   const isAnswer = !!h.answer && !h.loading;
-  const bubbleLeft = pos.x < window.innerWidth / 2;
+  const bubbleLeft = !docked && pos.x < window.innerWidth / 2;
+  const popSide = docked ? "top-[calc(100%+8px)]" : "bottom-[calc(100%+8px)]";
 
   const onPointerDown = (e: React.PointerEvent) => {
+    if (docked) return;
     dragging.current = true;
     moved.current = false;
     origin.current = { x: e.clientX, y: e.clientY, px: pos.x, py: pos.y };
@@ -129,11 +136,14 @@ export function BoardBuddy() {
   };
 
   return (
-    <div className="pointer-events-none fixed z-40" style={{ left: pos.x, top: pos.y, width: SIZE }}>
+    <div
+      className={docked ? "pointer-events-none relative z-40 shrink-0" : "pointer-events-none fixed z-40"}
+      style={docked ? { width: DOCKED_SIZE } : { left: pos.x, top: pos.y, width: SIZE }}
+    >
       <div className="relative flex flex-col items-center">
         {h.expanded && !h.loading && (
           <form
-            className={`pointer-events-auto absolute bottom-[calc(100%+10px)] flex w-[min(calc(100vw-2rem),280px)] gap-2 animate-rise-in ${
+            className={`pointer-events-auto absolute ${popSide} flex w-[min(calc(100vw-2rem),280px)] gap-2 animate-rise-in ${
               bubbleLeft ? "left-0" : "right-0"
             }`}
             onSubmit={(e) => {
@@ -166,7 +176,7 @@ export function BoardBuddy() {
             onClick={() => {
               if (!h.loading) h.expand();
             }}
-            className={`pointer-events-auto absolute bottom-[calc(100%+8px)] animate-pop rounded-2xl bg-white px-3.5 py-2.5 text-left shadow-[0_6px_20px_rgba(92,61,30,0.12)] ring-1 ring-[#eadcc8] ${
+            className={`pointer-events-auto absolute ${popSide} animate-pop rounded-2xl bg-white px-3.5 py-2.5 text-left shadow-[0_6px_20px_rgba(92,61,30,0.12)] ring-1 ring-[#eadcc8] ${
               bubbleLeft ? "left-0" : "right-0"
             } ${
               isAnswer || h.error
@@ -202,10 +212,11 @@ export function BoardBuddy() {
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
+          onClick={docked ? () => h.toggle() : undefined}
           className="pointer-events-auto touch-none shrink-0 drop-shadow-[0_8px_18px_rgba(92,61,30,0.18)] transition active:scale-95"
-          aria-label="한수에게 묻기 · 길게 끌어 이동"
+          aria-label={docked ? "한수에게 묻기" : "한수에게 묻기 · 길게 끌어 이동"}
         >
-          <HansuMascot size={SIZE} bounce={idle || nudge} />
+          <HansuMascot size={docked ? DOCKED_SIZE : SIZE} bounce={idle || nudge} />
         </button>
       </div>
     </div>

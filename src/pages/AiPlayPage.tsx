@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Board } from "@/components/Board";
+import { useSquareFit } from "@/hooks/useSquareFit";
 import { PrimaryButton, Screen, Spinner } from "@/components/Screen";
 import type { Point, StoneColor } from "@/data/curriculum";
 import {
@@ -28,6 +29,7 @@ function parseConfig(state: unknown): { size: AiBoardSize; level: AiLevelId } {
 
 export function AiPlayPage() {
   const navigate = useNavigate();
+  const fit = useSquareFit<HTMLDivElement>();
   const location = useLocation();
   const { size, level } = useMemo(() => parseConfig(location.state), [location.state]);
   const visits = levelMeta(level).visits;
@@ -207,14 +209,15 @@ export function AiPlayPage() {
           {error ? <p className="duo-t-red mt-1 break-keep text-[13px] font-bold">{error}</p> : null}
         </div>
 
-        <div className="relative my-2 flex min-h-0 flex-1 items-center justify-center px-1">
+        <div ref={fit.ref} className="relative my-2 flex min-h-0 flex-1 items-center justify-center px-1">
           <div
-            className="aspect-square max-h-full w-full max-w-[min(100%,320px)] rounded-[20px] p-1.5 sm:rounded-[24px] sm:p-2.5"
+            className="shrink-0 rounded-[20px] p-1.5 sm:rounded-[24px] sm:p-2.5"
             style={{
               backgroundColor: "#1A2C33",
               boxShadow: "inset 0 0 0 2px #37464F",
-              width: "min(100%, 320px)",
-              maxHeight: "100%",
+              width: fit.side ?? 0,
+              height: fit.side ?? 0,
+              visibility: fit.side ? "visible" : "hidden",
             }}
           >
             <Board
@@ -224,7 +227,7 @@ export function AiPlayPage() {
               interactive={phase === "play" && !thinking && toPlay === "B"}
               lastMove={lastMove}
               showSize={false}
-              className="h-full max-h-full w-full max-w-none"
+              className="h-full w-full max-w-none"
             />
           </div>
           {thinking ? (
